@@ -530,7 +530,7 @@ function openModal(id,level){
       <div class="qa-correct" style="font-style:italic">${correct}</div>
       <div class="qa-mark">
         <input class="mark-inp" type="number" min="0" max="${max}" value="${savedVal}" placeholder="0"
-          id="mf-${field}" oninput="recalcModal()"/>
+          id="mf-${field}" oninput="clampMax(this);recalcModal()"/>
         <span class="mark-max-label">/${max}</span>
       </div>
     </div>`;
@@ -544,14 +544,14 @@ function openModal(id,level){
     readingTFRows=tfQ.map((q,i)=>tfRow(q,tfV[i],ans.reading_tf[i])).join('');
     const oQ=['Wie lange schon im Krankenhaus?','Was hat sie am Morgen gemacht?','Mit wem hat sie gesprochen?','Was hat sie erklärt?','Warum macht ihr der Beruf Spaß?'];
     const oV=[r.q1_wie_lange,r.q2_was_morgen,r.q3_mit_wem,r.q4_was_erklaert,r.q5_warum_spass];
-    readingOpenRows=oQ.map((q,i)=>manualRow(q,oV[i],ans.reading_open[i],'reading_open_'+i,1)).join('');
+    readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
   }else{
     const tfQ=['Maria arbeitet in einer Schule?','Sie beginnt um 7 Uhr morgens?','Sie spricht mit Ärzten?','Pause im Garten?','Mag ihren Beruf nicht?'];
     const tfV=[r.tf_schule,r.tf_sieben_uhr,r.tf_aerzte,r.tf_garten,r.tf_mag_nicht];
     readingTFRows=tfQ.map((q,i)=>tfRow(q,tfV[i],ans.reading_tf[i])).join('');
     const oQ=['Wo arbeitet Maria?','Wann beginnt ihre Arbeit?','Was macht sie für Patienten?','Wo macht sie Pause?','Warum mag sie ihren Beruf?'];
     const oV=[r.q1_wo_arbeitet,r.q2_wann_arbeit,r.q3_was_patienten,r.q4_wo_pause,r.q5_warum_beruf];
-    readingOpenRows=oQ.map((q,i)=>manualRow(q,oV[i],ans.reading_open[i],'reading_open_'+i,1)).join('');
+    readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
   }
 
   // Grammar sections
@@ -582,7 +582,7 @@ function openModal(id,level){
         <div class="qa-block">${rows}</div>
         <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
           <label style="font-size:13px;font-weight:500">Section marks:</label>
-          <input class="mark-inp" type="number" min="0" max="5" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="recalcModal()"/>
+          <input class="mark-inp" type="number" min="0" max="5" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
           <span class="mark-max-label">/5</span>
         </div>`;
     });
@@ -612,7 +612,7 @@ function openModal(id,level){
         <div class="qa-block">${rows}</div>
         <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
           <label style="font-size:13px;font-weight:500">Section marks:</label>
-          <input class="mark-inp" type="number" min="0" max="5" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="recalcModal()"/>
+          <input class="mark-inp" type="number" min="0" max="5" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
           <span class="mark-max-label">/5 <em style="color:#9ca3af;font-size:11px">(A1 total grammar /25 across 5 sections)</em></span>
         </div>`;
     });
@@ -623,11 +623,11 @@ function openModal(id,level){
   if(isA2){
     const lQ=['Was hat Thomas am Morgen gemacht?','Mit wem hat er gesprochen?','Was am Nachmittag?','Was hat er den Familien erklärt?','Wie ist er nach Hause?'];
     const lV=[r.listen_q1_morgen,r.listen_q2_mit_wem,r.listen_q3_nachmittag,r.listen_q4_familien,r.listen_q5_nach_hause];
-    listenOpenRows=lQ.map((q,i)=>manualRow(q,lV[i],ans.listen_open[i],'listen_open_'+i,1)).join('');
+    listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
   }else{
     const lQ=['Wie heißt die Person?','Wo arbeitet sie?','Was macht sie am Morgen?','Was isst sie in der Pause?','Warum mag sie ihren Beruf?'];
     const lV=[r.listen_q1_name,r.listen_q2_wo,r.listen_q3_morgen,r.listen_q4_pause,r.listen_q5_warum];
-    listenOpenRows=lQ.map((q,i)=>manualRow(q,lV[i],ans.listen_open[i],'listen_open_'+i,1)).join('');
+    listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
   }
 
   // Fill blanks auto
@@ -662,7 +662,7 @@ function openModal(id,level){
       <div class="task-status">Student sent audio via WhatsApp: <strong>${s.val||'Not confirmed'}</strong></div>
       <div class="task-mark-row">
         <label>Marks awarded:</label>
-        <input class="mark-inp" type="number" min="0" max="${s.max}" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="recalcModal()"/>
+        <input class="mark-inp" type="number" min="0" max="${s.max}" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
         <span class="mark-max-label">/${s.max}</span>
       </div>
     </div>`).join('');
@@ -674,7 +674,7 @@ function openModal(id,level){
       <div class="qa-student">${studentVal(r.form_details)}</div>
       <div class="qa-correct" style="font-style:italic">Name, Alter, Beruf, Wohnort, Telefon</div>
       <div class="qa-mark">
-        <input class="mark-inp" type="number" min="0" max="5" value="${saved.writing_form??''}" placeholder="0" id="mf-writing_form" oninput="recalcModal()"/>
+        <input class="mark-inp" type="number" min="0" max="5" value="${saved.writing_form??''}" placeholder="0" id="mf-writing_form" oninput="clampMax(this);recalcModal()"/>
         <span class="mark-max-label">/5</span>
       </div>
     </div>
@@ -683,7 +683,7 @@ function openModal(id,level){
       <div class="qa-student" style="white-space:pre-wrap;line-height:1.6">${studentVal(r.email_writing)}</div>
       <div class="qa-correct" style="font-style:italic;font-size:12px;line-height:1.5">${isA2?'Gestern hatte ich einen stressigen Tag…':'Ich arbeite jeden Tag im Krankenhaus…'}</div>
       <div class="qa-mark">
-        <input class="mark-inp" type="number" min="0" max="15" value="${saved.writing_email??''}" placeholder="0" id="mf-writing_email" oninput="recalcModal()"/>
+        <input class="mark-inp" type="number" min="0" max="15" value="${saved.writing_email??''}" placeholder="0" id="mf-writing_email" oninput="clampMax(this);recalcModal()"/>
         <span class="mark-max-label">/15</span>
       </div>
     </div>
@@ -697,8 +697,13 @@ function openModal(id,level){
 
     <!-- READING OPEN MANUAL -->
     <div class="section-header">Phase 1A – Reading Open Questions (Examiner grades, /5)<span class="section-manual-score">✍ Manual</span></div>
-    <div class="qa-col-heads"><span>Question</span><span>Student Answer</span><span style="min-width:180px">Sample Answer</span><span style="min-width:120px">Marks</span></div>
+    <div class="qa-col-heads"><span>Question</span><span>Student Answer</span><span style="min-width:180px">Sample Answer</span></div>
     <div class="qa-block">${readingOpenRows}</div>
+    <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <label style="font-size:13px;font-weight:500">Section marks:</label>
+      <input class="mark-inp" type="number" min="0" max="5" value="${saved.reading_open??''}" placeholder="0" id="mf-reading_open" oninput="clampMax(this);recalcModal()"/>
+      <span class="mark-max-label">/5</span>
+    </div>
 
     <!-- GRAMMAR -->
     <div class="section-header">Phase 1B – Grammar (Examiner grades, /25)<span class="section-manual-score">✍ Manual</span></div>
@@ -720,8 +725,13 @@ function openModal(id,level){
 
     <!-- LISTENING OPEN MANUAL -->
     <div class="section-header">Phase 3 – Listening Open Questions (Examiner grades, /5)<span class="section-manual-score">✍ Manual</span></div>
-    <div class="qa-col-heads"><span>Question</span><span>Student Answer</span><span style="min-width:180px">Sample Answer</span><span style="min-width:120px">Marks</span></div>
+    <div class="qa-col-heads"><span>Question</span><span>Student Answer</span><span style="min-width:180px">Sample Answer</span></div>
     <div class="qa-block">${listenOpenRows}</div>
+    <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <label style="font-size:13px;font-weight:500">Section marks:</label>
+      <input class="mark-inp" type="number" min="0" max="5" value="${saved.listen_open??''}" placeholder="0" id="mf-listen_open" oninput="clampMax(this);recalcModal()"/>
+      <span class="mark-max-label">/5</span>
+    </div>
 
     <!-- FILL BLANKS AUTO -->
     <div class="section-header">Phase 3 – Fill in Blanks (Auto-graded, ${ag.listen_fill}/5)<span class="section-auto-score">✓ Auto</span></div>
@@ -759,6 +769,15 @@ function openModal(id,level){
   document.getElementById('modal').classList.add('open');
 }
 
+function clampMax(el){
+  const max=parseFloat(el.max);
+  const min=parseFloat(el.min)||0;
+  if(el.value===''||el.value===null)return;
+  if(parseFloat(el.value)>max){el.value=max;el.style.borderColor='#dc2626';}
+  else if(parseFloat(el.value)<min){el.value=min;el.style.borderColor='#dc2626';}
+  else{el.style.borderColor='';}
+}
+
 function recalcModal(){
   if(!modalStudentId)return;
   const isA2=modalLevel==='A2';
@@ -769,12 +788,12 @@ function recalcModal(){
 
   const gv=id=>{const el=document.getElementById('mf-'+id);return el?parseFloat(el.value)||0:0};
 
-  const readingOpen=[0,1,2,3,4].reduce((s,i)=>s+gv('reading_open_'+i),0);
+  const readingOpen=gv('reading_open');
   let grammar=0;
   if(isA2){grammar=[gv('g_conjunctions'),gv('g_comparatives'),gv('g_verbs'),gv('g_prepositions'),gv('g_relativsaetze')].reduce((a,b)=>a+b,0);}
   else{grammar=[gv('g_articles'),gv('g_verbs'),gv('g_sentences'),gv('g_prepositions'),gv('g_negation')].reduce((a,b)=>a+b,0);}
   const writing=gv('writing_form')+gv('writing_email');
-  const listenOpen=[0,1,2,3,4].reduce((s,i)=>s+gv('listen_open_'+i),0);
+  const listenOpen=gv('listen_open');
   const speakingFields=isA2?['spk_1','spk_2','spk_3']:['spk_1','spk_2','spk_3','spk_4'];
   const speaking=speakingFields.reduce((s,f)=>s+gv(f),0);
 
@@ -807,9 +826,9 @@ function saveCurrentMarks(){
   const gv=id=>{const el=document.getElementById('mf-'+id);return el?Math.min(parseFloat(el.value)||0,parseFloat(el.max)||99):0};
 
   const m={
-    reading_open:[0,1,2,3,4].reduce((s,i)=>s+gv('reading_open_'+i),0),
+    reading_open:gv('reading_open'),
     writing_form:gv('writing_form'),writing_email:gv('writing_email'),
-    listen_open:[0,1,2,3,4].reduce((s,i)=>s+gv('listen_open_'+i),0),
+    listen_open:gv('listen_open'),
     speaking:(isA2?['spk_1','spk_2','spk_3']:['spk_1','spk_2','spk_3','spk_4']).reduce((s,f)=>s+gv(f),0),
     saved:true
   };
