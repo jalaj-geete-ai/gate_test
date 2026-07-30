@@ -188,11 +188,11 @@
     <!-- NEGATION & ADJECTIVES -->
     <div class="section-card"><h3>Part B – Negation &amp; Adjectives <span class="marks-badge">5 marks</span></h3>
       <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Use kein / nicht and correct adjective forms.</p>
-      <div class="q-row"><label><span class="q-num">1.</span>Das ist ___ Arzt, das ist Pfleger.</label><input type="text" id="neg1" placeholder="kein / nicht…"/></div>
-      <div class="q-row"><label><span class="q-num">2.</span>Die Krankenschwester ist müde, sie ist sehr ___ (fit).</label><input type="text" id="neg2" placeholder="adjective form…"/></div>
-      <div class="q-row"><label><span class="q-num">3.</span>Ich habe ___ Pause heute.</label><input type="text" id="neg3" placeholder="kein / keine / nicht…"/></div>
-      <div class="q-row"><label><span class="q-num">4.</span>Das Medikament ist teuer, es ist ___ (billig).</label><input type="text" id="neg4" placeholder="adjective form…"/></div>
-      <div class="q-row"><label><span class="q-num">5.</span>Der Patient ist krank, er ist ___ (gesund).</label><input type="text" id="neg5" placeholder="adjective form…"/></div>
+      <div class="q-row"><label><span class="q-num">1.</span>Das ist ___ Arzt, das ist Pfleger.</label><input type="text" id="neg1" /></div>
+      <div class="q-row"><label><span class="q-num">2.</span>Die Krankenschwester ist müde, sie ist sehr ___ (fit).</label><input type="text" id="neg2" /></div>
+      <div class="q-row"><label><span class="q-num">3.</span>Ich habe ___ Pause heute.</label><input type="text" id="neg3" /></div>
+      <div class="q-row"><label><span class="q-num">4.</span>Das Medikament ist teuer, es ist ___ (billig).</label><input type="text" id="neg4" /></div>
+      <div class="q-row"><label><span class="q-num">5.</span>Der Patient ist krank, er ist ___ (gesund).</label><input type="text" id="neg5" /></div>
     </div>
 
     <!-- QUESTION WORDS & MODAL VERBS -->
@@ -212,14 +212,9 @@
   <div class="phase" id="phase-2">
     <div class="phase-header"><div class="phase-icon" style="background:var(--p2)">✍️</div><div><h2>Phase 2 – Writing</h2><div class="marks">20 Marks</div></div></div>
 
-    <div class="section-card"><h3>Personal Form <span class="marks-badge">5 marks</span></h3>
-      <div class="info-grid">
-        <div class="q-row"><label>Name</label><input type="text" id="form_name" placeholder="Dein Name…"/></div>
-        <div class="q-row"><label>Alter (Age)</label><input type="text" id="form_alter" placeholder="z.B. 25 Jahre"/></div>
-        <div class="q-row"><label>Beruf</label><input type="text" id="form_beruf" placeholder="Krankenschwester" value="Krankenschwester"/></div>
-        <div class="q-row"><label>Wohnort (City)</label><input type="text" id="form_wohnort" placeholder="z.B. München"/></div>
-      </div>
-      <div class="q-row" style="margin-top:14px"><label>Telefonnummer</label><input type="tel" id="form_telefon" placeholder="z.B. +49 123 456 7890"/></div>
+    <div class="section-card"><h3>Personal Introduction <span class="marks-badge">5 marks</span></h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Write a short introduction about yourself in German. Include your <strong>name, age, profession, city, and phone number</strong>.</p>
+      <textarea id="form_details" placeholder="" style="min-height:100px"></textarea>
     </div>
 
     <div class="section-card"><h3>Email Writing <span class="marks-badge">15 marks</span></h3>
@@ -348,7 +343,7 @@ function collectData(){return{
   grammar_prepositions:[v('prep1'),v('prep2'),v('prep3'),v('prep4'),v('prep5')].join(' | '),
   grammar_negation:[v('neg1'),v('neg2'),v('neg3'),v('neg4'),v('neg5')].join(' | '),
   grammar_question_modals:[v('qw1'),v('qw2'),v('qw3'),v('qw4'),v('qw5')].join(' | '),
-  form_details:'Name:'+v('form_name')+'|Alter:'+v('form_alter')+'|Beruf:'+v('form_beruf')+'|Wohnort:'+v('form_wohnort')+'|Tel:'+v('form_telefon'),
+  form_details:v('form_details'),
   email_writing:v('email_writing'),
   listen_tf_kleines_kh:tfAnswers['listen_tf_kleines_kh']||'',listen_tf_sieben_uhr:tfAnswers['listen_tf_sieben_uhr']||'',listen_tf_medikamente:tfAnswers['listen_tf_medikamente']||'',listen_tf_keine_pause:tfAnswers['listen_tf_keine_pause']||'',listen_tf_bus:tfAnswers['listen_tf_bus']||'',
   listen_q1_name:v('listen_q1_name'),listen_q2_wo:v('listen_q2_wo'),listen_q3_morgen:v('listen_q3_morgen'),listen_q4_pause:v('listen_q4_pause'),listen_q5_warum:v('listen_q5_warum'),
