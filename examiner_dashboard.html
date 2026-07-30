@@ -4,172 +4,151 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Examiner Dashboard – German Exam</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
-  :root{
-    --black:#1a1a2e;--white:#fff;--accent:#3b5bdb;--accent2:#059669;
-    --muted:#6b7280;--border:#e5e7eb;--bg:#f8f9fc;--radius:10px;
-    --error:#dc2626;--warn:#d97706;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--black);min-height:100vh}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+:root{
+  --black:#1a1a2e;--white:#fff;--accent:#3b5bdb;--accent2:#059669;
+  --muted:#6b7280;--border:#e5e7eb;--bg:#f8f9fc;--radius:10px;
+  --error:#dc2626;--warn:#d97706;--purple:#7c3aed;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--black);min-height:100vh}
 
-  /* ── LOGIN ── */
-  #login-screen{
-    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
-  }
-  .login-card{
-    background:#fff;border:1px solid var(--border);border-radius:16px;
-    padding:40px 36px;max-width:380px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.08);
-  }
-  .login-card .badge{
-    display:inline-block;background:var(--black);color:#fff;font-size:11px;
-    font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;
-    border-radius:20px;margin-bottom:20px;
-  }
-  .login-card h1{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:6px}
-  .login-card p{font-size:13px;color:var(--muted);margin-bottom:28px}
-  .field{margin-bottom:18px}
-  .field label{display:block;font-size:13px;font-weight:500;margin-bottom:6px}
-  .field input{
-    width:100%;border:1.5px solid var(--border);border-radius:8px;padding:11px 14px;
-    font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color .2s;
-  }
-  .field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,91,219,.1)}
-  .btn-login{
-    width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;
-    padding:13px;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;
-    cursor:pointer;transition:background .2s;
-  }
-  .btn-login:hover{background:#2f4abf}
-  .login-error{color:var(--error);font-size:13px;margin-top:12px;display:none;text-align:center}
+/* LOGIN */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.login-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:40px 36px;max-width:380px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.08)}
+.login-card .badge{display:inline-block;background:var(--black);color:#fff;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:20px}
+.login-card h1{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:6px}
+.login-card p{font-size:13px;color:var(--muted);margin-bottom:28px}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;font-weight:500;margin-bottom:6px}
+.field input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:11px 14px;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,91,219,.1)}
+.btn-login{width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:13px;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s}
+.btn-login:hover{background:#2f4abf}
+.login-error{color:var(--error);font-size:13px;margin-top:12px;display:none;text-align:center}
 
-  /* ── DASHBOARD ── */
-  #dashboard{display:none}
-  .topbar{
-    background:var(--black);color:#fff;padding:0 28px;
-    display:flex;align-items:center;justify-content:space-between;height:58px;
-  }
-  .topbar .brand{font-family:'Playfair Display',serif;font-size:18px}
-  .topbar .brand span{color:#818cf8;font-size:13px;font-weight:400;margin-left:8px}
-  .topbar-right{display:flex;align-items:center;gap:14px}
-  .btn-sm{
-    padding:7px 16px;border-radius:7px;font-family:'Inter',sans-serif;font-size:13px;
-    font-weight:600;cursor:pointer;border:none;transition:all .2s;
-  }
-  .btn-outline{background:transparent;color:#fff;border:1.5px solid #4b5563}
-  .btn-outline:hover{border-color:#fff}
-  .btn-green{background:var(--accent2);color:#fff}
-  .btn-green:hover{background:#047857}
-  .btn-blue{background:var(--accent);color:#fff}
-  .btn-blue:hover{background:#2f4abf}
+/* DASHBOARD */
+#dashboard{display:none}
+.topbar{background:var(--black);color:#fff;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:58px}
+.topbar .brand{font-family:'Playfair Display',serif;font-size:18px}
+.topbar .brand span{color:#818cf8;font-size:13px;font-weight:400;margin-left:8px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.btn-sm{padding:7px 16px;border-radius:7px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn-outline{background:transparent;color:#fff;border:1.5px solid #4b5563}
+.btn-outline:hover{border-color:#fff}
+.btn-green{background:var(--accent2);color:#fff}
+.btn-green:hover{background:#047857}
+.btn-blue{background:var(--accent);color:#fff}
+.btn-blue:hover{background:#2f4abf}
+.btn-purple{background:var(--purple);color:#fff}
+.btn-purple:hover{background:#6d28d9}
+.btn-gold{background:#d97706;color:#fff}
+.btn-gold:hover{background:#b45309}
 
-  .dashboard-body{max-width:1200px;margin:0 auto;padding:28px 20px 60px}
+.dashboard-body{max-width:1300px;margin:0 auto;padding:28px 20px 60px}
 
-  /* STATS */
-  .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px}
-  .stat-card{
-    background:#fff;border:1px solid var(--border);border-radius:var(--radius);
-    padding:18px 20px;
-  }
-  .stat-card .label{font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
-  .stat-card .value{font-size:28px;font-weight:700;line-height:1}
-  .stat-card .sub{font-size:12px;color:var(--muted);margin-top:4px}
+/* NAV TABS (views) */
+.view-tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:2px solid var(--border);padding-bottom:0}
+.view-tab{padding:10px 22px;font-size:14px;font-weight:500;cursor:pointer;color:var(--muted);background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Inter',sans-serif;transition:all .2s}
+.view-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
 
-  /* TABS */
-  .tabs{display:flex;gap:4px;margin-bottom:20px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:5px;width:fit-content}
-  .tab{
-    padding:8px 20px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;
-    color:var(--muted);transition:all .2s;border:none;background:transparent;font-family:'Inter',sans-serif;
-  }
-  .tab.active{background:var(--accent);color:#fff}
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px}
+.stat-card .label{font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+.stat-card .value{font-size:28px;font-weight:700;line-height:1}
+.stat-card .sub{font-size:12px;color:var(--muted);margin-top:4px}
 
-  /* CONTROLS */
-  .controls{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
-  .search-box{
-    flex:1;min-width:200px;border:1.5px solid var(--border);border-radius:8px;
-    padding:9px 14px;font-family:'Inter',sans-serif;font-size:13.5px;outline:none;
-    transition:border-color .2s;
-  }
-  .search-box:focus{border-color:var(--accent)}
+/* FILTER TABS */
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:5px;width:fit-content}
+.tab{padding:8px 20px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);transition:all .2s;border:none;background:transparent;font-family:'Inter',sans-serif}
+.tab.active{background:var(--accent);color:#fff}
 
-  /* TABLE */
-  .table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-  .table-scroll{overflow-x:auto}
-  table{width:100%;border-collapse:collapse;font-size:13px}
-  thead th{
-    background:var(--black);color:#fff;padding:12px 14px;text-align:left;
-    font-weight:500;font-size:12px;letter-spacing:.5px;text-transform:uppercase;
-    white-space:nowrap;
-  }
-  tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
-  tbody tr:hover{background:#f8f9ff}
-  tbody tr:last-child{border-bottom:none}
-  td{padding:12px 14px;vertical-align:middle;max-width:220px}
-  td.name-cell{font-weight:600;white-space:nowrap}
-  td.date-cell{white-space:nowrap;color:var(--muted);font-size:12px}
-  td.answer-cell{
-    color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-    max-width:200px;cursor:pointer;
-  }
-  td.answer-cell:hover{color:var(--accent)}
+.controls{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.search-box{flex:1;min-width:200px;border:1.5px solid var(--border);border-radius:8px;padding:9px 14px;font-family:'Inter',sans-serif;font-size:13.5px;outline:none;transition:border-color .2s}
+.search-box:focus{border-color:var(--accent)}
 
-  .badge-pill{
-    display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;
-  }
-  .badge-a1{background:#d1fae5;color:#065f46}
-  .badge-a2{background:#e0e7ff;color:#3730a3}
+/* TABLE */
+.table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--black);color:#fff;padding:12px 14px;text-align:left;font-weight:500;font-size:12px;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+tbody tr:hover{background:#f8f9ff}
+tbody tr:last-child{border-bottom:none}
+td{padding:12px 14px;vertical-align:middle}
+.badge-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-a1{background:#d1fae5;color:#065f46}
+.badge-a2{background:#e0e7ff;color:#3730a3}
+.score-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700}
+.score-none{background:#f3f4f6;color:#9ca3af}
+.score-low{background:#fee2e2;color:#991b1b}
+.score-mid{background:#fef3c7;color:#92400e}
+.score-high{background:#d1fae5;color:#065f46}
 
-  /* EMPTY STATE */
-  .empty-state{text-align:center;padding:60px 24px;color:var(--muted)}
-  .empty-state .icon{font-size:40px;margin-bottom:12px}
-  .empty-state p{font-size:14px}
+.empty-state{text-align:center;padding:60px 24px;color:var(--muted)}
+.empty-state .icon{font-size:40px;margin-bottom:12px}
+.loading{text-align:center;padding:40px;color:var(--muted);font-size:14px}
+.spinner{display:inline-block;width:22px;height:22px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-  /* LOADING */
-  .loading{text-align:center;padding:40px;color:var(--muted);font-size:14px}
-  .spinner{
-    display:inline-block;width:22px;height:22px;border:3px solid var(--border);
-    border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;
-    margin-right:8px;vertical-align:middle;
-  }
-  @keyframes spin{to{transform:rotate(360deg)}}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:14px;max-width:720px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1}
+.modal-header h3{font-size:17px;font-weight:700}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1}
+.modal-close:hover{color:var(--black)}
+.modal-body{padding:20px 24px}
 
-  /* MODAL */
-  .modal-overlay{
-    display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;
-    align-items:center;justify-content:center;padding:20px;
-  }
-  .modal-overlay.open{display:flex}
-  .modal{
-    background:#fff;border-radius:14px;max-width:640px;width:100%;max-height:85vh;
-    overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);
-  }
-  .modal-header{
-    padding:20px 24px;border-bottom:1px solid var(--border);
-    display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1;
-  }
-  .modal-header h3{font-size:17px;font-weight:700}
-  .modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1}
-  .modal-close:hover{color:var(--black)}
-  .modal-body{padding:20px 24px}
-  .detail-section{margin-bottom:20px}
-  .detail-section h4{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:10px;font-weight:600}
-  .detail-row{display:flex;gap:10px;margin-bottom:8px;font-size:13.5px;line-height:1.5}
-  .detail-row .dk{color:var(--muted);min-width:160px;flex-shrink:0;font-weight:500}
-  .detail-row .dv{color:var(--black);word-break:break-word}
-  .tf-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600}
-  .tf-true{background:#d1fae5;color:#065f46}
-  .tf-false{background:#fee2e2;color:#991b1b}
-  .tf-empty{background:#f3f4f6;color:#6b7280}
+/* GRADING SECTION */
+.grading-panel{background:#f0f4ff;border:1.5px solid #c7d2fe;border-radius:12px;padding:20px 22px;margin-bottom:20px}
+.grading-panel h4{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:6px}
+.marks-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.mark-field{display:flex;flex-direction:column;gap:4px}
+.mark-field label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.mark-field .mark-input-row{display:flex;align-items:center;gap:6px}
+.mark-input{width:70px;border:1.5px solid var(--border);border-radius:6px;padding:7px 10px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;outline:none;text-align:center}
+.mark-input:focus{border-color:var(--accent)}
+.mark-max{font-size:12px;color:var(--muted)}
+.total-score-display{background:var(--accent);color:#fff;border-radius:10px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
+.total-score-display .ts-label{font-size:13px;font-weight:500;opacity:.9}
+.total-score-display .ts-value{font-size:26px;font-weight:700}
+.btn-save-marks{background:var(--accent2);color:#fff;border:none;border-radius:8px;padding:10px 22px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s;margin-top:14px}
+.btn-save-marks:hover{background:#047857}
+.btn-save-marks:disabled{background:#9ca3af;cursor:not-allowed}
 
-  /* TOAST */
-  .toast{
-    position:fixed;bottom:20px;right:20px;background:var(--black);color:#fff;
-    padding:12px 18px;border-radius:8px;font-size:13px;transform:translateY(60px);
-    opacity:0;transition:all .3s;z-index:999;
-  }
-  .toast.show{transform:translateY(0);opacity:1}
-  .toast.success{background:var(--accent2)}
+/* DETAIL SECTIONS */
+.detail-section{margin-bottom:20px}
+.detail-section h4{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:10px;font-weight:600}
+.detail-row{display:flex;gap:10px;margin-bottom:8px;font-size:13.5px;line-height:1.5}
+.detail-row .dk{color:var(--muted);min-width:170px;flex-shrink:0;font-weight:500}
+.detail-row .dv{color:var(--black);word-break:break-word}
+.tf-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600}
+.tf-true{background:#d1fae5;color:#065f46}
+.tf-false{background:#fee2e2;color:#991b1b}
+.tf-empty{background:#f3f4f6;color:#6b7280}
+
+/* LEADERBOARD */
+.lb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.lb-header h2{font-size:22px;font-weight:700}
+.lb-table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.lb-rank-1{background:#fffbeb}
+.lb-rank-2{background:#f9fafb}
+.lb-rank-3{background:#fff8f4}
+.rank-medal{font-size:20px}
+.progress-bar-bg{background:#f3f4f6;border-radius:999px;height:8px;width:120px}
+.progress-bar-fill{height:8px;border-radius:999px;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.no-marks-note{background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:14px 18px;font-size:13px;color:#92400e;margin-bottom:20px}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--black);color:#fff;padding:12px 18px;border-radius:8px;font-size:13px;transform:translateY(60px);opacity:0;transition:all .3s;z-index:999}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:var(--accent2)}
+.toast.error{background:var(--error)}
 </style>
 </head>
 <body>
@@ -199,61 +178,110 @@
   <div class="topbar">
     <div class="brand">🇩🇪 German Exam Portal <span>Examiner View</span></div>
     <div class="topbar-right">
-      <button class="btn-sm btn-green" onclick="downloadCSV()">⬇ Download CSV</button>
+      <button class="btn-sm btn-green" onclick="downloadCSV()">⬇ CSV</button>
+      <button class="btn-sm btn-outline" onclick="loadData()">↻ Refresh</button>
       <button class="btn-sm btn-outline" onclick="logout()">Sign Out</button>
     </div>
   </div>
 
   <div class="dashboard-body">
-    <!-- STATS -->
-    <div class="stats-row" id="stats-row">
-      <div class="stat-card"><div class="label">Total Submissions</div><div class="value" id="stat-total">—</div><div class="sub">All levels</div></div>
-      <div class="stat-card"><div class="label">A2 Submissions</div><div class="value" id="stat-a2">—</div><div class="sub">Advanced beginner</div></div>
-      <div class="stat-card"><div class="label">A1 Submissions</div><div class="value" id="stat-a1">—</div><div class="sub">Beginner</div></div>
-      <div class="stat-card"><div class="label">Latest Submission</div><div class="value" style="font-size:16px;margin-top:4px" id="stat-latest">—</div><div class="sub" id="stat-latest-name">—</div></div>
+    <!-- VIEW TABS -->
+    <div class="view-tabs">
+      <button class="view-tab active" onclick="switchView('responses')">📋 Responses</button>
+      <button class="view-tab" onclick="switchView('leaderboard')">🏆 Leaderboard</button>
     </div>
 
-    <!-- TABS + CONTROLS -->
-    <div class="tabs">
-      <button class="tab active" onclick="switchTab('all')">All Students</button>
-      <button class="tab" onclick="switchTab('a2')">A2 Exam</button>
-      <button class="tab" onclick="switchTab('a1')">A1 Exam</button>
-    </div>
-
-    <div class="controls">
-      <input class="search-box" type="text" id="search-box" placeholder="🔍  Search by name or phone…" oninput="renderTable()"/>
-      <button class="btn-sm btn-blue" onclick="loadData()">↻ Refresh</button>
-    </div>
-
-    <!-- TABLE -->
-    <div class="table-wrap">
-      <div class="table-scroll">
-        <table id="main-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Level</th>
-              <th>Name</th>
-              <th>Mobile</th>
-              <th>Submitted</th>
-              <th>Reading T/F</th>
-              <th>Email Writing</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="table-body"></tbody>
-        </table>
+    <!-- ===== RESPONSES VIEW ===== -->
+    <div id="view-responses">
+      <div class="stats-row">
+        <div class="stat-card"><div class="label">Total Submissions</div><div class="value" id="stat-total">—</div><div class="sub">All levels</div></div>
+        <div class="stat-card"><div class="label">A2 Submissions</div><div class="value" id="stat-a2">—</div></div>
+        <div class="stat-card"><div class="label">A1 Submissions</div><div class="value" id="stat-a1">—</div></div>
+        <div class="stat-card"><div class="label">Marked</div><div class="value" id="stat-marked">—</div><div class="sub">of total</div></div>
+        <div class="stat-card"><div class="label">Latest</div><div class="value" style="font-size:15px;margin-top:4px" id="stat-latest">—</div><div class="sub" id="stat-latest-name">—</div></div>
       </div>
-      <div class="loading" id="loading-msg"><span class="spinner"></span>Loading responses…</div>
-      <div class="empty-state" id="empty-msg" style="display:none">
-        <div class="icon">📭</div>
-        <p>No submissions found.</p>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('all')">All</button>
+        <button class="tab" onclick="switchTab('a2')">A2 Exam</button>
+        <button class="tab" onclick="switchTab('a1')">A1 Exam</button>
+      </div>
+
+      <div class="controls">
+        <input class="search-box" type="text" id="search-box" placeholder="🔍  Search by name or phone…" oninput="renderTable()"/>
+        <select class="search-box" style="flex:0;width:auto" id="filter-marked" onchange="renderTable()">
+          <option value="all">All students</option>
+          <option value="marked">Marked only</option>
+          <option value="unmarked">Unmarked only</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table id="main-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Level</th>
+                <th>Name</th>
+                <th>Mobile</th>
+                <th>Submitted</th>
+                <th>Total Score</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+        <div class="loading" id="loading-msg"><span class="spinner"></span>Loading responses…</div>
+        <div class="empty-state" id="empty-msg" style="display:none"><div class="icon">📭</div><p>No submissions found.</p></div>
+      </div>
+    </div>
+
+    <!-- ===== LEADERBOARD VIEW ===== -->
+    <div id="view-leaderboard" style="display:none">
+      <div class="lb-header">
+        <h2>🏆 Leaderboard</h2>
+        <div style="display:flex;gap:10px">
+          <div class="tabs" style="margin:0">
+            <button class="tab active" onclick="switchLBTab('all')">All</button>
+            <button class="tab" onclick="switchLBTab('a2')">A2</button>
+            <button class="tab" onclick="switchLBTab('a1')">A1</button>
+          </div>
+          <button class="btn-sm btn-gold" onclick="downloadLeaderboardPDF()">📄 Download PDF</button>
+        </div>
+      </div>
+      <div class="no-marks-note" id="unmarked-note" style="display:none">
+        ⚠️ Some students have not been marked yet and are excluded from the leaderboard.
+      </div>
+      <div class="lb-table-wrap">
+        <div class="table-scroll">
+          <table id="lb-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Level</th>
+                <th>Mobile</th>
+                <th>Reading</th>
+                <th>Grammar</th>
+                <th>Writing</th>
+                <th>Listening</th>
+                <th>Speaking</th>
+                <th>Total / 100</th>
+                <th>Progress</th>
+              </tr>
+            </thead>
+            <tbody id="lb-body"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="lb-empty" style="display:none"><div class="icon">📊</div><p>No marked responses yet. Grade students first.</p></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- DETAIL MODAL -->
+<!-- STUDENT DETAIL + GRADING MODAL -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-header">
@@ -267,37 +295,55 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CONFIG ──
 const SUPABASE_URL = 'https://uxdrldreaockdloqvojs.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4ZHJsZHJlYW9ja2Rsb3F2b2pzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzE2MjIsImV4cCI6MjA4OTQwNzYyMn0.swqYBfGzHP5qSDPnZ_AivFE0zljyK33Kq-_ephz4Ybc';
-
-// ── AUTH (client-side, simple) ──
 const CREDENTIALS = { examiner: 'german@2026', admin: 'admin@2026' };
 
+// Marks are stored in localStorage keyed by student id
+// marks[id] = { reading, grammar, writing, listening, speaking, total }
+let marksStore = {};
 let allData = { a2: [], a1: [] };
 let currentTab = 'all';
+let currentLBTab = 'all';
+let currentView = 'responses';
 
+// ── AUTH ──
 function doLogin() {
   const user = document.getElementById('login-user').value.trim().toLowerCase();
   const pass = document.getElementById('login-pass').value;
-  const err  = document.getElementById('login-error');
+  const err = document.getElementById('login-error');
   if (CREDENTIALS[user] && CREDENTIALS[user] === pass) {
     err.style.display = 'none';
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
+    loadMarksFromStorage();
     loadData();
   } else {
     err.style.display = 'block';
     document.getElementById('login-pass').value = '';
   }
 }
-
 function logout() {
   document.getElementById('dashboard').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('login-user').value = '';
   document.getElementById('login-pass').value = '';
   allData = { a2: [], a1: [] };
+}
+
+// ── MARKS STORAGE ──
+function loadMarksFromStorage() {
+  try { marksStore = JSON.parse(localStorage.getItem('german_exam_marks') || '{}'); } catch(e) { marksStore = {}; }
+}
+function saveMarksToStorage() {
+  localStorage.setItem('german_exam_marks', JSON.stringify(marksStore));
+}
+function getMarks(id) {
+  return marksStore[id] || null;
+}
+function setMarks(id, marks) {
+  marksStore[id] = marks;
+  saveMarksToStorage();
 }
 
 // ── FETCH ──
@@ -308,7 +354,6 @@ async function fetchTable(table) {
   if (!res.ok) throw new Error(`Failed to fetch ${table}`);
   return await res.json();
 }
-
 async function loadData() {
   document.getElementById('loading-msg').style.display = 'block';
   document.getElementById('empty-msg').style.display = 'none';
@@ -321,8 +366,9 @@ async function loadData() {
     allData = { a2, a1 };
     updateStats();
     renderTable();
+    renderLeaderboard();
   } catch(e) {
-    showToast('Error loading data: ' + e.message);
+    showToast('Error: ' + e.message, 'error');
   } finally {
     document.getElementById('loading-msg').style.display = 'none';
   }
@@ -334,125 +380,113 @@ function updateStats() {
   document.getElementById('stat-total').textContent = total;
   document.getElementById('stat-a2').textContent = allData.a2.length;
   document.getElementById('stat-a1').textContent = allData.a1.length;
-  // Latest
-  const all = [
-    ...allData.a2.map(r => ({...r, _level:'A2'})),
-    ...allData.a1.map(r => ({...r, _level:'A1'}))
-  ].sort((a,b) => new Date(b.submitted_at) - new Date(a.submitted_at));
-  if (all.length > 0) {
-    const latest = all[0];
-    document.getElementById('stat-latest').textContent = fmt(latest.submitted_at);
-    document.getElementById('stat-latest-name').textContent = latest.student_name || '—';
+  const allRows = [...allData.a2, ...allData.a1];
+  const marked = allRows.filter(r => getMarks(r.id)).length;
+  document.getElementById('stat-marked').textContent = `${marked} / ${total}`;
+  const sorted = allRows.sort((a,b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+  if (sorted.length > 0) {
+    document.getElementById('stat-latest').textContent = fmt(sorted[0].submitted_at);
+    document.getElementById('stat-latest-name').textContent = sorted[0].student_name || '—';
   }
 }
 
-// ── TABLE ──
+// ── VIEWS ──
+function switchView(view) {
+  currentView = view;
+  document.querySelectorAll('.view-tab').forEach((t, i) => {
+    t.classList.toggle('active', ['responses','leaderboard'][i] === view);
+  });
+  document.getElementById('view-responses').style.display = view === 'responses' ? 'block' : 'none';
+  document.getElementById('view-leaderboard').style.display = view === 'leaderboard' ? 'block' : 'none';
+  if (view === 'leaderboard') renderLeaderboard();
+}
+
+// ── RESPONSES TABLE ──
 function switchTab(tab) {
   currentTab = tab;
-  document.querySelectorAll('.tab').forEach((t,i) => {
+  document.querySelectorAll('.tabs:first-of-type .tab').forEach((t,i) => {
     t.classList.toggle('active', ['all','a2','a1'][i] === tab);
   });
   renderTable();
 }
-
 function fmt(ts) {
   if (!ts) return '—';
   const d = new Date(ts);
-  return d.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'}) + ' ' +
-         d.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) + ' ' +
+         d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 }
-
-function truncate(str, n=40) {
-  if (!str) return '<span style="color:#d1d5db">—</span>';
-  return str.length > n ? str.substring(0,n)+'…' : str;
+function scoreClass(score, max) {
+  if (score === null || score === undefined) return 'score-none';
+  const pct = score / max;
+  if (pct >= 0.7) return 'score-high';
+  if (pct >= 0.4) return 'score-mid';
+  return 'score-low';
 }
-
-function tfTag(val) {
-  if (!val) return '<span class="tf-tag tf-empty">—</span>';
-  const cls = val === 'True' ? 'tf-true' : 'tf-false';
-  return `<span class="tf-tag ${cls}">${val}</span>`;
-}
-
 function renderTable() {
   const query = document.getElementById('search-box').value.toLowerCase();
+  const filterMarked = document.getElementById('filter-marked').value;
   let rows = [];
-
   if (currentTab !== 'a1') allData.a2.forEach(r => rows.push({...r, _level:'A2'}));
   if (currentTab !== 'a2') allData.a1.forEach(r => rows.push({...r, _level:'A1'}));
-
-  // Sort by date desc
   rows.sort((a,b) => new Date(b.submitted_at) - new Date(a.submitted_at));
-
-  // Filter
-  if (query) {
-    rows = rows.filter(r =>
-      (r.student_name||'').toLowerCase().includes(query) ||
-      (r.mobile_number||'').toLowerCase().includes(query)
-    );
-  }
+  if (query) rows = rows.filter(r => (r.student_name||'').toLowerCase().includes(query) || (r.mobile_number||'').toLowerCase().includes(query));
+  if (filterMarked === 'marked') rows = rows.filter(r => getMarks(r.id));
+  if (filterMarked === 'unmarked') rows = rows.filter(r => !getMarks(r.id));
 
   const tbody = document.getElementById('table-body');
   const empty = document.getElementById('empty-msg');
-
-  if (rows.length === 0) {
-    tbody.innerHTML = '';
-    empty.style.display = 'block';
-    return;
-  }
+  if (rows.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
 
-  // Build tf summary
   tbody.innerHTML = rows.map((r, i) => {
-    const level = r._level;
-    const tf1 = level === 'A2'
-      ? [r.tf_sabine_months, r.tf_patientenakten, r.tf_fruehstueck, r.tf_neue_patienten, r.tf_beruf_wichtig]
-      : [r.tf_schule, r.tf_sieben_uhr, r.tf_aerzte, r.tf_garten, r.tf_beruf_nicht];
-    const tfSummary = tf1.map(v => v ? (v==='True'?'✓':'✗') : '·').join(' ');
-    const levelBadge = level === 'A2'
+    const marks = getMarks(r.id);
+    const total = marks ? marks.total : null;
+    const badge = r._level === 'A2'
       ? '<span class="badge-pill badge-a2">A2</span>'
       : '<span class="badge-pill badge-a1">A1</span>';
-
+    const scoreHtml = total !== null
+      ? `<span class="score-badge ${scoreClass(total,100)}">${total} / 100</span>`
+      : '<span class="score-badge score-none">Not marked</span>';
     return `<tr>
       <td style="color:var(--muted);font-size:12px">${i+1}</td>
-      <td>${levelBadge}</td>
-      <td class="name-cell">${r.student_name || '—'}</td>
-      <td style="font-size:12.5px">${r.mobile_number || '—'}</td>
-      <td class="date-cell">${fmt(r.submitted_at)}</td>
-      <td style="font-family:monospace;letter-spacing:2px;font-size:13px">${tfSummary}</td>
-      <td class="answer-cell" onclick="openModal(${JSON.stringify(JSON.stringify(r)).slice(1,-1)}, '${level}')"
-        title="${(r.email_writing||'').replace(/"/g,'&quot;')}">${truncate(r.email_writing)}</td>
-      <td><button class="btn-sm btn-blue" onclick="openModal(${JSON.stringify(JSON.stringify(r)).slice(1,-1)}, '${level}')">View</button></td>
+      <td>${badge}</td>
+      <td style="font-weight:600">${r.student_name||'—'}</td>
+      <td style="font-size:12.5px">${r.mobile_number||'—'}</td>
+      <td style="white-space:nowrap;color:var(--muted);font-size:12px">${fmt(r.submitted_at)}</td>
+      <td>${scoreHtml}</td>
+      <td><button class="btn-sm btn-blue" onclick="openModal('${r.id}','${r._level}')">View & Grade</button></td>
     </tr>`;
   }).join('');
 }
 
 // ── MODAL ──
-function openModal(jsonStr, level) {
-  const r = JSON.parse(jsonStr);
-  document.getElementById('modal-title').textContent = `${r.student_name || 'Student'} — ${level} Exam`;
+function openModal(id, level) {
   const isA2 = level === 'A2';
+  const r = isA2
+    ? allData.a2.find(x => x.id === id)
+    : allData.a1.find(x => x.id === id);
+  if (!r) return;
+
+  document.getElementById('modal-title').textContent = `${r.student_name || 'Student'} — ${level} Exam`;
 
   const tfLabels = isA2
     ? ['Seit fünf Monaten?','Patientenakten kontrolliert?','Beim Frühstück geholfen?','Keine neuen Patienten?','Beruf wichtig?']
     : ['Arbeitet in Schule?','Beginnt um 7 Uhr?','Spricht mit Ärzten?','Pause im Garten?','Mag Beruf nicht?'];
   const tfVals = isA2
     ? [r.tf_sabine_months, r.tf_patientenakten, r.tf_fruehstueck, r.tf_neue_patienten, r.tf_beruf_wichtig]
-    : [r.tf_schule, r.tf_sieben_uhr, r.tf_aerzte, r.tf_garten, r.tf_beruf_nicht];
-
+    : [r.tf_schule, r.tf_sieben_uhr, r.tf_aerzte, r.tf_garten, r.tf_mag_nicht];
   const listenTFLabels = isA2
     ? ['Thomas ist Arzt?','Im Krankenhaus?','Pause am Mittag?','Geschlafen?','Fahrrad nach Hause?']
     : ['Kleines Krankenhaus?','Um 7 Uhr?','Gibt Medikamente?','Keine Pause?','Fährt mit Bus?'];
   const listenTFVals = isA2
     ? [r.listen_tf_thomas_arzt, r.listen_tf_krankenhaus, r.listen_tf_pause, r.listen_tf_geschlafen, r.listen_tf_fahrrad]
-    : [r.listen_tf_kleines_krankenhaus, r.listen_tf_sieben_uhr, r.listen_tf_medikamente, r.listen_tf_keine_pause, r.listen_tf_bus];
-
+    : [r.listen_tf_kleines_kh, r.listen_tf_sieben_uhr, r.listen_tf_medikamente, r.listen_tf_keine_pause, r.listen_tf_bus];
   const openQLabels = isA2
     ? ['Wie lange im Krankenhaus?','Was am Morgen?','Mit wem gesprochen?','Was erklärt?','Warum Spaß?']
-    : ['Wo arbeitet?','Wann beginnt?','Was mit Patienten?','Wo Pause?','Warum Beruf?'];
+    : ['Wo arbeitet?','Wann beginnt Arbeit?','Was mit Patienten?','Wo Pause?','Warum Beruf?'];
   const openQVals = isA2
     ? [r.q1_wie_lange, r.q2_was_morgen, r.q3_mit_wem, r.q4_was_erklaert, r.q5_warum_spass]
-    : [r.q1_wo_arbeitet, r.q2_wann_beginnt, r.q3_was_patienten, r.q4_wo_pause, r.q5_warum_beruf];
-
+    : [r.q1_wo_arbeitet, r.q2_wann_arbeit, r.q3_was_patienten, r.q4_wo_pause, r.q5_warum_beruf];
   const listenOpenLabels = isA2
     ? ['Was am Morgen?','Mit wem?','Was am Nachmittag?','Den Familien erklärt?','Wie nach Hause?']
     : ['Wie heißt sie?','Wo arbeitet?','Was am Morgen?','Was in Pause?','Warum Beruf?'];
@@ -461,9 +495,73 @@ function openModal(jsonStr, level) {
     : [r.listen_q1_name, r.listen_q2_wo, r.listen_q3_morgen, r.listen_q4_pause, r.listen_q5_warum];
 
   const row = (k,v) => `<div class="detail-row"><span class="dk">${k}</span><span class="dv">${v || '<em style="color:#d1d5db">not answered</em>'}</span></div>`;
-  const tfRow = (k,v) => `<div class="detail-row"><span class="dk">${k}</span><span class="dv">${tfTag(v)}</span></div>`;
+  const tfRow = (k,v) => {
+    const cls = !v ? 'tf-empty' : v==='True' ? 'tf-true' : 'tf-false';
+    return `<div class="detail-row"><span class="dk">${k}</span><span class="dv"><span class="tf-tag ${cls}">${v||'—'}</span></span></div>`;
+  };
+
+  // Marks config
+  const maxMarks = isA2
+    ? { reading: 15, grammar: 25, writing: 20, listening: 20, speaking: 20 }
+    : { reading: 10, grammar: 30, writing: 20, listening: 20, speaking: 20 };
+  const speakingLabels = isA2
+    ? ['Room / Home (10)', 'Last Vacation (5)', 'Food & Health (5)']
+    : ['Introduction (5)', 'Picture Description (5)', 'Free Time (5)', 'Role Play (5)'];
+  const speakingVals = isA2
+    ? [r.speaking_task1, r.speaking_task2, r.speaking_task3]
+    : [r.speaking_intro, r.speaking_picture, r.speaking_freetime, r.speaking_roleplay];
+
+  const saved = getMarks(r.id) || {};
 
   document.getElementById('modal-body').innerHTML = `
+    <!-- GRADING PANEL -->
+    <div class="grading-panel">
+      <h4>✏️ Assign Marks</h4>
+      <div class="marks-grid">
+        <div class="mark-field">
+          <label>Reading <span style="color:#9ca3af">/ ${maxMarks.reading}</span></label>
+          <div class="mark-input-row">
+            <input class="mark-input" type="number" id="m-reading" min="0" max="${maxMarks.reading}" value="${saved.reading ?? ''}" placeholder="0" oninput="calcTotal('${id}',${JSON.stringify(maxMarks)})"/>
+            <span class="mark-max">/ ${maxMarks.reading}</span>
+          </div>
+        </div>
+        <div class="mark-field">
+          <label>Grammar <span style="color:#9ca3af">/ ${maxMarks.grammar}</span></label>
+          <div class="mark-input-row">
+            <input class="mark-input" type="number" id="m-grammar" min="0" max="${maxMarks.grammar}" value="${saved.grammar ?? ''}" placeholder="0" oninput="calcTotal('${id}',${JSON.stringify(maxMarks)})"/>
+            <span class="mark-max">/ ${maxMarks.grammar}</span>
+          </div>
+        </div>
+        <div class="mark-field">
+          <label>Writing <span style="color:#9ca3af">/ ${maxMarks.writing}</span></label>
+          <div class="mark-input-row">
+            <input class="mark-input" type="number" id="m-writing" min="0" max="${maxMarks.writing}" value="${saved.writing ?? ''}" placeholder="0" oninput="calcTotal('${id}',${JSON.stringify(maxMarks)})"/>
+            <span class="mark-max">/ ${maxMarks.writing}</span>
+          </div>
+        </div>
+        <div class="mark-field">
+          <label>Listening <span style="color:#9ca3af">/ ${maxMarks.listening}</span></label>
+          <div class="mark-input-row">
+            <input class="mark-input" type="number" id="m-listening" min="0" max="${maxMarks.listening}" value="${saved.listening ?? ''}" placeholder="0" oninput="calcTotal('${id}',${JSON.stringify(maxMarks)})"/>
+            <span class="mark-max">/ ${maxMarks.listening}</span>
+          </div>
+        </div>
+        <div class="mark-field">
+          <label>Speaking <span style="color:#9ca3af">/ ${maxMarks.speaking}</span></label>
+          <div class="mark-input-row">
+            <input class="mark-input" type="number" id="m-speaking" min="0" max="${maxMarks.speaking}" value="${saved.speaking ?? ''}" placeholder="0" oninput="calcTotal('${id}',${JSON.stringify(maxMarks)})"/>
+            <span class="mark-max">/ ${maxMarks.speaking}</span>
+          </div>
+        </div>
+      </div>
+      <div class="total-score-display" id="total-display">
+        <span class="ts-label">Total Score</span>
+        <span class="ts-value" id="total-value">${saved.total ?? '—'} / 100</span>
+      </div>
+      <button class="btn-save-marks" onclick="saveMarks('${id}',${JSON.stringify(maxMarks)},'${r.student_name||''}')">💾 Save Marks</button>
+    </div>
+
+    <!-- STUDENT ANSWERS -->
     <div class="detail-section">
       <h4>Student Info</h4>
       ${row('Name', r.student_name)}
@@ -494,8 +592,8 @@ function openModal(jsonStr, level) {
         ${row('Verb Conjugation', r.grammar_verbs)}
         ${row('Sentences', r.grammar_sentences)}
         ${row('Prepositions', r.grammar_prepositions)}
-        ${row('Negation & Adj.', r.grammar_negation)}
-        ${row('Question & Modal', r.grammar_question_modal)}
+        ${row('Negation', r.grammar_negation)}
+        ${row('Question & Modal', r.grammar_question_modals)}
       `}
     </div>
 
@@ -524,20 +622,39 @@ function openModal(jsonStr, level) {
     </div>
 
     <div class="detail-section">
-      <h4>Phase 4 – Speaking Confirmations</h4>
-      ${isA2 ? `
-        ${row('Room / Home', r.speaking_task1)}
-        ${row('Last Vacation', r.speaking_task2)}
-        ${row('Food & Health', r.speaking_task3)}
-      ` : `
-        ${row('Introduction', r.speaking_intro)}
-        ${row('Picture Description', r.speaking_picture)}
-        ${row('Free Time', r.speaking_freetime)}
-        ${row('Role Play', r.speaking_roleplay)}
-      `}
+      <h4>Phase 4 – Speaking (WhatsApp Audio Confirmations)</h4>
+      ${speakingLabels.map((l,i) => row(l, speakingVals[i])).join('')}
     </div>
   `;
+
   document.getElementById('modal').classList.add('open');
+}
+
+function calcTotal(id, maxMarks) {
+  const vals = ['reading','grammar','writing','listening','speaking'].map(k => {
+    const v = parseFloat(document.getElementById(`m-${k}`)?.value);
+    return isNaN(v) ? null : Math.min(v, maxMarks[k]);
+  });
+  const allFilled = vals.every(v => v !== null);
+  const total = allFilled ? vals.reduce((a,b) => a+b, 0) : null;
+  document.getElementById('total-value').textContent = total !== null ? `${total} / 100` : '— / 100';
+}
+
+function saveMarks(id, maxMarks, name) {
+  const vals = {};
+  let allFilled = true;
+  for (const k of ['reading','grammar','writing','listening','speaking']) {
+    const v = parseFloat(document.getElementById(`m-${k}`)?.value);
+    if (isNaN(v)) { allFilled = false; break; }
+    vals[k] = Math.min(Math.max(0, v), maxMarks[k]);
+  }
+  if (!allFilled) { showToast('Please fill in all 5 mark fields.', 'error'); return; }
+  vals.total = Object.values(vals).reduce((a,b) => a+b, 0);
+  setMarks(id, vals);
+  showToast(`✅ Marks saved for ${name} — ${vals.total}/100`, 'success');
+  updateStats();
+  renderTable();
+  renderLeaderboard();
 }
 
 function closeModal() {
@@ -547,44 +664,160 @@ document.getElementById('modal').addEventListener('click', e => {
   if (e.target === document.getElementById('modal')) closeModal();
 });
 
-// ── CSV DOWNLOAD ──
-function downloadCSV() {
-  const level = currentTab === 'a1' ? 'a1' : currentTab === 'a2' ? 'a2' : 'all';
+// ── LEADERBOARD ──
+function switchLBTab(tab) {
+  currentLBTab = tab;
+  document.querySelectorAll('#view-leaderboard .tab').forEach((t,i) => {
+    t.classList.toggle('active', ['all','a2','a1'][i] === tab);
+  });
+  renderLeaderboard();
+}
+
+function renderLeaderboard() {
   let rows = [];
-  if (level !== 'a1') rows = [...rows, ...allData.a2.map(r => ({...r, _level:'A2'}))];
-  if (level !== 'a2') rows = [...rows, ...allData.a1.map(r => ({...r, _level:'A1'}))];
+  if (currentLBTab !== 'a1') allData.a2.forEach(r => rows.push({...r, _level:'A2'}));
+  if (currentLBTab !== 'a2') allData.a1.forEach(r => rows.push({...r, _level:'A1'}));
+
+  const unmarked = rows.filter(r => !getMarks(r.id));
+  document.getElementById('unmarked-note').style.display = unmarked.length > 0 ? 'block' : 'none';
+
+  const marked = rows.filter(r => getMarks(r.id));
+  marked.sort((a,b) => getMarks(b.id).total - getMarks(a.id).total);
+
+  const tbody = document.getElementById('lb-body');
+  const empty = document.getElementById('lb-empty');
+
+  if (marked.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  const medals = ['🥇','🥈','🥉'];
+  tbody.innerHTML = marked.map((r, i) => {
+    const m = getMarks(r.id);
+    const badge = r._level === 'A2' ? '<span class="badge-pill badge-a2">A2</span>' : '<span class="badge-pill badge-a1">A1</span>';
+    const rowClass = i < 3 ? `lb-rank-${i+1}` : '';
+    const pct = (m.total / 100) * 100;
+    return `<tr class="${rowClass}">
+      <td style="font-size:18px;text-align:center">${i < 3 ? medals[i] : i+1}</td>
+      <td style="font-weight:700">${r.student_name||'—'}</td>
+      <td>${badge}</td>
+      <td style="font-size:12px;color:var(--muted)">${r.mobile_number||'—'}</td>
+      <td style="text-align:center">${m.reading}</td>
+      <td style="text-align:center">${m.grammar}</td>
+      <td style="text-align:center">${m.writing}</td>
+      <td style="text-align:center">${m.listening}</td>
+      <td style="text-align:center">${m.speaking}</td>
+      <td style="font-weight:700;font-size:15px;text-align:center">
+        <span class="score-badge ${scoreClass(m.total,100)}">${m.total}</span>
+      </td>
+      <td>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── PDF DOWNLOAD ──
+function downloadLeaderboardPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+  const level = currentLBTab.toUpperCase();
+  const title = `German Exam Leaderboard${level !== 'ALL' ? ' — ' + level : ''}`;
+  const date = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' });
+
+  // Header
+  doc.setFillColor(26, 26, 46);
+  doc.rect(0, 0, 297, 22, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
+  doc.text('🇩🇪 ' + title, 14, 14);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Generated: ' + date, 250, 14, { align: 'right' });
+
+  // Build data
+  let rows = [];
+  if (currentLBTab !== 'a1') allData.a2.forEach(r => rows.push({...r, _level:'A2'}));
+  if (currentLBTab !== 'a2') allData.a1.forEach(r => rows.push({...r, _level:'A1'}));
+  const marked = rows.filter(r => getMarks(r.id)).sort((a,b) => getMarks(b.id).total - getMarks(a.id).total);
+
+  if (marked.length === 0) { showToast('No marked students to export.', 'error'); return; }
+
+  const medals = ['🥇','🥈','🥉'];
+  let y = 32;
+  const cols = [12, 14, 65, 20, 35, 16, 16, 16, 16, 16, 20];
+  const headers = ['Rank','','Name','Level','Mobile','Reading','Grammar','Writing','Listening','Speaking','Total/100'];
+
+  // Table header
+  doc.setFillColor(59, 91, 219);
+  doc.rect(10, y - 5, 277, 8, 'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'bold');
+  let x = 12;
+  headers.forEach((h, i) => { doc.text(h, x, y); x += cols[i]; });
+  y += 7;
+
+  // Rows
+  marked.forEach((r, i) => {
+    const m = getMarks(r.id);
+    if (i % 2 === 0) { doc.setFillColor(248, 249, 252); doc.rect(10, y - 4.5, 277, 7, 'F'); }
+    doc.setTextColor(26, 26, 46);
+    doc.setFont('helvetica', i < 3 ? 'bold' : 'normal');
+    doc.setFontSize(8.5);
+    x = 12;
+    const rankStr = i < 3 ? (i+1).toString() : (i+1).toString();
+    doc.text(rankStr, x, y); x += cols[0];
+    doc.text(i < 3 ? medals[i].replace(/\uFE0F/g,'') : '', x, y); x += cols[1];
+    doc.text((r.student_name||'—').substring(0,28), x, y); x += cols[2];
+    doc.text(r._level, x, y); x += cols[3];
+    doc.text((r.mobile_number||'—'), x, y); x += cols[4];
+    doc.text(String(m.reading), x, y); x += cols[5];
+    doc.text(String(m.grammar), x, y); x += cols[6];
+    doc.text(String(m.writing), x, y); x += cols[7];
+    doc.text(String(m.listening), x, y); x += cols[8];
+    doc.text(String(m.speaking), x, y); x += cols[9];
+    doc.setFont('helvetica','bold');
+    doc.text(String(m.total), x, y);
+    y += 7;
+    if (y > 190) { doc.addPage(); y = 20; }
+  });
+
+  // Footer
+  doc.setDrawColor(229, 231, 235);
+  doc.line(10, y + 4, 287, y + 4);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(107, 114, 128);
+  doc.text('Global Careers by Testbook · German Language Programme', 14, y + 10);
+  doc.text(`Total students: ${marked.length}`, 260, y + 10, { align: 'right' });
+
+  doc.save(`german_exam_leaderboard_${new Date().toISOString().slice(0,10)}.pdf`);
+  showToast('PDF downloaded!', 'success');
+}
+
+// ── CSV ──
+function downloadCSV() {
+  let rows = [];
+  if (currentTab !== 'a1') allData.a2.forEach(r => rows.push({...r, _level:'A2'}));
+  if (currentTab !== 'a2') allData.a1.forEach(r => rows.push({...r, _level:'A1'}));
   rows.sort((a,b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+  if (!rows.length) { showToast('No data to download.'); return; }
 
-  if (rows.length === 0) { showToast('No data to download.'); return; }
-
-  const cols = ['_level', 'student_name', 'mobile_number', 'submitted_at',
-    'tf_sabine_months','tf_patientenakten','tf_fruehstueck','tf_neue_patienten','tf_beruf_wichtig',
-    'tf_schule','tf_sieben_uhr','tf_aerzte','tf_garten','tf_beruf_nicht',
-    'q1_wie_lange','q2_was_morgen','q3_mit_wem','q4_was_erklaert','q5_warum_spass',
-    'q1_wo_arbeitet','q2_wann_beginnt','q3_was_patienten','q4_wo_pause','q5_warum_beruf',
-    'grammar_conjunctions','grammar_comparatives','grammar_verbs_tenses','grammar_prepositions','grammar_relativsaetze',
-    'grammar_articles','grammar_verbs','grammar_sentences','grammar_negation','grammar_question_modal',
-    'form_details','email_writing',
-    'listen_tf_thomas_arzt','listen_tf_krankenhaus','listen_tf_pause','listen_tf_geschlafen','listen_tf_fahrrad',
-    'listen_tf_kleines_krankenhaus','listen_tf_medikamente','listen_tf_keine_pause','listen_tf_bus',
-    'listen_q1_morgen','listen_q2_mit_wem','listen_q3_nachmittag','listen_q4_familien','listen_q5_nach_hause',
-    'listen_q1_name','listen_q2_wo','listen_q3_morgen','listen_q4_pause','listen_q5_warum',
-    'listen_fill_blanks',
-    'speaking_task1','speaking_task2','speaking_task3',
-    'speaking_intro','speaking_picture','speaking_freetime','speaking_roleplay'
-  ];
-
-  function esc(v) {
-    if (v == null) return '';
-    const s = String(v);
-    return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g,'""')}"` : s;
-  }
-
-  const csv = [cols.join(','), ...rows.map(r => cols.map(c => esc(r[c])).join(','))].join('\n');
-  const blob = new Blob([csv], {type:'text/csv'});
+  const esc = v => { const s = String(v??''); return (s.includes(',') || s.includes('"') || s.includes('\n')) ? `"${s.replace(/"/g,'""')}"` : s; };
+  const headers = ['Level','Name','Mobile','Submitted','Reading','Grammar','Writing','Listening','Speaking','Total'];
+  const csv = [
+    headers.join(','),
+    ...rows.map(r => {
+      const m = getMarks(r.id) || {};
+      return [r._level, r.student_name, r.mobile_number, r.submitted_at,
+              m.reading??'', m.grammar??'', m.writing??'', m.listening??'', m.speaking??'', m.total??''].map(esc).join(',');
+    })
+  ].join('\n');
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `german_exam_responses_${new Date().toISOString().slice(0,10)}.csv`;
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+  a.download = `german_exam_${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
   showToast('CSV downloaded!', 'success');
 }
@@ -594,7 +827,7 @@ function showToast(msg, type) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast ' + (type||'') + ' show';
-  setTimeout(() => t.className = 'toast', 3000);
+  setTimeout(() => t.className = 'toast', 3500);
 }
 </script>
 </body>
