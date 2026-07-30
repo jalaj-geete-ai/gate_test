@@ -103,7 +103,8 @@ td{padding:12px 14px;vertical-align:middle}
 
 /* QA ROWS */
 .qa-block{padding:0 20px}
-.qa-row{display:grid;grid-template-columns:1fr 1fr auto;gap:0;border-bottom:1px solid var(--border);align-items:stretch}
+.qa-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--border);align-items:stretch}
+.qa-row.has-mark{grid-template-columns:1fr 1fr 1fr auto}
 .qa-row:last-child{border-bottom:none}
 .qa-q{padding:12px 14px;font-size:13px;color:var(--muted);font-weight:500;border-right:1px solid var(--border);background:#fafafa}
 .qa-student{padding:12px 14px;font-size:13.5px;border-right:1px solid var(--border)}
@@ -519,14 +520,14 @@ function openModal(id,level){
   const openRow=(q,student,correct)=>`<div class="qa-row">
     <div class="qa-q">${q}</div>
     <div class="qa-student">${studentVal(student)}</div>
-    <div class="qa-correct" style="font-style:italic;color:#374151">${correct}</div>
+    <div class="qa-correct" style="font-style:italic">${correct}</div>
   </div>`;
   const manualRow=(q,student,correct,field,max)=>{
     const savedVal=saved[field]??'';
-    return`<div class="qa-row">
+    return`<div class="qa-row has-mark">
       <div class="qa-q">${q}</div>
       <div class="qa-student">${studentVal(student)}</div>
-      <div class="qa-correct" style="font-style:italic;color:#374151;flex:1">${correct}</div>
+      <div class="qa-correct" style="font-style:italic">${correct}</div>
       <div class="qa-mark">
         <input class="mark-inp" type="number" min="0" max="${max}" value="${savedVal}" placeholder="0"
           id="mf-${field}" oninput="recalcModal()"/>
@@ -668,7 +669,7 @@ function openModal(id,level){
 
   // Writing
   const writingHTML=`<div class="qa-block" style="padding-top:8px">
-    <div class="qa-row">
+    <div class="qa-row has-mark">
       <div class="qa-q">Form Details</div>
       <div class="qa-student">${studentVal(r.form_details)}</div>
       <div class="qa-correct" style="font-style:italic">Name, Alter, Beruf, Wohnort, Telefon</div>
@@ -677,7 +678,7 @@ function openModal(id,level){
         <span class="mark-max-label">/5</span>
       </div>
     </div>
-    <div class="qa-row" style="align-items:flex-start">
+    <div class="qa-row has-mark" style="align-items:flex-start">
       <div class="qa-q">Email Writing</div>
       <div class="qa-student" style="white-space:pre-wrap;line-height:1.6">${studentVal(r.email_writing)}</div>
       <div class="qa-correct" style="font-style:italic;font-size:12px;line-height:1.5">${isA2?'Gestern hatte ich einen stressigen Tag…':'Ich arbeite jeden Tag im Krankenhaus…'}</div>
