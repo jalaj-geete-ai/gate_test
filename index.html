@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>German Exam Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --border: #2a2a36;
+      --text: #f0f0f5;
+      --muted: #8a8a9a;
+      --a1: #7c3aed;
+      --a1-glow: rgba(124, 58, 237, 0.18);
+      --a2: #059669;
+      --a2-glow: rgba(5, 150, 105, 0.18);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .flag {
+      font-size: 48px;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      display: block;
+      text-decoration: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px 28px;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+    }
+
+    .card.a1:hover {
+      border-color: var(--a1);
+      box-shadow: 0 8px 32px var(--a1-glow);
+    }
+
+    .card.a2:hover {
+      border-color: var(--a2);
+      box-shadow: 0 8px 32px var(--a2-glow);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .badge {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .a1 .badge {
+      background: var(--a1-glow);
+      color: #a78bfa;
+      border: 1px solid rgba(124,58,237,0.3);
+    }
+
+    .a2 .badge {
+      background: var(--a2-glow);
+      color: #34d399;
+      border: 1px solid rgba(5,150,105,0.3);
+    }
+
+    .arrow {
+      color: var(--muted);
+      font-size: 18px;
+      transition: color 0.15s, transform 0.15s;
+    }
+
+    .card:hover .arrow {
+      transform: translateX(4px);
+    }
+
+    .a1:hover .arrow { color: #a78bfa; }
+    .a2:hover .arrow { color: #34d399; }
+
+    .card h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      letter-spacing: -0.2px;
+    }
+
+    .card p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 8px 0;
+    }
+
+    .divider span {
+      font-size: 12px;
+      color: var(--border);
+      white-space: nowrap;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 12px;
+      color: var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="header">
+      <div class="flag">🇩🇪</div>
+      <h1>German Exam Portal</h1>
+      <p>Select your exam level to begin.<br/>You will need an internet connection to submit.</p>
+    </div>
+
+    <div class="cards">
+
+      <a class="card a1" href="a1_german_exam.html">
+        <div class="card-top">
+          <span class="badge">A1 — Beginner</span>
+          <span class="arrow">→</span>
+        </div>
+        <h2>A1 German Exam</h2>
+        <p>Reading, Grammar, Writing, Listening & Speaking · 100 marks · ~90 min</p>
+      </a>
+
+      <div class="divider"><span>or</span></div>
+
+      <a class="card a2" href="a2_german_exam.html">
+        <div class="card-top">
+          <span class="badge">A2 — Elementary</span>
+          <span class="arrow">→</span>
+        </div>
+        <h2>A2 German Exam</h2>
+        <p>Reading, Grammar, Writing, Listening & Speaking · 100 marks · ~90 min</p>
+      </a>
+
+    </div>
+
+    <div class="footer">
+      Global Careers by Testbook · German Language Programme
+    </div>
+
+  </div>
+</body>
+</html>
