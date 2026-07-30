@@ -335,12 +335,14 @@ function doLogin(){
   const err=document.getElementById('login-error');
   if(CREDENTIALS[user]&&CREDENTIALS[user]===pass){
     err.style.display='none';
+    localStorage.setItem('gcb_exam_session','1');
     document.getElementById('login-screen').style.display='none';
     document.getElementById('dashboard').style.display='block';
     loadMarks();loadData();
   }else{err.style.display='block';document.getElementById('login-pass').value='';}
 }
 function logout(){
+  localStorage.removeItem('gcb_exam_session');
   document.getElementById('dashboard').style.display='none';
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('login-user').value='';
@@ -349,6 +351,16 @@ function logout(){
 
 // ── MARKS STORAGE ──
 function loadMarks(){try{marksStore=JSON.parse(localStorage.getItem('gcb_exam_marks')||'{}')}catch(e){marksStore={}}}
+
+// ── SESSION PERSISTENCE ──
+function checkSession(){
+  if(localStorage.getItem('gcb_exam_session')==='1'){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    loadMarks();loadData();
+  }
+}
+window.addEventListener('DOMContentLoaded',checkSession);
 function saveMarks(){localStorage.setItem('gcb_exam_marks',JSON.stringify(marksStore))}
 function getM(id){return marksStore[id]||null}
 function setM(id,m){marksStore[id]=m;saveMarks()}
@@ -903,19 +915,7 @@ function downloadCSV(){
   showToast('CSV downloaded!','success');
 }
 
-// ── AUTH ──
-function doLogin(){
-  const user=document.getElementById('login-user').value.trim().toLowerCase();
-  const pass=document.getElementById('login-pass').value;
-  const err=document.getElementById('login-error');
-  if(CREDENTIALS[user]&&CREDENTIALS[user]===pass){
-    err.style.display='none';
-    document.getElementById('login-screen').style.display='none';
-    document.getElementById('dashboard').style.display='block';
-    loadMarks();loadData();
-  }else{err.style.display='block';document.getElementById('login-pass').value='';}
-}
-function logout(){document.getElementById('dashboard').style.display='none';document.getElementById('login-screen').style.display='flex';document.getElementById('login-user').value='';document.getElementById('login-pass').value='';}
+
 
 // ── TOAST ──
 function showToast(msg,type){
