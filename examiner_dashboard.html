@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Examiner Dashboard – German Exam</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+  :root{
+    --black:#1a1a2e;--white:#fff;--accent:#3b5bdb;--accent2:#059669;
+    --muted:#6b7280;--border:#e5e7eb;--bg:#f8f9fc;--radius:10px;
+    --error:#dc2626;--warn:#d97706;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--black);min-height:100vh}
+
+  /* ── LOGIN ── */
+  #login-screen{
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+  }
+  .login-card{
+    background:#fff;border:1px solid var(--border);border-radius:16px;
+    padding:40px 36px;max-width:380px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.08);
+  }
+  .login-card .badge{
+    display:inline-block;background:var(--black);color:#fff;font-size:11px;
+    font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;
+    border-radius:20px;margin-bottom:20px;
+  }
+  .login-card h1{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:6px}
+  .login-card p{font-size:13px;color:var(--muted);margin-bottom:28px}
+  .field{margin-bottom:18px}
+  .field label{display:block;font-size:13px;font-weight:500;margin-bottom:6px}
+  .field input{
+    width:100%;border:1.5px solid var(--border);border-radius:8px;padding:11px 14px;
+    font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color .2s;
+  }
+  .field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,91,219,.1)}
+  .btn-login{
+    width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;
+    padding:13px;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;
+    cursor:pointer;transition:background .2s;
+  }
+  .btn-login:hover{background:#2f4abf}
+  .login-error{color:var(--error);font-size:13px;margin-top:12px;display:none;text-align:center}
+
+  /* ── DASHBOARD ── */
+  #dashboard{display:none}
+  .topbar{
+    background:var(--black);color:#fff;padding:0 28px;
+    display:flex;align-items:center;justify-content:space-between;height:58px;
+  }
+  .topbar .brand{font-family:'Playfair Display',serif;font-size:18px}
+  .topbar .brand span{color:#818cf8;font-size:13px;font-weight:400;margin-left:8px}
+  .topbar-right{display:flex;align-items:center;gap:14px}
+  .btn-sm{
+    padding:7px 16px;border-radius:7px;font-family:'Inter',sans-serif;font-size:13px;
+    font-weight:600;cursor:pointer;border:none;transition:all .2s;
+  }
+  .btn-outline{background:transparent;color:#fff;border:1.5px solid #4b5563}
+  .btn-outline:hover{border-color:#fff}
+  .btn-green{background:var(--accent2);color:#fff}
+  .btn-green:hover{background:#047857}
+  .btn-blue{background:var(--accent);color:#fff}
+  .btn-blue:hover{background:#2f4abf}
+
+  .dashboard-body{max-width:1200px;margin:0 auto;padding:28px 20px 60px}
+
+  /* STATS */
+  .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px}
+  .stat-card{
+    background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+    padding:18px 20px;
+  }
+  .stat-card .label{font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+  .stat-card .value{font-size:28px;font-weight:700;line-height:1}
+  .stat-card .sub{font-size:12px;color:var(--muted);margin-top:4px}
+
+  /* TABS */
+  .tabs{display:flex;gap:4px;margin-bottom:20px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:5px;width:fit-content}
+  .tab{
+    padding:8px 20px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;
+    color:var(--muted);transition:all .2s;border:none;background:transparent;font-family:'Inter',sans-serif;
+  }
+  .tab.active{background:var(--accent);color:#fff}
+
+  /* CONTROLS */
+  .controls{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+  .search-box{
+    flex:1;min-width:200px;border:1.5px solid var(--border);border-radius:8px;
+    padding:9px 14px;font-family:'Inter',sans-serif;font-size:13.5px;outline:none;
+    transition:border-color .2s;
+  }
+  .search-box:focus{border-color:var(--accent)}
+
+  /* TABLE */
+  .table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+  .table-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  thead th{
+    background:var(--black);color:#fff;padding:12px 14px;text-align:left;
+    font-weight:500;font-size:12px;letter-spacing:.5px;text-transform:uppercase;
+    white-space:nowrap;
+  }
+  tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+  tbody tr:hover{background:#f8f9ff}
+  tbody tr:last-child{border-bottom:none}
+  td{padding:12px 14px;vertical-align:middle;max-width:220px}
+  td.name-cell{font-weight:600;white-space:nowrap}
+  td.date-cell{white-space:nowrap;color:var(--muted);font-size:12px}
+  td.answer-cell{
+    color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    max-width:200px;cursor:pointer;
+  }
+  td.answer-cell:hover{color:var(--accent)}
+
+  .badge-pill{
+    display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;
+  }
+  .badge-a1{background:#d1fae5;color:#065f46}
+  .badge-a2{background:#e0e7ff;color:#3730a3}
+
+  /* EMPTY STATE */
+  .empty-state{text-align:center;padding:60px 24px;color:var(--muted)}
+  .empty-state .icon{font-size:40px;margin-bottom:12px}
+  .empty-state p{font-size:14px}
+
+  /* LOADING */
+  .loading{text-align:center;padding:40px;color:var(--muted);font-size:14px}
+  .spinner{
+    display:inline-block;width:22px;height:22px;border:3px solid var(--border);
+    border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;
+    margin-right:8px;vertical-align:middle;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* MODAL */
+  .modal-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;
+    align-items:center;justify-content:center;padding:20px;
+  }
+  .modal-overlay.open{display:flex}
+  .modal{
+    background:#fff;border-radius:14px;max-width:640px;width:100%;max-height:85vh;
+    overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);
+  }
+  .modal-header{
+    padding:20px 24px;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1;
+  }
+  .modal-header h3{font-size:17px;font-weight:700}
+  .modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1}
+  .modal-close:hover{color:var(--black)}
+  .modal-body{padding:20px 24px}
+  .detail-section{margin-bottom:20px}
+  .detail-section h4{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:10px;font-weight:600}
+  .detail-row{display:flex;gap:10px;margin-bottom:8px;font-size:13.5px;line-height:1.5}
+  .detail-row .dk{color:var(--muted);min-width:160px;flex-shrink:0;font-weight:500}
+  .detail-row .dv{color:var(--black);word-break:break-word}
+  .tf-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600}
+  .tf-true{background:#d1fae5;color:#065f46}
+  .tf-false{background:#fee2e2;color:#991b1b}
+  .tf-empty{background:#f3f4f6;color:#6b7280}
+
+  /* TOAST */
+  .toast{
+    position:fixed;bottom:20px;right:20px;background:var(--black);color:#fff;
+    padding:12px 18px;border-radius:8px;font-size:13px;transform:translateY(60px);
+    opacity:0;transition:all .3s;z-index:999;
+  }
+  .toast.show{transform:translateY(0);opacity:1}
+  .toast.success{background:var(--accent2)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="badge">🔐 Examiner Portal</div>
+    <h1>German Exam<br>Dashboard</h1>
+    <p>Sign in to view and manage student responses.</p>
+    <div class="field">
+      <label>Username</label>
+      <input type="text" id="login-user" placeholder="examiner" autocomplete="username"/>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button class="btn-login" onclick="doLogin()">Sign In →</button>
+    <div class="login-error" id="login-error">❌ Incorrect username or password.</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="topbar">
+    <div class="brand">🇩🇪 German Exam Portal <span>Examiner View</span></div>
+    <div class="topbar-right">
+      <button class="btn-sm btn-green" onclick="downloadCSV()">⬇ Download CSV</button>
+      <button class="btn-sm btn-outline" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="dashboard-body">
+    <!-- STATS -->
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card"><div class="label">Total Submissions</div><div class="value" id="stat-total">—</div><div class="sub">All levels</div></div>
+      <div class="stat-card"><div class="label">A2 Submissions</div><div class="value" id="stat-a2">—</div><div class="sub">Advanced beginner</div></div>
+      <div class="stat-card"><div class="label">A1 Submissions</div><div class="value" id="stat-a1">—</div><div class="sub">Beginner</div></div>
+      <div class="stat-card"><div class="label">Latest Submission</div><div class="value" style="font-size:16px;margin-top:4px" id="stat-latest">—</div><div class="sub" id="stat-latest-name">—</div></div>
+    </div>
+
+    <!-- TABS + CONTROLS -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('all')">All Students</button>
+      <button class="tab" onclick="switchTab('a2')">A2 Exam</button>
+      <button class="tab" onclick="switchTab('a1')">A1 Exam</button>
+    </div>
+
+    <div class="controls">
+      <input class="search-box" type="text" id="search-box" placeholder="🔍  Search by name or phone…" oninput="renderTable()"/>
+      <button class="btn-sm btn-blue" onclick="loadData()">↻ Refresh</button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table id="main-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Level</th>
+              <th>Name</th>
+              <th>Mobile</th>
+              <th>Submitted</th>
+              <th>Reading T/F</th>
+              <th>Email Writing</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+      <div class="loading" id="loading-msg"><span class="spinner"></span>Loading responses…</div>
+      <div class="empty-state" id="empty-msg" style="display:none">
+        <div class="icon">📭</div>
+        <p>No submissions found.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Student Response</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──
+const SUPABASE_URL = 'https://uxdrldreaockdloqvojs.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4ZHJsZHJlYW9ja2Rsb3F2b2pzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzE2MjIsImV4cCI6MjA4OTQwNzYyMn0.swqYBfGzHP5qSDPnZ_AivFE0zljyK33Kq-_ephz4Ybc';
+
+// ── AUTH (client-side, simple) ──
+const CREDENTIALS = { examiner: 'german@2026', admin: 'admin@2026' };
+
+let allData = { a2: [], a1: [] };
+let currentTab = 'all';
+
+function doLogin() {
+  const user = document.getElementById('login-user').value.trim().toLowerCase();
+  const pass = document.getElementById('login-pass').value;
+  const err  = document.getElementById('login-error');
+  if (CREDENTIALS[user] && CREDENTIALS[user] === pass) {
+    err.style.display = 'none';
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadData();
+  } else {
+    err.style.display = 'block';
+    document.getElementById('login-pass').value = '';
+  }
+}
+
+function logout() {
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+  allData = { a2: [], a1: [] };
+}
+
+// ── FETCH ──
+async function fetchTable(table) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*&order=submitted_at.desc`, {
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+  });
+  if (!res.ok) throw new Error(`Failed to fetch ${table}`);
+  return await res.json();
+}
+
+async function loadData() {
+  document.getElementById('loading-msg').style.display = 'block';
+  document.getElementById('empty-msg').style.display = 'none';
+  document.getElementById('table-body').innerHTML = '';
+  try {
+    const [a2, a1] = await Promise.all([
+      fetchTable('german_exam_responses'),
+      fetchTable('a1_german_exam_responses')
+    ]);
+    allData = { a2, a1 };
+    updateStats();
+    renderTable();
+  } catch(e) {
+    showToast('Error loading data: ' + e.message);
+  } finally {
+    document.getElementById('loading-msg').style.display = 'none';
+  }
+}
+
+// ── STATS ──
+function updateStats() {
+  const total = allData.a2.length + allData.a1.length;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-a2').textContent = allData.a2.length;
+  document.getElementById('stat-a1').textContent = allData.a1.length;
+  // Latest
+  const all = [
+    ...allData.a2.map(r => ({...r, _level:'A2'})),
+    ...allData.a1.map(r => ({...r, _level:'A1'}))
+  ].sort((a,b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+  if (all.length > 0) {
+    const latest = all[0];
+    document.getElementById('stat-latest').textContent = fmt(latest.submitted_at);
+    document.getElementById('stat-latest-name').textContent = latest.student_name || '—';
+  }
+}
+
+// ── TABLE ──
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', ['all','a2','a1'][i] === tab);
+  });
+  renderTable();
+}
+
+function fmt(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts);
+  return d.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'}) + ' ' +
+         d.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+}
+
+function truncate(str, n=40) {
+  if (!str) return '<span style="color:#d1d5db">—</span>';
+  return str.length > n ? str.substring(0,n)+'…' : str;
+}
+
+function tfTag(val) {
+  if (!val) return '<span class="tf-tag tf-empty">—</span>';
+  const cls = val === 'True' ? 'tf-true' : 'tf-false';
+  return `<span class="tf-tag ${cls}">${val}</span>`;
+}
+
+function renderTable() {
+  const query = document.getElementById('search-box').value.toLowerCase();
+  let rows = [];
+
+  if (currentTab !== 'a1') allData.a2.forEach(r => rows.push({...r, _level:'A2'}));
+  if (currentTab !== 'a2') allData.a1.forEach(r => rows.push({...r, _level:'A1'}));
+
+  // Sort by date desc
+  rows.sort((a,b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+
+  // Filter
+  if (query) {
+    rows = rows.filter(r =>
+      (r.student_name||'').toLowerCase().includes(query) ||
+      (r.mobile_number||'').toLowerCase().includes(query)
+    );
+  }
+
+  const tbody = document.getElementById('table-body');
+  const empty = document.getElementById('empty-msg');
+
+  if (rows.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  // Build tf summary
+  tbody.innerHTML = rows.map((r, i) => {
+    const level = r._level;
+    const tf1 = level === 'A2'
+      ? [r.tf_sabine_months, r.tf_patientenakten, r.tf_fruehstueck, r.tf_neue_patienten, r.tf_beruf_wichtig]
+      : [r.tf_schule, r.tf_sieben_uhr, r.tf_aerzte, r.tf_garten, r.tf_beruf_nicht];
+    const tfSummary = tf1.map(v => v ? (v==='True'?'✓':'✗') : '·').join(' ');
+    const levelBadge = level === 'A2'
+      ? '<span class="badge-pill badge-a2">A2</span>'
+      : '<span class="badge-pill badge-a1">A1</span>';
+
+    return `<tr>
+      <td style="color:var(--muted);font-size:12px">${i+1}</td>
+      <td>${levelBadge}</td>
+      <td class="name-cell">${r.student_name || '—'}</td>
+      <td style="font-size:12.5px">${r.mobile_number || '—'}</td>
+      <td class="date-cell">${fmt(r.submitted_at)}</td>
+      <td style="font-family:monospace;letter-spacing:2px;font-size:13px">${tfSummary}</td>
+      <td class="answer-cell" onclick="openModal(${JSON.stringify(JSON.stringify(r)).slice(1,-1)}, '${level}')"
+        title="${(r.email_writing||'').replace(/"/g,'&quot;')}">${truncate(r.email_writing)}</td>
+      <td><button class="btn-sm btn-blue" onclick="openModal(${JSON.stringify(JSON.stringify(r)).slice(1,-1)}, '${level}')">View</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── MODAL ──
+function openModal(jsonStr, level) {
+  const r = JSON.parse(jsonStr);
+  document.getElementById('modal-title').textContent = `${r.student_name || 'Student'} — ${level} Exam`;
+  const isA2 = level === 'A2';
+
+  const tfLabels = isA2
+    ? ['Seit fünf Monaten?','Patientenakten kontrolliert?','Beim Frühstück geholfen?','Keine neuen Patienten?','Beruf wichtig?']
+    : ['Arbeitet in Schule?','Beginnt um 7 Uhr?','Spricht mit Ärzten?','Pause im Garten?','Mag Beruf nicht?'];
+  const tfVals = isA2
+    ? [r.tf_sabine_months, r.tf_patientenakten, r.tf_fruehstueck, r.tf_neue_patienten, r.tf_beruf_wichtig]
+    : [r.tf_schule, r.tf_sieben_uhr, r.tf_aerzte, r.tf_garten, r.tf_beruf_nicht];
+
+  const listenTFLabels = isA2
+    ? ['Thomas ist Arzt?','Im Krankenhaus?','Pause am Mittag?','Geschlafen?','Fahrrad nach Hause?']
+    : ['Kleines Krankenhaus?','Um 7 Uhr?','Gibt Medikamente?','Keine Pause?','Fährt mit Bus?'];
+  const listenTFVals = isA2
+    ? [r.listen_tf_thomas_arzt, r.listen_tf_krankenhaus, r.listen_tf_pause, r.listen_tf_geschlafen, r.listen_tf_fahrrad]
+    : [r.listen_tf_kleines_krankenhaus, r.listen_tf_sieben_uhr, r.listen_tf_medikamente, r.listen_tf_keine_pause, r.listen_tf_bus];
+
+  const openQLabels = isA2
+    ? ['Wie lange im Krankenhaus?','Was am Morgen?','Mit wem gesprochen?','Was erklärt?','Warum Spaß?']
+    : ['Wo arbeitet?','Wann beginnt?','Was mit Patienten?','Wo Pause?','Warum Beruf?'];
+  const openQVals = isA2
+    ? [r.q1_wie_lange, r.q2_was_morgen, r.q3_mit_wem, r.q4_was_erklaert, r.q5_warum_spass]
+    : [r.q1_wo_arbeitet, r.q2_wann_beginnt, r.q3_was_patienten, r.q4_wo_pause, r.q5_warum_beruf];
+
+  const listenOpenLabels = isA2
+    ? ['Was am Morgen?','Mit wem?','Was am Nachmittag?','Den Familien erklärt?','Wie nach Hause?']
+    : ['Wie heißt sie?','Wo arbeitet?','Was am Morgen?','Was in Pause?','Warum Beruf?'];
+  const listenOpenVals = isA2
+    ? [r.listen_q1_morgen, r.listen_q2_mit_wem, r.listen_q3_nachmittag, r.listen_q4_familien, r.listen_q5_nach_hause]
+    : [r.listen_q1_name, r.listen_q2_wo, r.listen_q3_morgen, r.listen_q4_pause, r.listen_q5_warum];
+
+  const row = (k,v) => `<div class="detail-row"><span class="dk">${k}</span><span class="dv">${v || '<em style="color:#d1d5db">not answered</em>'}</span></div>`;
+  const tfRow = (k,v) => `<div class="detail-row"><span class="dk">${k}</span><span class="dv">${tfTag(v)}</span></div>`;
+
+  document.getElementById('modal-body').innerHTML = `
+    <div class="detail-section">
+      <h4>Student Info</h4>
+      ${row('Name', r.student_name)}
+      ${row('Mobile', r.mobile_number)}
+      ${row('Submitted', fmt(r.submitted_at))}
+    </div>
+
+    <div class="detail-section">
+      <h4>Phase 1A – Reading True / False</h4>
+      ${tfLabels.map((l,i) => tfRow(l, tfVals[i])).join('')}
+    </div>
+
+    <div class="detail-section">
+      <h4>Phase 1A – Open Questions</h4>
+      ${openQLabels.map((l,i) => row(l, openQVals[i])).join('')}
+    </div>
+
+    <div class="detail-section">
+      <h4>Phase 1B – Grammar</h4>
+      ${isA2 ? `
+        ${row('Conjunctions', r.grammar_conjunctions)}
+        ${row('Comparatives', r.grammar_comparatives)}
+        ${row('Verbs & Tenses', r.grammar_verbs_tenses)}
+        ${row('Prepositions', r.grammar_prepositions)}
+        ${row('Relativsätze', r.grammar_relativsaetze)}
+      ` : `
+        ${row('Articles & Nouns', r.grammar_articles)}
+        ${row('Verb Conjugation', r.grammar_verbs)}
+        ${row('Sentences', r.grammar_sentences)}
+        ${row('Prepositions', r.grammar_prepositions)}
+        ${row('Negation & Adj.', r.grammar_negation)}
+        ${row('Question & Modal', r.grammar_question_modal)}
+      `}
+    </div>
+
+    <div class="detail-section">
+      <h4>Phase 2 – Writing</h4>
+      ${row('Form Details', r.form_details)}
+      <div class="detail-row">
+        <span class="dk">Email (${isA2?'80–100':'50–70'} words)</span>
+        <span class="dv" style="white-space:pre-wrap;line-height:1.6">${r.email_writing || '<em style="color:#d1d5db">not answered</em>'}</span>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h4>Phase 3 – Listening True / False</h4>
+      ${listenTFLabels.map((l,i) => tfRow(l, listenTFVals[i])).join('')}
+    </div>
+
+    <div class="detail-section">
+      <h4>Phase 3 – Listening Open Questions</h4>
+      ${listenOpenLabels.map((l,i) => row(l, listenOpenVals[i])).join('')}
+    </div>
+
+    <div class="detail-section">
+      <h4>Phase 3 – Fill in Blanks</h4>
+      ${row('Answers', r.listen_fill_blanks)}
+    </div>
+
+    <div class="detail-section">
+      <h4>Phase 4 – Speaking Confirmations</h4>
+      ${isA2 ? `
+        ${row('Room / Home', r.speaking_task1)}
+        ${row('Last Vacation', r.speaking_task2)}
+        ${row('Food & Health', r.speaking_task3)}
+      ` : `
+        ${row('Introduction', r.speaking_intro)}
+        ${row('Picture Description', r.speaking_picture)}
+        ${row('Free Time', r.speaking_freetime)}
+        ${row('Role Play', r.speaking_roleplay)}
+      `}
+    </div>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+
+// ── CSV DOWNLOAD ──
+function downloadCSV() {
+  const level = currentTab === 'a1' ? 'a1' : currentTab === 'a2' ? 'a2' : 'all';
+  let rows = [];
+  if (level !== 'a1') rows = [...rows, ...allData.a2.map(r => ({...r, _level:'A2'}))];
+  if (level !== 'a2') rows = [...rows, ...allData.a1.map(r => ({...r, _level:'A1'}))];
+  rows.sort((a,b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+
+  if (rows.length === 0) { showToast('No data to download.'); return; }
+
+  const cols = ['_level', 'student_name', 'mobile_number', 'submitted_at',
+    'tf_sabine_months','tf_patientenakten','tf_fruehstueck','tf_neue_patienten','tf_beruf_wichtig',
+    'tf_schule','tf_sieben_uhr','tf_aerzte','tf_garten','tf_beruf_nicht',
+    'q1_wie_lange','q2_was_morgen','q3_mit_wem','q4_was_erklaert','q5_warum_spass',
+    'q1_wo_arbeitet','q2_wann_beginnt','q3_was_patienten','q4_wo_pause','q5_warum_beruf',
+    'grammar_conjunctions','grammar_comparatives','grammar_verbs_tenses','grammar_prepositions','grammar_relativsaetze',
+    'grammar_articles','grammar_verbs','grammar_sentences','grammar_negation','grammar_question_modal',
+    'form_details','email_writing',
+    'listen_tf_thomas_arzt','listen_tf_krankenhaus','listen_tf_pause','listen_tf_geschlafen','listen_tf_fahrrad',
+    'listen_tf_kleines_krankenhaus','listen_tf_medikamente','listen_tf_keine_pause','listen_tf_bus',
+    'listen_q1_morgen','listen_q2_mit_wem','listen_q3_nachmittag','listen_q4_familien','listen_q5_nach_hause',
+    'listen_q1_name','listen_q2_wo','listen_q3_morgen','listen_q4_pause','listen_q5_warum',
+    'listen_fill_blanks',
+    'speaking_task1','speaking_task2','speaking_task3',
+    'speaking_intro','speaking_picture','speaking_freetime','speaking_roleplay'
+  ];
+
+  function esc(v) {
+    if (v == null) return '';
+    const s = String(v);
+    return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g,'""')}"` : s;
+  }
+
+  const csv = [cols.join(','), ...rows.map(r => cols.map(c => esc(r[c])).join(','))].join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `german_exam_responses_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('CSV downloaded!', 'success');
+}
+
+// ── TOAST ──
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + (type||'') + ' show';
+  setTimeout(() => t.className = 'toast', 3000);
+}
+</script>
+</body>
+</html>
