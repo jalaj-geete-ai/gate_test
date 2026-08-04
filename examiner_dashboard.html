@@ -232,7 +232,7 @@ td{padding:12px 14px;vertical-align:middle}
       <div class="table-wrap">
         <div class="table-scroll">
           <table>
-            <thead><tr><th>#</th><th>Level</th><th>Name</th><th>Mobile</th><th>Submitted</th><th>Auto Score</th><th>Manual Score</th><th>Total / 100</th><th>Actions</th></tr></thead>
+            <thead><tr><th>#</th><th>Level</th><th>Name</th><th>Mobile</th><th>Submitted</th><th>Total / 100</th><th>Actions</th></tr></thead>
             <tbody id="table-body"></tbody>
           </table>
         </div>
@@ -466,14 +466,9 @@ function renderTable(){
 
   tbody.innerHTML=rows.map((r,i)=>{
     const lv=r._level;
-    const ag=lv==='A2'?autoGradeA2(r):autoGradeA1(r);
     const m=getM(r.id);
-    const autoScore=ag.auto_total;
-    const manualScore=m?.saved?(m.reading_open+m.grammar+m.writing_form+m.writing_email+m.listen_open+m.speaking):null;
-    const total=m?.saved?autoScore+manualScore:null;
+    const total=m?.saved?m.total:null;
     const badge=lv==='A2'?'<span class="badge-pill badge-a2">A2</span>':'<span class="badge-pill badge-a1">A1</span>';
-    const autoHtml=`<span class="score-badge ${scoreClass(autoScore,15)}">${autoScore}/15</span>`;
-    const manHtml=manualScore!==null?`<span class="score-badge ${scoreClass(manualScore,85)}">${manualScore}/85</span>`:'<span class="score-badge score-none">Pending</span>';
     const totalHtml=total!==null?`<span class="score-badge ${scoreClass(total,100)}">${total}/100</span>`:'<span class="score-badge score-none">Not marked</span>';
     return`<tr>
       <td style="color:var(--muted);font-size:12px">${i+1}</td>
@@ -481,8 +476,6 @@ function renderTable(){
       <td style="font-weight:600">${r.student_name||'—'}</td>
       <td style="font-size:12.5px">${r.mobile_number||'—'}</td>
       <td style="white-space:nowrap;color:var(--muted);font-size:12px">${fmt(r.submitted_at)}</td>
-      <td>${autoHtml}</td>
-      <td>${manHtml}</td>
       <td>${totalHtml}</td>
       <td><button class="btn-sm btn-blue" onclick="openModal('${r.id}','${lv}')">View & Grade</button></td>
     </tr>`;
@@ -690,10 +683,15 @@ function openModal(id,level){
   </div>`;
 
   document.getElementById('modal-body').innerHTML=`
-    <!-- READING T/F AUTO -->
-    <div class="section-header">Phase 1A – Reading True/False (Auto-graded, ${ag.reading_tf}/5)<span class="section-auto-score">✓ Auto</span></div>
-    <div class="qa-col-heads"><span>Statement</span><span>Student Answer</span><span style="min-width:180px">Correct + Result</span></div>
+    <!-- READING T/F MANUAL -->
+    <div class="section-header">Phase 1A – Reading True/False (Examiner grades, /5)<span class="section-manual-score">✍ Manual</span></div>
+    <div class="qa-col-heads"><span>Statement</span><span>Student Answer</span><span style="min-width:180px">Correct Answer</span></div>
     <div class="qa-block">${readingTFRows}</div>
+    <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <label style="font-size:13px;font-weight:500">Section marks:</label>
+      <input class="mark-inp" type="number" min="0" max="5" value="${saved.reading_tf??''}" placeholder="0" id="mf-reading_tf" oninput="clampMax(this);recalcModal()"/>
+      <span class="mark-max-label">/5</span>
+    </div>
 
     <!-- READING OPEN MANUAL -->
     <div class="section-header">Phase 1A – Reading Open Questions (Examiner grades, /5)<span class="section-manual-score">✍ Manual</span></div>
@@ -714,14 +712,19 @@ function openModal(id,level){
     <div class="qa-col-heads"><span>Task</span><span>Student Answer</span><span>Reference</span><span style="min-width:120px">Marks</span></div>
     ${writingHTML}
 
-    <!-- LISTENING T/F AUTO -->
-    <div class="section-header">Phase 3 – Listening True/False (Auto-graded, ${ag.listen_tf}/5)<span class="section-auto-score">✓ Auto</span></div>
-    <div class="qa-col-heads"><span>Statement</span><span>Student Answer</span><span style="min-width:180px">Correct + Result</span></div>
+    <!-- LISTENING T/F MANUAL -->
+    <div class="section-header">Phase 3 – Listening True/False (Examiner grades, /5)<span class="section-manual-score">✍ Manual</span></div>
+    <div class="qa-col-heads"><span>Statement</span><span>Student Answer</span><span style="min-width:180px">Correct Answer</span></div>
     <div class="qa-block">${(()=>{
       const ltfQ=isA2?['Thomas ist Arzt?','Im Krankenhaus?','Pause am Mittag?','Hat geschlafen?','Fahrrad nach Hause?']:['Kleines Krankenhaus?','Um 7 Uhr?','Gibt Medikamente?','Keine Pause?','Fährt mit Bus?'];
       const ltfV=isA2?[r.listen_tf_thomas_arzt,r.listen_tf_krankenhaus,r.listen_tf_pause,r.listen_tf_geschlafen,r.listen_tf_fahrrad]:[r.listen_tf_kleines_kh,r.listen_tf_sieben_uhr,r.listen_tf_medikamente,r.listen_tf_keine_pause,r.listen_tf_bus];
-      return ltfQ.map((q,i)=>tfRow(q,ltfV[i],ans.listen_tf[i])).join('');
+      return ltfQ.map((q,i)=>openRow(q,ltfV[i],ans.listen_tf[i])).join('');
     })()}</div>
+    <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <label style="font-size:13px;font-weight:500">Section marks:</label>
+      <input class="mark-inp" type="number" min="0" max="5" value="${saved.listen_tf??''}" placeholder="0" id="mf-listen_tf" oninput="clampMax(this);recalcModal()"/>
+      <span class="mark-max-label">/5</span>
+    </div>
 
     <!-- LISTENING OPEN MANUAL -->
     <div class="section-header">Phase 3 – Listening Open Questions (Examiner grades, /5)<span class="section-manual-score">✍ Manual</span></div>
@@ -733,10 +736,15 @@ function openModal(id,level){
       <span class="mark-max-label">/5</span>
     </div>
 
-    <!-- FILL BLANKS AUTO -->
-    <div class="section-header">Phase 3 – Fill in Blanks (Auto-graded, ${ag.listen_fill}/5)<span class="section-auto-score">✓ Auto</span></div>
-    <div class="qa-col-heads"><span>Blank</span><span>Student Answer</span><span style="min-width:180px">Correct + Result</span></div>
+    <!-- FILL BLANKS MANUAL -->
+    <div class="section-header">Phase 3 – Fill in Blanks (Examiner grades, /5)<span class="section-manual-score">✍ Manual</span></div>
+    <div class="qa-col-heads"><span>Blank</span><span>Student Answer</span><span style="min-width:180px">Correct Answer</span></div>
     <div class="qa-block">${fillRows}</div>
+    <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <label style="font-size:13px;font-weight:500">Section marks:</label>
+      <input class="mark-inp" type="number" min="0" max="5" value="${saved.listen_fill??''}" placeholder="0" id="mf-listen_fill" oninput="clampMax(this);recalcModal()"/>
+      <span class="mark-max-label">/5</span>
+    </div>
 
     <!-- SPEAKING MANUAL -->
     <div class="section-header">Phase 4 – Speaking (Examiner grades, /20)<span class="section-manual-score">✍ Manual</span></div>
@@ -746,13 +754,13 @@ function openModal(id,level){
     <div class="score-summary">
       <h4>📊 Score Summary</h4>
       <div class="score-grid" id="score-grid">
-        <div class="score-mini"><div class="sm-label">Reading T/F</div><div class="sm-val auto">${ag.reading_tf}/5</div></div>
+        <div class="score-mini"><div class="sm-label">Reading T/F</div><div class="sm-val manual" id="ss-reading_tf">—/5</div></div>
         <div class="score-mini"><div class="sm-label">Reading Open</div><div class="sm-val manual" id="ss-reading_open">—/5</div></div>
         <div class="score-mini"><div class="sm-label">Grammar</div><div class="sm-val manual" id="ss-grammar">—/25</div></div>
         <div class="score-mini"><div class="sm-label">Writing</div><div class="sm-val manual" id="ss-writing">—/20</div></div>
-        <div class="score-mini"><div class="sm-label">Listen T/F</div><div class="sm-val auto">${ag.listen_tf}/5</div></div>
+        <div class="score-mini"><div class="sm-label">Listen T/F</div><div class="sm-val manual" id="ss-listen_tf">—/5</div></div>
         <div class="score-mini"><div class="sm-label">Listen Open</div><div class="sm-val manual" id="ss-listen_open">—/5</div></div>
-        <div class="score-mini"><div class="sm-label">Fill Blanks</div><div class="sm-val auto">${ag.listen_fill}/5</div></div>
+        <div class="score-mini"><div class="sm-label">Fill Blanks</div><div class="sm-val manual" id="ss-listen_fill">—/5</div></div>
         <div class="score-mini"><div class="sm-label">Speaking</div><div class="sm-val manual" id="ss-speaking">—/20</div></div>
       </div>
       <div class="total-bar">
@@ -784,27 +792,31 @@ function recalcModal(){
   const lvKey=isA2?'a2':'a1';
   const r=isA2?allData.a2.find(x=>x.id===modalStudentId):allData.a1.find(x=>x.id===modalStudentId);
   if(!r)return;
-  const ag=isA2?autoGradeA2(r):autoGradeA1(r);
 
   const gv=id=>{const el=document.getElementById('mf-'+id);return el?parseFloat(el.value)||0:0};
 
+  const readingTF=gv('reading_tf');
   const readingOpen=gv('reading_open');
   let grammar=0;
   if(isA2){grammar=[gv('g_conjunctions'),gv('g_comparatives'),gv('g_verbs'),gv('g_prepositions'),gv('g_relativsaetze')].reduce((a,b)=>a+b,0);}
   else{grammar=[gv('g_articles'),gv('g_verbs'),gv('g_sentences'),gv('g_prepositions'),gv('g_negation')].reduce((a,b)=>a+b,0);}
   const writing=gv('writing_form')+gv('writing_email');
+  const listenTF=gv('listen_tf');
   const listenOpen=gv('listen_open');
+  const listenFill=gv('listen_fill');
   const speakingFields=isA2?['spk_1','spk_2','spk_3']:['spk_1','spk_2','spk_3','spk_4'];
   const speaking=speakingFields.reduce((s,f)=>s+gv(f),0);
 
-  const manual=readingOpen+grammar+writing+listenOpen+speaking;
-  const total=ag.auto_total+manual;
+  const total=readingTF+readingOpen+grammar+writing+listenTF+listenOpen+listenFill+speaking;
 
   const ss=id=>document.getElementById('ss-'+id);
+  if(ss('reading_tf'))ss('reading_tf').textContent=`${readingTF}/5`;
   if(ss('reading_open'))ss('reading_open').textContent=`${readingOpen}/5`;
   if(ss('grammar'))ss('grammar').textContent=`${grammar}/25`;
   if(ss('writing'))ss('writing').textContent=`${writing}/20`;
+  if(ss('listen_tf'))ss('listen_tf').textContent=`${listenTF}/5`;
   if(ss('listen_open'))ss('listen_open').textContent=`${listenOpen}/5`;
+  if(ss('listen_fill'))ss('listen_fill').textContent=`${listenFill}/5`;
   if(ss('speaking'))ss('speaking').textContent=`${speaking}/20`;
   if(ss('total'))ss('total').textContent=`${total} / 100`;
 }
@@ -822,21 +834,21 @@ function saveCurrentMarks(){
   if(!modalStudentId)return;
   const isA2=modalLevel==='A2';
   const r=isA2?allData.a2.find(x=>x.id===modalStudentId):allData.a1.find(x=>x.id===modalStudentId);
-  const ag=isA2?autoGradeA2(r):autoGradeA1(r);
   const gv=id=>{const el=document.getElementById('mf-'+id);return el?Math.min(parseFloat(el.value)||0,parseFloat(el.max)||99):0};
 
   const m={
+    reading_tf:gv('reading_tf'),
     reading_open:gv('reading_open'),
     writing_form:gv('writing_form'),writing_email:gv('writing_email'),
+    listen_tf:gv('listen_tf'),
     listen_open:gv('listen_open'),
+    listen_fill:gv('listen_fill'),
     speaking:(isA2?['spk_1','spk_2','spk_3']:['spk_1','spk_2','spk_3','spk_4']).reduce((s,f)=>s+gv(f),0),
     saved:true
   };
   if(isA2){m.grammar=gv('g_conjunctions')+gv('g_comparatives')+gv('g_verbs')+gv('g_prepositions')+gv('g_relativsaetze');m.g_conjunctions=gv('g_conjunctions');m.g_comparatives=gv('g_comparatives');m.g_verbs=gv('g_verbs');m.g_prepositions=gv('g_prepositions');m.g_relativsaetze=gv('g_relativsaetze');}
   else{m.grammar=gv('g_articles')+gv('g_verbs')+gv('g_sentences')+gv('g_prepositions')+gv('g_negation');m.g_articles=gv('g_articles');m.g_verbs=gv('g_verbs');m.g_sentences=gv('g_sentences');m.g_prepositions=gv('g_prepositions');m.g_negation=gv('g_negation');}
-  m.auto_total=ag.auto_total;
-  m.manual_total=m.reading_open+m.grammar+m.writing_form+m.writing_email+m.listen_open+m.speaking;
-  m.total=m.auto_total+m.manual_total;
+  m.total=m.reading_tf+m.reading_open+m.grammar+m.writing_form+m.writing_email+m.listen_tf+m.listen_open+m.listen_fill+m.speaking;
   setM(modalStudentId,m);
   updateStats();renderTable();renderLeaderboard();updateModalPill();
   showToast(`✅ Marks saved for ${r?.student_name||'student'} — ${m.total}/100`,'success');
@@ -928,7 +940,7 @@ function downloadCSV(){
   rows.sort((a,b)=>new Date(b.submitted_at)-new Date(a.submitted_at));
   if(!rows.length){showToast('No data.','error');return;}
   const esc=v=>{const s=String(v??'');return(s.includes(',')||s.includes('"')||s.includes('\n'))?`"${s.replace(/"/g,'""')}"`:`${s}`};
-  const headers=['Level','Name','Mobile','Submitted','Auto/15','Manual/85','Total/100'];
+  const headers=['Level','Name','Mobile','Submitted','Total/100'];
   const csv=[headers.join(','),...rows.map(r=>{const m=getM(r.id);const ag=r._level==='A2'?autoGradeA2(r):autoGradeA1(r);return[r._level,r.student_name,r.mobile_number,r.submitted_at,ag.auto_total,m?.saved?m.manual_total:'',m?.saved?m.total:''].map(esc).join(',');})].join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
   a.download=`german_exam_${new Date().toISOString().slice(0,10)}.csv`;a.click();
