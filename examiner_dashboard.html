@@ -77,6 +77,7 @@ td{padding:12px 14px;vertical-align:middle}
 .badge-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
 .badge-a1{background:#d1fae5;color:#065f46}
 .badge-a2{background:#e0e7ff;color:#3730a3}
+.badge-a1r{background:#fef3c7;color:#92400e}
 .score-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700}
 .score-none{background:#f3f4f6;color:#9ca3af}
 .score-low{background:#fee2e2;color:#991b1b}
@@ -210,6 +211,7 @@ td{padding:12px 14px;vertical-align:middle}
         <div class="stat-card"><div class="label">Total</div><div class="value" id="stat-total">—</div><div class="sub">submissions</div></div>
         <div class="stat-card"><div class="label">A2</div><div class="value" id="stat-a2">—</div></div>
         <div class="stat-card"><div class="label">A1</div><div class="value" id="stat-a1">—</div></div>
+        <div class="stat-card"><div class="label">A1 Retest</div><div class="value" id="stat-a1r">—</div></div>
         <div class="stat-card"><div class="label">Marked</div><div class="value" id="stat-marked">—</div><div class="sub">of total</div></div>
         <div class="stat-card"><div class="label">Latest</div><div class="value" style="font-size:15px;margin-top:4px" id="stat-latest">—</div><div class="sub" id="stat-latest-name">—</div></div>
       </div>
@@ -218,6 +220,7 @@ td{padding:12px 14px;vertical-align:middle}
         <button class="tab active" onclick="switchTab('all')">All</button>
         <button class="tab" onclick="switchTab('a2')">A2 Exam</button>
         <button class="tab" onclick="switchTab('a1')">A1 Exam</button>
+        <button class="tab" onclick="switchTab('a1r')">A1 Retest</button>
       </div>
 
       <div class="controls">
@@ -250,6 +253,7 @@ td{padding:12px 14px;vertical-align:middle}
             <button class="tab active" onclick="switchLBTab('all')">All</button>
             <button class="tab" onclick="switchLBTab('a2')">A2</button>
             <button class="tab" onclick="switchLBTab('a1')">A1</button>
+            <button class="tab" onclick="switchLBTab('a1r')">A1 Retest</button>
           </div>
           <button class="btn-sm btn-gold" onclick="downloadLeaderboardPDF()">📄 Download PDF</button>
         </div>
@@ -315,17 +319,31 @@ const ANSWERS = {
     listen_tf: ['False','True','True','False','True'],
     listen_open: ['Er hat Medikamente gegeben','Mit den Ärzten','Berichte','Die Regeln im Krankenhaus','Mit dem Fahrrad'],
     listen_fill: ['Krankenpfleger','Krankenhaus','Medikamente','Berichte','Fahrrad']
+  },
+  a1r: {
+    reading_tf: ['True','False','True','True','False'],
+    reading_open: ['Um 5:30 Uhr','Mit dem Fahrrad','Sie zieht die Arbeitskleidung an und begrüßt die Patienten','Herrn Weber','Sie lernt eine Stunde Deutsch'],
+    grammar_pronouns: ['Sie','Wir','Sie','du','Sie'],
+    grammar_possessives: ['Mein','Ihre','dein','Sein','Meine'],
+    grammar_prepositions: ['um','Am','mit','Nach','bei'],
+    grammar_separable_verbs: ['Ich stehe um 6 Uhr auf','Die Schicht fängt um 7 Uhr an','Wir rufen den Patienten an','Sie macht das Fenster auf','Wann kaufst du ein'],
+    grammar_perfekt: ['habe … gelernt','ist … aufgestanden','haben … gearbeitet','ist … gefahren','hat … getrunken'],
+    grammar_satzbau: ['Morgen arbeite ich nicht','Wann beginnt die Schicht?','Heute muss sie länger arbeiten','Wo wohnst du?','Am Abend lernen wir Deutsch'],
+    listen_tf: ['True','False','True','True','False'],
+    listen_open: ['In einem Seniorenheim in Leipzig','Um 14 Uhr','Herrn Braun','Er trinkt Tee und isst einen Apfel','Mit der Straßenbahn'],
+    listen_fill: ['Spätdienst','Leipzig','Medikamente','Tee','22 Uhr']
   }
 };
 
 // Max marks per section
 const MAX_MARKS = {
   a1: { reading_tf:5, reading_open:5, grammar:25, writing_form:5, writing_email:15, listen_tf:5, listen_open:5, listen_fill:5, speaking:20 },
-  a2: { reading_tf:5, reading_open:5, grammar:25, writing_form:5, writing_email:15, listen_tf:5, listen_open:5, listen_fill:5, speaking:20 }
+  a2: { reading_tf:5, reading_open:5, grammar:25, writing_form:5, writing_email:15, listen_tf:5, listen_open:5, listen_fill:5, speaking:20 },
+  a1r: { reading_tf:5, reading_open:5, grammar:30, writing_form:5, writing_email:15, listen_tf:5, listen_open:10, listen_fill:5, speaking:20 }
 };
 
 let marksStore={};
-let allData={a2:[],a1:[]};
+let allData={a2:[],a1:[],a1r:[]};
 let currentTab='all', currentLBTab='all', currentView='responses';
 let modalStudentId=null, modalLevel=null;
 
@@ -377,8 +395,8 @@ async function loadData(){
   document.getElementById('empty-msg').style.display='none';
   document.getElementById('table-body').innerHTML='';
   try{
-    const [a2,a1]=await Promise.all([fetchTable('german_exam_responses'),fetchTable('a1_german_exam_responses')]);
-    allData={a2,a1};updateStats();renderTable();renderLeaderboard();
+    const [a2,a1,a1r]=await Promise.all([fetchTable('german_exam_responses'),fetchTable('a1_german_exam_responses'),fetchTable('a1_retest_german_exam_responses')]);
+    allData={a2,a1,a1r};updateStats();renderTable();renderLeaderboard();
   }catch(e){showToast('Error: '+e.message,'error');}
   finally{document.getElementById('loading-msg').style.display='none';}
 }
@@ -416,17 +434,43 @@ function autoGradeA2(r){
   return {reading_tf:rtfScore,listen_tf:ltfScore,listen_fill:fillScore,auto_total:rtfScore+ltfScore+fillScore};
 }
 
+function autoGradeA1R(r){
+  const ans=ANSWERS.a1r;
+  const rtf=[r.tf_wohnt_bonn,r.tf_bus_klinik,r.tf_schicht_sieben,r.tf_frau_klein_wasser,r.tf_direkt_zurueck];
+  const rtfScore=rtf.reduce((s,v,i)=>s+(tfMatch(v,ans.reading_tf[i])?1:0),0);
+  const ltf=[r.listen_tf_seniorenheim,r.listen_tf_zwoelf_uhr,r.listen_tf_abendessen,r.listen_tf_pause_18,r.listen_tf_morgen_arbeit];
+  const ltfScore=ltf.reduce((s,v,i)=>s+(tfMatch(v,ans.listen_tf[i])?1:0),0);
+  const fills=(r.listen_fill_blanks||'').split('|').map(x=>x.trim());
+  const fillScore=ans.listen_fill.reduce((s,a,i)=>s+(normalise(fills[i])===normalise(a)?1:0),0);
+  return {reading_tf:rtfScore,listen_tf:ltfScore,listen_fill:fillScore,auto_total:rtfScore+ltfScore+fillScore};
+}
+
+// ── LEVELS ──
+const LEVELS=[{tab:'a2',code:'A2',key:'a2'},{tab:'a1',code:'A1',key:'a1'},{tab:'a1r',code:'A1R',key:'a1r'}];
+function collectRows(tab){
+  const rows=[];
+  LEVELS.forEach(L=>{ if(tab==='all'||tab===L.tab)(allData[L.key]||[]).forEach(r=>rows.push({...r,_level:L.code})); });
+  return rows;
+}
+function levelBadge(code){
+  const cls=code==='A2'?'badge-a2':code==='A1R'?'badge-a1r':'badge-a1';
+  const txt=code==='A1R'?'A1 Retest':code;
+  return `<span class="badge-pill ${cls}">${txt}</span>`;
+}
+function grammarMax(code){return code==='A1R'?30:25}
+
 // ── HELPERS ──
 function fmt(ts){if(!ts)return'—';const d=new Date(ts);return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}
 function scoreClass(s,max){if(s===null||s===undefined)return'score-none';const p=s/max;return p>=0.7?'score-high':p>=0.4?'score-mid':'score-low'}
 
 // ── STATS ──
 function updateStats(){
-  const total=allData.a2.length+allData.a1.length;
+  const total=allData.a2.length+allData.a1.length+allData.a1r.length;
   document.getElementById('stat-total').textContent=total;
   document.getElementById('stat-a2').textContent=allData.a2.length;
   document.getElementById('stat-a1').textContent=allData.a1.length;
-  const all=[...allData.a2,...allData.a1];
+  document.getElementById('stat-a1r').textContent=allData.a1r.length;
+  const all=[...allData.a2,...allData.a1,...allData.a1r];
   const marked=all.filter(r=>getM(r.id)?.saved).length;
   document.getElementById('stat-marked').textContent=`${marked}/${total}`;
   const sorted=[...all].sort((a,b)=>new Date(b.submitted_at)-new Date(a.submitted_at));
@@ -443,7 +487,7 @@ function switchView(v){
 }
 function switchTab(tab){
   currentTab=tab;
-  document.querySelectorAll('#view-responses .tab').forEach((t,i)=>t.classList.toggle('active',['all','a2','a1'][i]===tab));
+  document.querySelectorAll('#view-responses .tab').forEach((t,i)=>t.classList.toggle('active',['all','a2','a1','a1r'][i]===tab));
   renderTable();
 }
 
@@ -451,9 +495,7 @@ function switchTab(tab){
 function renderTable(){
   const q=document.getElementById('search-box').value.toLowerCase();
   const fm=document.getElementById('filter-marked').value;
-  let rows=[];
-  if(currentTab!=='a1')allData.a2.forEach(r=>rows.push({...r,_level:'A2'}));
-  if(currentTab!=='a2')allData.a1.forEach(r=>rows.push({...r,_level:'A1'}));
+  let rows=collectRows(currentTab);
   rows.sort((a,b)=>new Date(b.submitted_at)-new Date(a.submitted_at));
   if(q)rows=rows.filter(r=>(r.student_name||'').toLowerCase().includes(q)||(r.mobile_number||'').includes(q));
   if(fm==='marked')rows=rows.filter(r=>getM(r.id)?.saved);
@@ -468,7 +510,7 @@ function renderTable(){
     const lv=r._level;
     const m=getM(r.id);
     const total=m?.saved?m.total:null;
-    const badge=lv==='A2'?'<span class="badge-pill badge-a2">A2</span>':'<span class="badge-pill badge-a1">A1</span>';
+    const badge=levelBadge(lv);
     const totalHtml=total!==null?`<span class="score-badge ${scoreClass(total,100)}">${total}/100</span>`:'<span class="score-badge score-none">Not marked</span>';
     return`<tr>
       <td style="color:var(--muted);font-size:12px">${i+1}</td>
@@ -486,14 +528,15 @@ function renderTable(){
 function openModal(id,level){
   modalStudentId=id;modalLevel=level;
   const isA2=level==='A2';
-  const lvKey=isA2?'a2':'a1';
-  const r=isA2?allData.a2.find(x=>x.id===id):allData.a1.find(x=>x.id===id);
+  const isA1R=level==='A1R';
+  const lvKey=isA2?'a2':isA1R?'a1r':'a1';
+  const r=(allData[lvKey]||[]).find(x=>x.id===id);
   if(!r)return;
   const ans=ANSWERS[lvKey];
-  const ag=isA2?autoGradeA2(r):autoGradeA1(r);
+  const ag=isA2?autoGradeA2(r):isA1R?autoGradeA1R(r):autoGradeA1(r);
   const saved=getM(id)||{};
 
-  document.getElementById('modal-title').textContent=`${r.student_name||'Student'} — ${level} Exam`;
+  document.getElementById('modal-title').textContent=`${r.student_name||'Student'} — ${isA1R?'A1 Retest':level} Exam`;
 
   // Helpers
   const studentVal=(v)=>v?`<span>${v}</span>`:`<em style="color:#d1d5db">not answered</em>`;
@@ -538,6 +581,13 @@ function openModal(id,level){
     const oQ=['Wie lange schon im Krankenhaus?','Was hat sie am Morgen gemacht?','Mit wem hat sie gesprochen?','Was hat sie erklärt?','Warum macht ihr der Beruf Spaß?'];
     const oV=[r.q1_wie_lange,r.q2_was_morgen,r.q3_mit_wem,r.q4_was_erklaert,r.q5_warum_spass];
     readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
+  }else if(isA1R){
+    const tfQ=['Sophie wohnt in Bonn?','Fährt mit dem Bus zur Klinik?','Schicht beginnt um 7 Uhr?','Bringt Frau Klein Wasser?','Geht direkt ins Krankenhaus zurück?'];
+    const tfV=[r.tf_wohnt_bonn,r.tf_bus_klinik,r.tf_schicht_sieben,r.tf_frau_klein_wasser,r.tf_direkt_zurueck];
+    readingTFRows=tfQ.map((q,i)=>tfRow(q,tfV[i],ans.reading_tf[i])).join('');
+    const oQ=['Wann steht Sophie auf?','Wie fährt sie zur Klinik?','Was macht sie zuerst auf der Station?','Wem hilft sie beim Frühstück?','Was macht sie am Abend?'];
+    const oV=[r.q1_wann_aufstehen,r.q2_wie_zur_klinik,r.q3_zuerst_station,r.q4_wem_fruehstueck,r.q5_was_am_abend];
+    readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
   }else{
     const tfQ=['Maria arbeitet in einer Schule?','Sie beginnt um 7 Uhr morgens?','Sie spricht mit Ärzten?','Pause im Garten?','Mag ihren Beruf nicht?'];
     const tfV=[r.tf_schule,r.tf_sieben_uhr,r.tf_aerzte,r.tf_garten,r.tf_mag_nicht];
@@ -579,6 +629,31 @@ function openModal(id,level){
           <span class="mark-max-label">/5</span>
         </div>`;
     });
+  }else if(isA1R){
+    const sections=[
+      {label:'Personal Pronouns (5 pts)',field:'g_pronouns',vals:r.grammar_pronouns,answers:ans.grammar_pronouns},
+      {label:'Possessive Articles (5 pts)',field:'g_possessives',vals:r.grammar_possessives,answers:ans.grammar_possessives},
+      {label:'Prepositions (5 pts)',field:'g_prepositions',vals:r.grammar_prepositions,answers:ans.grammar_prepositions},
+      {label:'Separable Verbs (5 pts)',field:'g_separable',vals:r.grammar_separable_verbs,answers:ans.grammar_separable_verbs},
+      {label:'Perfekt (5 pts)',field:'g_perfekt',vals:r.grammar_perfekt,answers:ans.grammar_perfekt},
+      {label:'Satzbau & W-Fragen (5 pts)',field:'g_satzbau',vals:r.grammar_satzbau,answers:ans.grammar_satzbau},
+    ];
+    sections.forEach(s=>{
+      const parts=(s.vals||'').split('|').map(x=>x.trim());
+      const rows=s.answers.map((a,i)=>`<div class="qa-row">
+          <div class="qa-q">Q${i+1}</div>
+          <div class="qa-student">${parts[i]||'<em style="color:#d1d5db">—</em>'}</div>
+          <div class="qa-correct" style="font-style:italic">${a}</div>
+        </div>`).join('');
+      grammarHTML+=`<div class="section-header">${s.label}<span class="section-manual-score">Examiner grades</span></div>
+        <div class="qa-col-heads"><span>Q</span><span>Student Answer</span><span>Correct Answer</span></div>
+        <div class="qa-block">${rows}</div>
+        <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+          <label style="font-size:13px;font-weight:500">Section marks:</label>
+          <input class="mark-inp" type="number" min="0" max="5" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
+          <span class="mark-max-label">/5 <em style="color:#9ca3af;font-size:11px">(A1 Retest grammar /30 across 6 sections)</em></span>
+        </div>`;
+    });
   }else{
     const sections=[
       {label:'Articles & Nouns (5 pts)',field:'g_articles',vals:r.grammar_articles,answers:ans.grammar_articles},
@@ -617,6 +692,10 @@ function openModal(id,level){
     const lQ=['Was hat Thomas am Morgen gemacht?','Mit wem hat er gesprochen?','Was am Nachmittag?','Was hat er den Familien erklärt?','Wie ist er nach Hause?'];
     const lV=[r.listen_q1_morgen,r.listen_q2_mit_wem,r.listen_q3_nachmittag,r.listen_q4_familien,r.listen_q5_nach_hause];
     listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
+  }else if(isA1R){
+    const lQ=['Wo arbeitet Daniel?','Wann beginnt sein Dienst?','Wem bringt er Medikamente?','Was macht er in der Pause?','Wie fährt er nach Hause?'];
+    const lV=[r.listen_q1_wo,r.listen_q2_wann,r.listen_q3_wem_medikamente,r.listen_q4_pause,r.listen_q5_wie_hause];
+    listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
   }else{
     const lQ=['Wie heißt die Person?','Wo arbeitet sie?','Was macht sie am Morgen?','Was isst sie in der Pause?','Warum mag sie ihren Beruf?'];
     const lV=[r.listen_q1_name,r.listen_q2_wo,r.listen_q3_morgen,r.listen_q4_pause,r.listen_q5_warum];
@@ -642,6 +721,11 @@ function openModal(id,level){
     {label:'Room / Home Description (10 marks)',sample:'„In meinem Zimmer steht das Bett neben dem Fenster. Der Tisch steht vor dem Bett. Der Schrank ist in der Ecke."',val:r.speaking_task1,field:'spk_1',max:10},
     {label:'Last Vacation (5 marks)',sample:'„Letztes Jahr bin ich nach Goa gefahren. Ich habe am Strand geschwommen und viele Fotos gemacht."',val:r.speaking_task2,field:'spk_2',max:5},
     {label:'Food & Health (5 marks)',sample:'„Ich esse gern Gemüse und Obst, weil das gesund ist. Ich trinke viel Wasser."',val:r.speaking_task3,field:'spk_3',max:5},
+  ]:isA1R?[
+    {label:'Sich vorstellen – Introduction (5 marks)',sample:'„Hallo! Ich heiße Priya. Ich bin 26 Jahre alt und komme aus Pune. Ich lerne Deutsch für meine Arbeit."',val:r.speaking_intro,field:'spk_1',max:5},
+    {label:'Picture Description (5 marks)',sample:'„Das ist eine Klinik. Ich sehe Ärzte, Krankenschwestern und Patienten. Sie sprechen miteinander."',val:r.speaking_picture,field:'spk_2',max:5},
+    {label:'Daily Life / Routine (5 marks)',sample:'„Ich stehe um sechs Uhr auf. Dann frühstücke ich und fahre zur Arbeit. Am Abend lerne ich Deutsch."',val:r.speaking_routine,field:'spk_3',max:5},
+    {label:'Role Play – In der Apotheke (5 marks)',sample:'„Guten Tag! Ich brauche ein Medikament. Ich habe Kopfschmerzen. Was kostet das? Vielen Dank!"',val:r.speaking_roleplay,field:'spk_4',max:5},
   ]:[
     {label:'Introduction (5 marks)',sample:'„Hallo! Ich heiße Maria. Ich bin 28 Jahre alt und komme aus Indien."',val:r.speaking_intro,field:'spk_1',max:5},
     {label:'Picture Description (5 marks)',sample:'„Das ist ein Krankenhaus. Ich sehe Ärzte, Krankenschwestern und Patienten."',val:r.speaking_picture,field:'spk_2',max:5},
@@ -663,9 +747,9 @@ function openModal(id,level){
   // Writing
   const writingHTML=`<div class="qa-block" style="padding-top:8px">
     <div class="qa-row has-mark">
-      <div class="qa-q">Form Details</div>
-      <div class="qa-student">${studentVal(r.form_details)}</div>
-      <div class="qa-correct" style="font-style:italic">Name, Alter, Beruf, Wohnort, Telefon</div>
+      <div class="qa-q">${isA1R?'Short Message':'Form Details'}</div>
+      <div class="qa-student" style="white-space:pre-wrap;line-height:1.6">${studentVal(isA1R?r.short_message:r.form_details)}</div>
+      <div class="qa-correct" style="font-style:italic">${isA1R?'25–30 Wörter: krank, Grund, Frage nach den Hausaufgaben':'Name, Alter, Beruf, Wohnort, Telefon'}</div>
       <div class="qa-mark">
         <input class="mark-inp" type="number" min="0" max="5" value="${saved.writing_form??''}" placeholder="0" id="mf-writing_form" oninput="clampMax(this);recalcModal()"/>
         <span class="mark-max-label">/5</span>
@@ -674,7 +758,7 @@ function openModal(id,level){
     <div class="qa-row has-mark" style="align-items:flex-start">
       <div class="qa-q">Email Writing</div>
       <div class="qa-student" style="white-space:pre-wrap;line-height:1.6">${studentVal(r.email_writing)}</div>
-      <div class="qa-correct" style="font-style:italic;font-size:12px;line-height:1.5">${isA2?'Gestern hatte ich einen stressigen Tag…':'Ich arbeite jeden Tag im Krankenhaus…'}</div>
+      <div class="qa-correct" style="font-style:italic;font-size:12px;line-height:1.5">${isA2?'Gestern hatte ich einen stressigen Tag…':isA1R?'50–70 Wörter: erste Woche, Arbeitszeiten, Kollegen, eine Aufgabe, Pause, was gefällt…':'Ich arbeite jeden Tag im Krankenhaus…'}</div>
       <div class="qa-mark">
         <input class="mark-inp" type="number" min="0" max="15" value="${saved.writing_email??''}" placeholder="0" id="mf-writing_email" oninput="clampMax(this);recalcModal()"/>
         <span class="mark-max-label">/15</span>
@@ -704,7 +788,7 @@ function openModal(id,level){
     </div>
 
     <!-- GRAMMAR -->
-    <div class="section-header">Phase 1B – Grammar (Examiner grades, /25)<span class="section-manual-score">✍ Manual</span></div>
+    <div class="section-header">Phase 1B – Grammar (Examiner grades, /${grammarMax(level)})<span class="section-manual-score">✍ Manual</span></div>
     ${grammarHTML}
 
     <!-- WRITING -->
@@ -716,8 +800,8 @@ function openModal(id,level){
     <div class="section-header">Phase 3 – Listening True/False (Examiner grades, /5)<span class="section-manual-score">✍ Manual</span></div>
     <div class="qa-col-heads"><span>Statement</span><span>Student Answer</span><span style="min-width:180px">Correct Answer</span></div>
     <div class="qa-block">${(()=>{
-      const ltfQ=isA2?['Thomas ist Arzt?','Im Krankenhaus?','Pause am Mittag?','Hat geschlafen?','Fahrrad nach Hause?']:['Kleines Krankenhaus?','Um 7 Uhr?','Gibt Medikamente?','Keine Pause?','Fährt mit Bus?'];
-      const ltfV=isA2?[r.listen_tf_thomas_arzt,r.listen_tf_krankenhaus,r.listen_tf_pause,r.listen_tf_geschlafen,r.listen_tf_fahrrad]:[r.listen_tf_kleines_kh,r.listen_tf_sieben_uhr,r.listen_tf_medikamente,r.listen_tf_keine_pause,r.listen_tf_bus];
+      const ltfQ=isA2?['Thomas ist Arzt?','Im Krankenhaus?','Pause am Mittag?','Hat geschlafen?','Fahrrad nach Hause?']:isA1R?['Arbeitet im Seniorenheim?','Beginnt um 12 Uhr?','Hilft Frau Sommer beim Abendessen?','Pause um 18 Uhr?','Muss morgen wieder arbeiten?']:['Kleines Krankenhaus?','Um 7 Uhr?','Gibt Medikamente?','Keine Pause?','Fährt mit Bus?'];
+      const ltfV=isA2?[r.listen_tf_thomas_arzt,r.listen_tf_krankenhaus,r.listen_tf_pause,r.listen_tf_geschlafen,r.listen_tf_fahrrad]:isA1R?[r.listen_tf_seniorenheim,r.listen_tf_zwoelf_uhr,r.listen_tf_abendessen,r.listen_tf_pause_18,r.listen_tf_morgen_arbeit]:[r.listen_tf_kleines_kh,r.listen_tf_sieben_uhr,r.listen_tf_medikamente,r.listen_tf_keine_pause,r.listen_tf_bus];
       return ltfQ.map((q,i)=>openRow(q,ltfV[i],ans.listen_tf[i])).join('');
     })()}</div>
     <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
@@ -727,13 +811,13 @@ function openModal(id,level){
     </div>
 
     <!-- LISTENING OPEN MANUAL -->
-    <div class="section-header">Phase 3 – Listening Open Questions (Examiner grades, /5)<span class="section-manual-score">✍ Manual</span></div>
+    <div class="section-header">Phase 3 – Listening Open Questions (Examiner grades, /${isA1R?10:5})<span class="section-manual-score">✍ Manual</span></div>
     <div class="qa-col-heads"><span>Question</span><span>Student Answer</span><span style="min-width:180px">Sample Answer</span></div>
     <div class="qa-block">${listenOpenRows}</div>
     <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
       <label style="font-size:13px;font-weight:500">Section marks:</label>
-      <input class="mark-inp" type="number" min="0" max="5" value="${saved.listen_open??''}" placeholder="0" id="mf-listen_open" oninput="clampMax(this);recalcModal()"/>
-      <span class="mark-max-label">/5</span>
+      <input class="mark-inp" type="number" min="0" max="${isA1R?10:5}" value="${saved.listen_open??''}" placeholder="0" id="mf-listen_open" oninput="clampMax(this);recalcModal()"/>
+      <span class="mark-max-label">/${isA1R?10:5}</span>
     </div>
 
     <!-- FILL BLANKS MANUAL -->
@@ -756,10 +840,10 @@ function openModal(id,level){
       <div class="score-grid" id="score-grid">
         <div class="score-mini"><div class="sm-label">Reading T/F</div><div class="sm-val manual" id="ss-reading_tf">—/5</div></div>
         <div class="score-mini"><div class="sm-label">Reading Open</div><div class="sm-val manual" id="ss-reading_open">—/5</div></div>
-        <div class="score-mini"><div class="sm-label">Grammar</div><div class="sm-val manual" id="ss-grammar">—/25</div></div>
+        <div class="score-mini"><div class="sm-label">Grammar</div><div class="sm-val manual" id="ss-grammar">—/${grammarMax(level)}</div></div>
         <div class="score-mini"><div class="sm-label">Writing</div><div class="sm-val manual" id="ss-writing">—/20</div></div>
         <div class="score-mini"><div class="sm-label">Listen T/F</div><div class="sm-val manual" id="ss-listen_tf">—/5</div></div>
-        <div class="score-mini"><div class="sm-label">Listen Open</div><div class="sm-val manual" id="ss-listen_open">—/5</div></div>
+        <div class="score-mini"><div class="sm-label">Listen Open</div><div class="sm-val manual" id="ss-listen_open">—/${isA1R?10:5}</div></div>
         <div class="score-mini"><div class="sm-label">Fill Blanks</div><div class="sm-val manual" id="ss-listen_fill">—/5</div></div>
         <div class="score-mini"><div class="sm-label">Speaking</div><div class="sm-val manual" id="ss-speaking">—/20</div></div>
       </div>
@@ -789,8 +873,9 @@ function clampMax(el){
 function recalcModal(){
   if(!modalStudentId)return;
   const isA2=modalLevel==='A2';
-  const lvKey=isA2?'a2':'a1';
-  const r=isA2?allData.a2.find(x=>x.id===modalStudentId):allData.a1.find(x=>x.id===modalStudentId);
+  const isA1R=modalLevel==='A1R';
+  const lvKey=isA2?'a2':isA1R?'a1r':'a1';
+  const r=(allData[lvKey]||[]).find(x=>x.id===modalStudentId);
   if(!r)return;
 
   const gv=id=>{const el=document.getElementById('mf-'+id);return el?parseFloat(el.value)||0:0};
@@ -799,6 +884,7 @@ function recalcModal(){
   const readingOpen=gv('reading_open');
   let grammar=0;
   if(isA2){grammar=[gv('g_conjunctions'),gv('g_comparatives'),gv('g_verbs'),gv('g_prepositions'),gv('g_relativsaetze')].reduce((a,b)=>a+b,0);}
+  else if(isA1R){grammar=[gv('g_pronouns'),gv('g_possessives'),gv('g_prepositions'),gv('g_separable'),gv('g_perfekt'),gv('g_satzbau')].reduce((a,b)=>a+b,0);}
   else{grammar=[gv('g_articles'),gv('g_verbs'),gv('g_sentences'),gv('g_prepositions'),gv('g_negation')].reduce((a,b)=>a+b,0);}
   const writing=gv('writing_form')+gv('writing_email');
   const listenTF=gv('listen_tf');
@@ -812,10 +898,10 @@ function recalcModal(){
   const ss=id=>document.getElementById('ss-'+id);
   if(ss('reading_tf'))ss('reading_tf').textContent=`${readingTF}/5`;
   if(ss('reading_open'))ss('reading_open').textContent=`${readingOpen}/5`;
-  if(ss('grammar'))ss('grammar').textContent=`${grammar}/25`;
+  if(ss('grammar'))ss('grammar').textContent=`${grammar}/${grammarMax(modalLevel)}`;
   if(ss('writing'))ss('writing').textContent=`${writing}/20`;
   if(ss('listen_tf'))ss('listen_tf').textContent=`${listenTF}/5`;
-  if(ss('listen_open'))ss('listen_open').textContent=`${listenOpen}/5`;
+  if(ss('listen_open'))ss('listen_open').textContent=`${listenOpen}/${isA1R?10:5}`;
   if(ss('listen_fill'))ss('listen_fill').textContent=`${listenFill}/5`;
   if(ss('speaking'))ss('speaking').textContent=`${speaking}/20`;
   if(ss('total'))ss('total').textContent=`${total} / 100`;
@@ -833,7 +919,9 @@ function updateModalPill(){
 function saveCurrentMarks(){
   if(!modalStudentId)return;
   const isA2=modalLevel==='A2';
-  const r=isA2?allData.a2.find(x=>x.id===modalStudentId):allData.a1.find(x=>x.id===modalStudentId);
+  const isA1R=modalLevel==='A1R';
+  const lvKey=isA2?'a2':isA1R?'a1r':'a1';
+  const r=(allData[lvKey]||[]).find(x=>x.id===modalStudentId);
   const gv=id=>{const el=document.getElementById('mf-'+id);return el?Math.min(parseFloat(el.value)||0,parseFloat(el.max)||99):0};
 
   const m={
@@ -846,8 +934,10 @@ function saveCurrentMarks(){
     speaking:(isA2?['spk_1','spk_2','spk_3']:['spk_1','spk_2','spk_3','spk_4']).reduce((s,f)=>s+gv(f),0),
     saved:true
   };
+  m.level=modalLevel;
   if(isA2){m.grammar=gv('g_conjunctions')+gv('g_comparatives')+gv('g_verbs')+gv('g_prepositions')+gv('g_relativsaetze');m.g_conjunctions=gv('g_conjunctions');m.g_comparatives=gv('g_comparatives');m.g_verbs=gv('g_verbs');m.g_prepositions=gv('g_prepositions');m.g_relativsaetze=gv('g_relativsaetze');}
-  else{m.grammar=gv('g_articles')+gv('g_verbs')+gv('g_sentences')+gv('g_prepositions')+gv('g_negation');m.g_articles=gv('g_articles');m.g_verbs=gv('g_verbs');m.g_sentences=gv('g_sentences');m.g_prepositions=gv('g_prepositions');m.g_negation=gv('g_negation');}
+  else if(isA1R){m.g_pronouns=gv('g_pronouns');m.g_possessives=gv('g_possessives');m.g_prepositions=gv('g_prepositions');m.g_separable=gv('g_separable');m.g_perfekt=gv('g_perfekt');m.g_satzbau=gv('g_satzbau');m.grammar=m.g_pronouns+m.g_possessives+m.g_prepositions+m.g_separable+m.g_perfekt+m.g_satzbau;}
+  else{m.g_articles=gv('g_articles');m.g_verbs=gv('g_verbs');m.g_sentences=gv('g_sentences');m.g_prepositions=gv('g_prepositions');m.g_negation=gv('g_negation');m.grammar=m.g_articles+m.g_verbs+m.g_sentences+m.g_prepositions+m.g_negation;}
   m.total=m.reading_tf+m.reading_open+m.grammar+m.writing_form+m.writing_email+m.listen_tf+m.listen_open+m.listen_fill+m.speaking;
   setM(modalStudentId,m);
   updateStats();renderTable();renderLeaderboard();updateModalPill();
@@ -860,13 +950,11 @@ document.getElementById('modal').addEventListener('click',e=>{if(e.target===docu
 // ── LEADERBOARD ──
 function switchLBTab(t){
   currentLBTab=t;
-  document.querySelectorAll('#view-leaderboard .tab').forEach((el,i)=>el.classList.toggle('active',['all','a2','a1'][i]===t));
+  document.querySelectorAll('#view-leaderboard .tab').forEach((el,i)=>el.classList.toggle('active',['all','a2','a1','a1r'][i]===t));
   renderLeaderboard();
 }
 function renderLeaderboard(){
-  let rows=[];
-  if(currentLBTab!=='a1')allData.a2.forEach(r=>rows.push({...r,_level:'A2'}));
-  if(currentLBTab!=='a2')allData.a1.forEach(r=>rows.push({...r,_level:'A1'}));
+  let rows=collectRows(currentLBTab);
   const unmarked=rows.filter(r=>!getM(r.id)?.saved);
   document.getElementById('unmarked-note').style.display=unmarked.length?'block':'none';
   const marked=rows.filter(r=>getM(r.id)?.saved).sort((a,b)=>getM(b.id).total-getM(a.id).total);
@@ -877,17 +965,17 @@ function renderLeaderboard(){
   const medals=['🥇','🥈','🥉'];
   tbody.innerHTML=marked.map((r,i)=>{
     const m=getM(r.id);
-    const badge=r._level==='A2'?'<span class="badge-pill badge-a2">A2</span>':'<span class="badge-pill badge-a1">A1</span>';
+    const badge=levelBadge(r._level);
     const rowCls=i<3?`lb-rank-${i+1}`:'';
     return`<tr class="${rowCls}">
       <td style="text-align:center;font-size:${i<3?'20':'14'}px;font-weight:700">${i<3?medals[i]:i+1}</td>
       <td style="font-weight:700">${r.student_name||'—'}</td>
       <td>${badge}</td>
       <td style="font-size:12px;color:var(--muted)">${r.mobile_number||'—'}</td>
-      <td style="text-align:center">${(m.reading_tf||0)+m.reading_open}/${r._level==='A2'?10:10}</td>
-      <td style="text-align:center">${m.grammar}/25</td>
+      <td style="text-align:center">${(m.reading_tf||0)+m.reading_open}/10</td>
+      <td style="text-align:center">${m.grammar}/${grammarMax(r._level)}</td>
       <td style="text-align:center">${m.writing_form+m.writing_email}/20</td>
-      <td style="text-align:center">${(m.listen_tf||0)+m.listen_open+(m.listen_fill||0)}/15</td>
+      <td style="text-align:center">${(m.listen_tf||0)+m.listen_open+(m.listen_fill||0)}/${r._level==='A1R'?20:15}</td>
       <td style="text-align:center">${m.speaking}/20</td>
       <td style="text-align:center"><span class="score-badge ${scoreClass(m.total,100)}">${m.total}</span></td>
       <td><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${m.total}%"></div></div></td>
@@ -899,9 +987,7 @@ function renderLeaderboard(){
 function downloadLeaderboardPDF(){
   const{jsPDF}=window.jspdf;
   const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
-  let rows=[];
-  if(currentLBTab!=='a1')allData.a2.forEach(r=>rows.push({...r,_level:'A2'}));
-  if(currentLBTab!=='a2')allData.a1.forEach(r=>rows.push({...r,_level:'A1'}));
+  let rows=collectRows(currentLBTab);
   const marked=rows.filter(r=>getM(r.id)?.saved).sort((a,b)=>getM(b.id).total-getM(a.id).total);
   if(!marked.length){showToast('No marked students to export.','error');return;}
   doc.setFillColor(26,26,46);doc.rect(0,0,297,22,'F');
@@ -910,7 +996,7 @@ function downloadLeaderboardPDF(){
   doc.setFontSize(9);doc.setFont('helvetica','normal');
   doc.text(new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}),283,14,{align:'right'});
   let y=32;
-  const headers=['#','Name','Level','Mobile','Reading /15','Grammar /25','Writing /20','Listening /15','Speaking /20','Total /100'];
+  const headers=['#','Name','Level','Mobile','Reading /10','Grammar','Writing /20','Listening','Speaking /20','Total /100'];
   const widths=[10,50,14,32,20,20,18,20,20,20];
   doc.setFillColor(59,91,219);doc.rect(10,y-5,277,8,'F');
   doc.setTextColor(255,255,255);doc.setFontSize(8);doc.setFont('helvetica','bold');
@@ -921,8 +1007,8 @@ function downloadLeaderboardPDF(){
     doc.setTextColor(26,26,46);doc.setFont('helvetica',i<3?'bold':'normal');doc.setFontSize(8.5);
     x=12;
     const cells=[i+1,r.student_name||'—',r._level,r.mobile_number||'—',
-      `${(m.reading_tf||0)+m.reading_open}/15`,`${m.grammar}/25`,`${m.writing_form+m.writing_email}/20`,
-      `${(m.listen_tf||0)+m.listen_open+(m.listen_fill||0)}/15`,`${m.speaking}/20`,`${m.total}/100`];
+      `${(m.reading_tf||0)+m.reading_open}/10`,`${m.grammar}/${grammarMax(r._level)}`,`${m.writing_form+m.writing_email}/20`,
+      `${(m.listen_tf||0)+m.listen_open+(m.listen_fill||0)}/${r._level==='A1R'?20:15}`,`${m.speaking}/20`,`${m.total}/100`];
     cells.forEach((c,ci)=>{doc.text(String(c).substring(0,ci===1?30:20),x,y);x+=widths[ci];});
     y+=7;if(y>190){doc.addPage();y=20;}
   });
@@ -934,14 +1020,23 @@ function downloadLeaderboardPDF(){
 
 // ── CSV ──
 function downloadCSV(){
-  let rows=[];
-  if(currentTab!=='a1')allData.a2.forEach(r=>rows.push({...r,_level:'A2'}));
-  if(currentTab!=='a2')allData.a1.forEach(r=>rows.push({...r,_level:'A1'}));
+  let rows=collectRows(currentTab);
   rows.sort((a,b)=>new Date(b.submitted_at)-new Date(a.submitted_at));
   if(!rows.length){showToast('No data.','error');return;}
   const esc=v=>{const s=String(v??'');return(s.includes(',')||s.includes('"')||s.includes('\n'))?`"${s.replace(/"/g,'""')}"`:`${s}`};
-  const headers=['Level','Name','Mobile','Submitted','Total/100'];
-  const csv=[headers.join(','),...rows.map(r=>{const m=getM(r.id);const ag=r._level==='A2'?autoGradeA2(r):autoGradeA1(r);return[r._level,r.student_name,r.mobile_number,r.submitted_at,ag.auto_total,m?.saved?m.manual_total:'',m?.saved?m.total:''].map(esc).join(',');})].join('\n');
+  const headers=['Level','Name','Mobile','Submitted','Auto (T/F + Fill)','Reading','Grammar','Writing','Listening','Speaking','Total /100'];
+  const csv=[headers.join(','),...rows.map(r=>{
+    const m=getM(r.id);
+    const ag=r._level==='A2'?autoGradeA2(r):r._level==='A1R'?autoGradeA1R(r):autoGradeA1(r);
+    const g=m?.saved;
+    return[r._level,r.student_name,r.mobile_number,r.submitted_at,ag.auto_total,
+      g?(m.reading_tf||0)+m.reading_open:'',
+      g?m.grammar:'',
+      g?m.writing_form+m.writing_email:'',
+      g?(m.listen_tf||0)+m.listen_open+(m.listen_fill||0):'',
+      g?m.speaking:'',
+      g?m.total:''].map(esc).join(',');
+  })].join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
   a.download=`german_exam_${new Date().toISOString().slice(0,10)}.csv`;a.click();
   showToast('CSV downloaded!','success');
