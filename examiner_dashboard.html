@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Examiner Dashboard – German Exam</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+:root{
+  --black:#1a1a2e;--white:#fff;--accent:#3b5bdb;--accent2:#059669;
+  --muted:#6b7280;--border:#e5e7eb;--bg:#f8f9fc;--radius:10px;
+  --error:#dc2626;--warn:#d97706;--purple:#7c3aed;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--black);min-height:100vh}
+
+/* LOGIN */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.login-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:40px 36px;max-width:380px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.08)}
+.login-card .badge{display:inline-block;background:var(--black);color:#fff;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:20px}
+.login-card h1{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:6px}
+.login-card p{font-size:13px;color:var(--muted);margin-bottom:28px}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;font-weight:500;margin-bottom:6px}
+.field input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:11px 14px;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,91,219,.1)}
+.btn-login{width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:13px;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s}
+.btn-login:hover{background:#2f4abf}
+.login-error{color:var(--error);font-size:13px;margin-top:12px;display:none;text-align:center}
+
+/* TOPBAR */
+#dashboard{display:none}
+.topbar{background:var(--black);color:#fff;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:58px}
+.topbar .brand{font-family:'Playfair Display',serif;font-size:18px}
+.topbar .brand span{color:#818cf8;font-size:13px;font-weight:400;margin-left:8px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.btn-sm{padding:7px 16px;border-radius:7px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn-outline{background:transparent;color:#fff;border:1.5px solid #4b5563}
+.btn-outline:hover{border-color:#fff}
+.btn-green{background:var(--accent2);color:#fff}.btn-green:hover{background:#047857}
+.btn-blue{background:var(--accent);color:#fff}.btn-blue:hover{background:#2f4abf}
+.btn-gold{background:#d97706;color:#fff}.btn-gold:hover{background:#b45309}
+
+.dashboard-body{max-width:1300px;margin:0 auto;padding:28px 20px 60px}
+
+/* VIEW TABS */
+.view-tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:2px solid var(--border)}
+.view-tab{padding:10px 22px;font-size:14px;font-weight:500;cursor:pointer;color:var(--muted);background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Inter',sans-serif;transition:all .2s}
+.view-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px}
+.stat-card .label{font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+.stat-card .value{font-size:28px;font-weight:700;line-height:1}
+.stat-card .sub{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* FILTER TABS */
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:5px;width:fit-content}
+.tab{padding:8px 20px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);transition:all .2s;border:none;background:transparent;font-family:'Inter',sans-serif}
+.tab.active{background:var(--accent);color:#fff}
+
+.controls{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.search-box{flex:1;min-width:200px;border:1.5px solid var(--border);border-radius:8px;padding:9px 14px;font-family:'Inter',sans-serif;font-size:13.5px;outline:none;transition:border-color .2s}
+.search-box:focus{border-color:var(--accent)}
+
+/* TABLE */
+.table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--black);color:#fff;padding:12px 14px;text-align:left;font-weight:500;font-size:12px;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+tbody tr:hover{background:#f8f9ff}
+tbody tr:last-child{border-bottom:none}
+td{padding:12px 14px;vertical-align:middle}
+.badge-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-a1{background:#d1fae5;color:#065f46}
+.badge-a2{background:#e0e7ff;color:#3730a3}
+.badge-a1r{background:#fef3c7;color:#92400e}
+.score-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700}
+.score-none{background:#f3f4f6;color:#9ca3af}
+.score-low{background:#fee2e2;color:#991b1b}
+.score-mid{background:#fef3c7;color:#92400e}
+.score-high{background:#d1fae5;color:#065f46}
+.empty-state{text-align:center;padding:60px 24px;color:var(--muted)}
+.loading{text-align:center;padding:40px;color:var(--muted);font-size:14px}
+.spinner{display:inline-block;width:22px;height:22px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:14px;max-width:800px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1}
+.modal-header h3{font-size:17px;font-weight:700}
+.modal-header .score-pill{font-size:15px;font-weight:700;padding:5px 16px;border-radius:20px;margin-left:12px}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1;padding:4px}
+
+/* SECTION HEADERS IN MODAL */
+.section-header{background:var(--black);color:#fff;padding:10px 16px;font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;margin:0 -0px}
+.section-auto-score{background:#059669;color:#fff;font-size:11px;padding:2px 8px;border-radius:10px}
+.section-manual-score{background:#d97706;color:#fff;font-size:11px;padding:2px 8px;border-radius:10px}
+
+/* QA ROWS */
+.qa-block{padding:0 20px}
+.qa-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--border);align-items:stretch}
+.qa-row.has-mark{grid-template-columns:1fr 1fr 1fr auto}
+.qa-row:last-child{border-bottom:none}
+.qa-q{padding:12px 14px;font-size:13px;color:var(--muted);font-weight:500;border-right:1px solid var(--border);background:#fafafa}
+.qa-student{padding:12px 14px;font-size:13.5px;border-right:1px solid var(--border)}
+.qa-correct{padding:12px 14px;font-size:13px;color:#065f46;background:#f0fdf4;min-width:180px}
+.qa-mark{padding:10px 14px;display:flex;align-items:center;gap:8px;min-width:120px;background:#f8f9fc}
+
+/* AUTO MARKED */
+.correct-answer{color:#059669;font-weight:600}
+.wrong-answer{color:#dc2626;font-weight:600}
+.auto-tick{display:inline-block;width:22px;height:22px;border-radius:50%;text-align:center;line-height:22px;font-size:13px;font-weight:700;flex-shrink:0}
+.auto-tick.correct{background:#d1fae5;color:#059669}
+.auto-tick.wrong{background:#fee2e2;color:#dc2626}
+.auto-tick.empty{background:#f3f4f6;color:#9ca3af}
+
+/* MANUAL MARK INPUT */
+.mark-inp{width:56px;border:1.5px solid var(--border);border-radius:6px;padding:6px 8px;font-size:14px;font-weight:600;text-align:center;outline:none;font-family:'Inter',sans-serif}
+.mark-inp:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(59,91,219,.12)}
+.mark-max-label{font-size:12px;color:var(--muted);white-space:nowrap}
+
+/* SPEAKING SECTION */
+.speaking-block{padding:16px 20px}
+.speaking-task{background:#fafafa;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.speaking-task .task-label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.speaking-task .task-sample{font-size:13px;color:#374151;line-height:1.6;font-style:italic;margin-bottom:10px;padding:10px 12px;background:#f0f9ff;border-left:3px solid var(--accent);border-radius:4px}
+.speaking-task .task-status{font-size:13px;color:var(--muted);margin-bottom:10px}
+.speaking-task .task-mark-row{display:flex;align-items:center;gap:10px}
+.speaking-task .task-mark-row label{font-size:13px;font-weight:500}
+
+/* SCORE SUMMARY */
+.score-summary{margin:16px 20px;background:#f0f4ff;border:1.5px solid #c7d2fe;border-radius:12px;padding:18px 20px}
+.score-summary h4{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:14px}
+.score-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px}
+.score-mini{background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center}
+.score-mini .sm-label{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:4px}
+.score-mini .sm-val{font-size:18px;font-weight:700}
+.score-mini .sm-val.auto{color:var(--accent2)}
+.score-mini .sm-val.manual{color:var(--warn)}
+.score-mini .sm-val.pending{color:#9ca3af}
+.total-bar{background:var(--accent);color:#fff;border-radius:10px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
+.total-bar .tl{font-size:13px;opacity:.9}
+.total-bar .tv{font-size:26px;font-weight:700}
+.btn-save{background:var(--accent2);color:#fff;border:none;border-radius:8px;padding:11px 24px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:14px;width:100%}
+.btn-save:hover{background:#047857}
+
+/* COL HEADERS */
+.qa-col-heads{display:grid;grid-template-columns:1fr 1fr auto;background:#f3f4f6;border-bottom:1px solid var(--border)}
+.qa-col-heads span{padding:8px 14px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.qa-col-heads span:nth-child(2){border-left:1px solid var(--border);color:#374151}
+.qa-col-heads span:nth-child(3){border-left:1px solid var(--border);min-width:120px}
+
+/* LEADERBOARD */
+.lb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.lb-header h2{font-size:22px;font-weight:700}
+.progress-bar-bg{background:#f3f4f6;border-radius:999px;height:8px;width:100px}
+.progress-bar-fill{height:8px;border-radius:999px;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.no-marks-note{background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:14px 18px;font-size:13px;color:#92400e;margin-bottom:20px}
+.lb-rank-1 td:first-child{font-size:20px}
+.lb-rank-2 td:first-child{font-size:18px}
+.lb-rank-3 td:first-child{font-size:16px}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--black);color:#fff;padding:12px 18px;border-radius:8px;font-size:13px;transform:translateY(60px);opacity:0;transition:all .3s;z-index:999}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:var(--accent2)}
+.toast.error{background:var(--error)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="badge">🔐 Examiner Portal</div>
+    <h1>German Exam<br>Dashboard</h1>
+    <p>Sign in to view and manage student responses.</p>
+    <div class="field"><label>Username</label><input type="text" id="login-user" placeholder="examiner" autocomplete="username"/></div>
+    <div class="field"><label>Password</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="btn-login" onclick="doLogin()">Sign In →</button>
+    <div class="login-error" id="login-error">❌ Incorrect username or password.</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="topbar">
+    <div class="brand">🇩🇪 German Exam Portal <span>Examiner View</span></div>
+    <div class="topbar-right">
+      <button class="btn-sm btn-green" onclick="downloadCSV()">⬇ CSV</button>
+      <button class="btn-sm btn-outline" onclick="loadData()">↻ Refresh</button>
+      <button class="btn-sm btn-outline" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="dashboard-body">
+    <div class="view-tabs">
+      <button class="view-tab active" onclick="switchView('responses')">📋 Responses</button>
+      <button class="view-tab" onclick="switchView('leaderboard')">🏆 Leaderboard</button>
+    </div>
+
+    <!-- RESPONSES VIEW -->
+    <div id="view-responses">
+      <div class="stats-row">
+        <div class="stat-card"><div class="label">Total</div><div class="value" id="stat-total">—</div><div class="sub">submissions</div></div>
+        <div class="stat-card"><div class="label">A2</div><div class="value" id="stat-a2">—</div></div>
+        <div class="stat-card"><div class="label">A1</div><div class="value" id="stat-a1">—</div></div>
+        <div class="stat-card"><div class="label">A1 Retest</div><div class="value" id="stat-a1r">—</div></div>
+        <div class="stat-card"><div class="label">Marked</div><div class="value" id="stat-marked">—</div><div class="sub">of total</div></div>
+        <div class="stat-card"><div class="label">Flagged</div><div class="value" id="stat-flagged">—</div><div class="sub">integrity</div></div>
+        <div class="stat-card"><div class="label">Latest</div><div class="value" style="font-size:15px;margin-top:4px" id="stat-latest">—</div><div class="sub" id="stat-latest-name">—</div></div>
+      </div>
+
+      <div id="rescale-note" style="display:none;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:14px 16px;margin-bottom:20px;font-size:13px;line-height:1.7;color:#92400e"></div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('all')">All</button>
+        <button class="tab" onclick="switchTab('a2')">A2 Exam</button>
+        <button class="tab" onclick="switchTab('a1')">A1 Exam</button>
+        <button class="tab" onclick="switchTab('a1r')">A1 Retest</button>
+      </div>
+
+      <div class="controls">
+        <input class="search-box" type="text" id="search-box" placeholder="🔍  Search by name or phone…" oninput="renderTable()"/>
+        <select class="search-box" style="flex:0;width:auto" id="filter-marked" onchange="renderTable()">
+          <option value="all">All students</option>
+          <option value="marked">Marked only</option>
+          <option value="unmarked">Unmarked only</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>#</th><th>Level</th><th>Name</th><th>Mobile</th><th>Submitted</th><th>Total / 100</th><th>Actions</th></tr></thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+        <div class="loading" id="loading-msg"><span class="spinner"></span>Loading…</div>
+        <div class="empty-state" id="empty-msg" style="display:none"><div style="font-size:40px;margin-bottom:12px">📭</div><p>No submissions found.</p></div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD VIEW -->
+    <div id="view-leaderboard" style="display:none">
+      <div class="lb-header">
+        <h2>🏆 Leaderboard</h2>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <div class="tabs" style="margin:0">
+            <button class="tab active" onclick="switchLBTab('all')">All</button>
+            <button class="tab" onclick="switchLBTab('a2')">A2</button>
+            <button class="tab" onclick="switchLBTab('a1')">A1</button>
+            <button class="tab" onclick="switchLBTab('a1r')">A1 Retest</button>
+          </div>
+          <button class="btn-sm btn-gold" onclick="downloadLeaderboardPDF()">📄 Download PDF</button>
+        </div>
+      </div>
+      <div class="no-marks-note" id="unmarked-note" style="display:none">⚠️ Some students are not fully marked yet and are excluded.</div>
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table id="lb-table">
+            <thead><tr><th>Rank</th><th>Name</th><th>Level</th><th>Mobile</th><th>Reading</th><th>Grammar</th><th>Writing</th><th>Listening</th><th>Speaking</th><th>Total / 100</th><th></th></tr></thead>
+            <tbody id="lb-body"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="lb-empty" style="display:none"><div style="font-size:40px;margin-bottom:12px">📊</div><p>No fully marked students yet. Grade students first.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GRADING MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <h3 id="modal-title">Student Response</h3>
+        <span class="score-pill score-badge score-none" id="modal-score-pill">Not saved</span>
+      </div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL='https://uxdrldreaockdloqvojs.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4ZHJsZHJlYW9ja2Rsb3F2b2pzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzE2MjIsImV4cCI6MjA4OTQwNzYyMn0.swqYBfGzHP5qSDPnZ_AivFE0zljyK33Kq-_ephz4Ybc';
+const CREDENTIALS={examiner:'german@2026',admin:'admin@2026'};
+
+// ── ANSWER KEYS ──
+const ANSWERS = {
+  a1: {
+    reading_tf: ['False','True','True','True','False'],
+    reading_open: ['Maria arbeitet im Krankenhaus','Ihre Arbeit beginnt um sieben Uhr','Sie hilft den Patienten und gibt Medikamente','Sie macht Pause im Garten','Weil sie gern Menschen hilft'],
+    grammar_articles: ['Die Krankenschwester','Der Arzt die Patientin','Ein Bett eine Lampe','Das Medikament','Der Krankenpfleger dem alten Mann'],
+    grammar_verbs: ['Ich arbeite','Du hilfst','Er gibt','Wir sprechen','Sie ist'],
+    grammar_sentences: ['Maria arbeitet im Krankenhaus','Sie gibt den Patienten Medikamente','Die Krankenschwester isst das Frühstück im Pausenraum','Der Arzt spricht mit der Krankenschwester','Wir helfen gern Menschen'],
+    grammar_prepositions: ['in dem Krankenhaus','um acht Uhr','mit dem Arzt','nach der Arbeit','seit zwei Jahren'],
+    grammar_negation: ['kein Arzt ein Pfleger','nicht müde sehr fit','keine Pause','nicht teuer billig','nicht krank gesund'],
+    grammar_question_modals: ['Wer arbeitet im Krankenhaus','Wann beginnt die Arbeit','Ich muss heute Medikamente geben','Warum sprichst du mit dem Arzt','Wir können den Patienten helfen'],
+    listen_tf: ['False','True','True','False','True'],
+    listen_open: ['Sie heißt Sabine','Sie arbeitet in Frankfurt','Sie gibt Medikamente und hilft beim Frühstück','Sie isst ein Sandwich','Weil sie Menschen helfen kann'],
+    listen_fill: ['Krankenschwester','Frankfurt','Medikamente','ein Sandwich','fünf Uhr']
+  },
+  a2: {
+    reading_tf: ['False','True','True','False','True'],
+    reading_open: ['Seit fünf Jahren','Sie hat die Patientenakten kontrolliert','Mit den Ärzten','Die Regeln im Krankenhaus','Weil sie Menschen helfen kann'],
+    grammar_conjunctions: ['weil/da','wenn/falls','darum/deshalb/deswegen','obwohl/trotzdem','dass'],
+    grammar_comparatives: ['stressiger','wichtigste','neues','nicht gesund','nicht fit'],
+    grammar_verbs_tenses: ['arbeitete','musste','las','haben gesprochen','möchte'],
+    grammar_prepositions: ['in','bei','in','mit','seit'],
+    grammar_relativsaetze: ['der','die','deren','ob','die'],
+    listen_tf: ['False','True','True','False','True'],
+    listen_open: ['Er hat Medikamente gegeben','Mit den Ärzten','Berichte','Die Regeln im Krankenhaus','Mit dem Fahrrad'],
+    listen_fill: ['Krankenpfleger','Krankenhaus','Medikamente','Berichte','Fahrrad']
+  },
+  a1r: {
+    reading_tf: ['True','False','True','True','False'],
+    reading_open: ['Um 5:30 Uhr','Mit dem Fahrrad','Sie zieht die Arbeitskleidung an und begrüßt die Patienten','Herrn Weber','Sie lernt eine Stunde Deutsch'],
+    grammar_pronouns: ['Sie','Wir','Sie','du','Sie'],
+    grammar_possessives: ['Mein','Ihre','dein','Sein','Meine'],
+    grammar_prepositions: ['um','Am','mit','Nach','bei'],
+    grammar_separable_verbs: ['Ich stehe um 6 Uhr auf','Die Schicht fängt um 7 Uhr an','Wir rufen den Patienten an','Sie macht das Fenster auf','Wann kaufst du ein'],
+    grammar_perfekt: ['habe … gelernt','ist … aufgestanden','haben … gearbeitet','ist … gefahren','hat … getrunken'],
+    grammar_satzbau: ['Morgen arbeite ich nicht','Wann beginnt die Schicht?','Heute muss sie länger arbeiten','Wo wohnst du?','Am Abend lernen wir Deutsch'],
+    listen_tf: ['True','False','True','True','False'],
+    listen_open: ['In einem Seniorenheim in Leipzig','Um 14 Uhr','Herrn Braun','Er trinkt Tee und isst einen Apfel','Mit der Straßenbahn'],
+    listen_fill: ['Spätdienst','Leipzig','Medikamente','Tee','22 Uhr']
+  }
+};
+
+// ── MARK SCHEME ──
+// Single source of truth for every maximum. Each level must total exactly
+// 100; assertMaxes() fails loudly if an edit ever breaks that.
+const MAXES = {
+  a1: {
+    reading_tf:5, reading_open:5, grammar:30, writing_form:5, writing_email:15,
+    listen_tf:5, listen_open:10, listen_fill:5, speaking:20,
+    grammar_sections:['g_articles','g_verbs','g_sentences','g_prepositions','g_negation','g_qmodals'],
+    speaking_fields:['spk_1','spk_2','spk_3','spk_4'],
+  },
+  a2: {
+    reading_tf:5, reading_open:10, grammar:25, writing_form:5, writing_email:15,
+    listen_tf:5, listen_open:10, listen_fill:5, speaking:20,
+    grammar_sections:['g_conjunctions','g_comparatives','g_verbs','g_prepositions','g_relativsaetze'],
+    speaking_fields:['spk_1','spk_2','spk_3'],
+  },
+  a1r: {
+    reading_tf:5, reading_open:5, grammar:30, writing_form:5, writing_email:15,
+    listen_tf:5, listen_open:10, listen_fill:5, speaking:20,
+    grammar_sections:['g_pronouns','g_possessives','g_prepositions','g_separable','g_perfekt','g_satzbau'],
+    speaking_fields:['spk_1','spk_2','spk_3','spk_4'],
+  }
+};
+// The scheme marks were originally saved under, before the /100 correction.
+const OLD_MAXES = {
+  a1: {
+    reading_tf:5, reading_open:5, grammar:25, writing_form:5, writing_email:15,
+    listen_tf:5, listen_open:5, listen_fill:5, speaking:20,
+    grammar_sections:['g_articles','g_verbs','g_sentences','g_prepositions','g_negation'],
+  },
+  a2: {
+    reading_tf:5, reading_open:5, grammar:25, writing_form:5, writing_email:15,
+    listen_tf:5, listen_open:5, listen_fill:5, speaking:20,
+    grammar_sections:['g_conjunctions','g_comparatives','g_verbs','g_prepositions','g_relativsaetze'],
+  },
+  a1r: {
+    reading_tf:5, reading_open:5, grammar:30, writing_form:5, writing_email:15,
+    listen_tf:5, listen_open:10, listen_fill:5, speaking:20,
+    grammar_sections:['g_pronouns','g_possessives','g_prepositions','g_separable','g_perfekt','g_satzbau'],
+  }
+};
+const MARK_SCALE = 100;
+const LVKEY = {A1:'a1', A2:'a2', A1R:'a1r'};
+function maxesFor(code){ return MAXES[LVKEY[code]] || MAXES.a1 }
+function oldMaxesFor(code){ return OLD_MAXES[LVKEY[code]] || OLD_MAXES.a1 }
+function paperTotal(M){
+  return M.reading_tf + M.reading_open + M.grammar + M.writing_form + M.writing_email +
+         M.listen_tf + M.listen_open + M.listen_fill + M.speaking;
+}
+function readingMax(M){ return M.reading_tf + M.reading_open }
+function listeningMax(M){ return M.listen_tf + M.listen_open + M.listen_fill }
+function assertMaxes(){
+  const bad = Object.entries(MAXES).filter(([k,M]) => paperTotal(M) !== MARK_SCALE);
+  if(bad.length){
+    const msg = bad.map(([k,M]) => `${k.toUpperCase()} totals ${paperTotal(M)} not ${MARK_SCALE}`).join('; ');
+    console.error('MARK SCHEME ERROR: ' + msg);
+    return msg;
+  }
+  return null;
+}
+
+let marksStore={};
+let allData={a2:[],a1:[],a1r:[]};
+let currentTab='all', currentLBTab='all', currentView='responses';
+let modalStudentId=null, modalLevel=null;
+
+// ── AUTH ──
+function doLogin(){
+  const user=document.getElementById('login-user').value.trim().toLowerCase();
+  const pass=document.getElementById('login-pass').value;
+  const err=document.getElementById('login-error');
+  if(CREDENTIALS[user]&&CREDENTIALS[user]===pass){
+    err.style.display='none';
+    localStorage.setItem('gcb_exam_session','1');
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    loadMarks();loadData();
+  }else{err.style.display='block';document.getElementById('login-pass').value='';}
+}
+function logout(){
+  localStorage.removeItem('gcb_exam_session');
+  document.getElementById('dashboard').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+}
+
+// ── MARKS STORAGE ──
+function loadMarks(){try{marksStore=JSON.parse(localStorage.getItem('gcb_exam_marks')||'{}')}catch(e){marksStore={}}}
+
+// ── SESSION PERSISTENCE ──
+function checkSession(){
+  if(localStorage.getItem('gcb_exam_session')==='1'){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    loadMarks();loadData();
+  }
+}
+window.addEventListener('DOMContentLoaded',checkSession);
+function saveMarks(){localStorage.setItem('gcb_exam_marks',JSON.stringify(marksStore))}
+function getM(id){return marksStore[id]||null}
+function setM(id,m){marksStore[id]=m;saveMarks()}
+
+// ── FETCH ──
+async function fetchTable(t){
+  const r=await fetch(`${SUPABASE_URL}/rest/v1/${t}?select=*&order=submitted_at.desc`,{headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}});
+  if(!r.ok)throw new Error('Failed to fetch '+t);
+  return r.json();
+}
+async function loadData(){
+  document.getElementById('loading-msg').style.display='block';
+  document.getElementById('empty-msg').style.display='none';
+  document.getElementById('table-body').innerHTML='';
+  try{
+    const schemeErr=assertMaxes();
+    if(schemeErr)showToast('Mark scheme error: '+schemeErr,'error');
+    const [a2,a1,a1r]=await Promise.all([fetchTable('german_exam_responses'),fetchTable('a1_german_exam_responses'),fetchTable('a1_retest_german_exam_responses')]);
+    allData={a2,a1,a1r};updateStats();renderTable();renderLeaderboard();renderRescaleNote();
+  }catch(e){showToast('Error: '+e.message,'error');}
+  finally{document.getElementById('loading-msg').style.display='none';}
+}
+
+// ── AUTO GRADE ──
+function normalise(s){return(s||'').toLowerCase().replace(/[^a-zäöü0-9]/g,' ').replace(/\s+/g,' ').trim()}
+function tfMatch(student,correct){
+  const s=(student||'').trim().toLowerCase();
+  const c=correct.toLowerCase();
+  return s===c||s===c.substring(0,1)||s==='richtig'&&c==='true'||s==='falsch'&&c==='false'||s==='wahr'&&c==='true';
+}
+
+function autoGradeA1(r){
+  const ans=ANSWERS.a1;
+  // Reading T/F (1 mark each = 5)
+  const rtf=[r.tf_schule,r.tf_sieben_uhr,r.tf_aerzte,r.tf_garten,r.tf_mag_nicht];
+  const rtfScore=rtf.reduce((s,v,i)=>s+(tfMatch(v,ans.reading_tf[i])?1:0),0);
+  // Listening T/F (1 mark each = 5)
+  const ltf=[r.listen_tf_kleines_kh,r.listen_tf_sieben_uhr,r.listen_tf_medikamente,r.listen_tf_keine_pause,r.listen_tf_bus];
+  const ltfScore=ltf.reduce((s,v,i)=>s+(tfMatch(v,ans.listen_tf[i])?1:0),0);
+  // Fill blanks (1 mark each = 5)
+  const fills=(r.listen_fill_blanks||'').split('|').map(x=>x.trim());
+  const fillScore=ans.listen_fill.reduce((s,a,i)=>s+(normalise(fills[i])===normalise(a)?1:0),0);
+  return {reading_tf:rtfScore,listen_tf:ltfScore,listen_fill:fillScore,auto_total:rtfScore+ltfScore+fillScore};
+}
+
+function autoGradeA2(r){
+  const ans=ANSWERS.a2;
+  const rtf=[r.tf_sabine_months,r.tf_patientenakten,r.tf_fruehstueck,r.tf_neue_patienten,r.tf_beruf_wichtig];
+  const rtfScore=rtf.reduce((s,v,i)=>s+(tfMatch(v,ans.reading_tf[i])?1:0),0);
+  const ltf=[r.listen_tf_thomas_arzt,r.listen_tf_krankenhaus,r.listen_tf_pause,r.listen_tf_geschlafen,r.listen_tf_fahrrad];
+  const ltfScore=ltf.reduce((s,v,i)=>s+(tfMatch(v,ans.listen_tf[i])?1:0),0);
+  const fills=(r.listen_fill_blanks||'').split('|').map(x=>x.trim());
+  const fillScore=ans.listen_fill.reduce((s,a,i)=>s+(normalise(fills[i])===normalise(a)?1:0),0);
+  return {reading_tf:rtfScore,listen_tf:ltfScore,listen_fill:fillScore,auto_total:rtfScore+ltfScore+fillScore};
+}
+
+function autoGradeA1R(r){
+  const ans=ANSWERS.a1r;
+  const rtf=[r.tf_wohnt_bonn,r.tf_bus_klinik,r.tf_schicht_sieben,r.tf_frau_klein_wasser,r.tf_direkt_zurueck];
+  const rtfScore=rtf.reduce((s,v,i)=>s+(tfMatch(v,ans.reading_tf[i])?1:0),0);
+  const ltf=[r.listen_tf_seniorenheim,r.listen_tf_zwoelf_uhr,r.listen_tf_abendessen,r.listen_tf_pause_18,r.listen_tf_morgen_arbeit];
+  const ltfScore=ltf.reduce((s,v,i)=>s+(tfMatch(v,ans.listen_tf[i])?1:0),0);
+  const fills=(r.listen_fill_blanks||'').split('|').map(x=>x.trim());
+  const fillScore=ans.listen_fill.reduce((s,a,i)=>s+(normalise(fills[i])===normalise(a)?1:0),0);
+  return {reading_tf:rtfScore,listen_tf:ltfScore,listen_fill:fillScore,auto_total:rtfScore+ltfScore+fillScore};
+}
+
+// ── LEVELS ──
+const LEVELS=[{tab:'a2',code:'A2',key:'a2'},{tab:'a1',code:'A1',key:'a1'},{tab:'a1r',code:'A1R',key:'a1r'}];
+function collectRows(tab){
+  const rows=[];
+  LEVELS.forEach(L=>{ if(tab==='all'||tab===L.tab)(allData[L.key]||[]).forEach(r=>rows.push({...r,_level:L.code})); });
+  return rows;
+}
+function levelBadge(code){
+  const cls=code==='A2'?'badge-a2':code==='A1R'?'badge-a1r':'badge-a1';
+  const txt=code==='A1R'?'A1 Retest':code;
+  return `<span class="badge-pill ${cls}">${txt}</span>`;
+}
+function grammarMax(code){return maxesFor(code).grammar}
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function staleScaleFlag(id){
+  const m=getM(id);
+  if(!m||!m.saved)return '';
+  if(m.scale===MARK_SCALE){
+    return m.rescaled
+      ? `<span class="badge-pill" style="background:#dcfce7;color:#15803d;margin-left:6px" title="Rescaled from /${m.rescaled.from} on ${new Date(m.rescaled.at).toLocaleDateString('en-GB')} — sections raised in proportion">RESCALED</span>`
+      : '';
+  }
+  return `<span class="badge-pill" style="background:#fef3c7;color:#92400e;margin-left:6px" title="Graded before the mark scheme was corrected — still out of ${m.scale||90}">OLD SCALE</span>`;
+}
+function integrityFlag(r){
+  if(r.auto_submitted)return '<span class="badge-pill" style="background:#fee2e2;color:#991b1b;margin-left:6px">AUTO-SUBMITTED</span>';
+  if((r.tab_switches||0)>0)return `<span class="badge-pill" style="background:#fef3c7;color:#92400e;margin-left:6px">\u26a0 ${r.tab_switches}</span>`;
+  return '';
+}
+
+// ── HELPERS ──
+function fmt(ts){if(!ts)return'—';const d=new Date(ts);return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}
+function scoreClass(s,max){if(s===null||s===undefined)return'score-none';const p=s/max;return p>=0.7?'score-high':p>=0.4?'score-mid':'score-low'}
+
+// ── RESCALE MARKS SAVED UNDER THE OLD /90 SCHEME ──
+// Sections whose maximum grew are scaled in the same proportion the candidate
+// already earned in that section. A1 grammar is the one special case: its
+// sixth section was never marked at all, so it is awarded the average of the
+// five sections that were — which works out to exactly the same proportion.
+const SECTION_LABELS = {
+  reading_tf:'Reading — Richtig/Falsch', reading_open:'Reading — open questions',
+  grammar:'Grammar', writing_form:'Writing — short task', writing_email:'Writing — email',
+  listen_tf:'Listening — Richtig/Falsch', listen_open:'Listening — open questions',
+  listen_fill:'Listening — fill the blanks', speaking:'Speaking'
+};
+const SCALED_FIELDS = ['reading_tf','reading_open','writing_form','writing_email',
+                       'listen_tf','listen_open','listen_fill','speaking'];
+function half(v, max){ return Math.min(max, Math.max(0, Math.round(v*2)/2)) }
+
+function legacyRows(){
+  return collectRows('all').filter(r=>{
+    const m=getM(r.id);
+    return m && m.saved && (m.scale||90) !== MARK_SCALE;
+  });
+}
+function rescaledRows(){
+  return collectRows('all').filter(r=>{ const m=getM(r.id); return m && m._pre });
+}
+
+function planRescale(r){
+  const m=getM(r.id), M=maxesFor(r._level), O=oldMaxesFor(r._level);
+  const out=Object.assign({}, m), changes=[];
+
+  SCALED_FIELDS.forEach(f=>{
+    if(O[f]===M[f])return;
+    const before=m[f]||0;
+    const after=half(before*M[f]/O[f], M[f]);
+    out[f]=after;
+    changes.push({label:SECTION_LABELS[f], from:`${before}/${O[f]}`, to:`${after}/${M[f]}`,
+      note:`scaled in proportion (×${(M[f]/O[f]).toFixed(2)})`});
+  });
+
+  if(O.grammar!==M.grammar){
+    const marked=O.grammar_sections;
+    const added=M.grammar_sections.filter(f=>marked.indexOf(f)<0);
+    const vals=marked.map(f=>m[f]==null?0:m[f]);
+    const mean=vals.reduce((a,b)=>a+b,0)/vals.length;
+    const awarded=half(mean,5);
+    added.forEach(f=>{out[f]=awarded});
+    out.grammar=M.grammar_sections.reduce((sum,f)=>sum+(out[f]==null?0:out[f]),0);
+    changes.push({label:SECTION_LABELS.grammar, from:`${m.grammar||0}/${O.grammar}`, to:`${out.grammar}/${M.grammar}`,
+      note:`${added.map(f=>f.replace('g_','')).join(', ')} was never marked — awarded ${awarded}/5, the average of the five sections that were`});
+  }
+
+  out.scale=paperTotal(M);
+  out.total=out.reading_tf+out.reading_open+out.grammar+out.writing_form+out.writing_email+
+            out.listen_tf+out.listen_open+out.listen_fill+out.speaking;
+  out.rescaled={from:paperTotal(O), to:out.scale, method:'proportionate', at:new Date().toISOString()};
+  out._pre=m;
+  return {row:r, before:m, after:out, changes};
+}
+
+function renderRescaleNote(){
+  const el=document.getElementById('rescale-note');
+  if(!el)return;
+  const legacy=legacyRows(), done=rescaledRows();
+  if(!legacy.length && !done.length){ el.style.display='none'; return; }
+  el.style.display='block';
+  let html='';
+  if(legacy.length){
+    html+=`<strong>${legacy.length} student${legacy.length===1?'':'s'} still marked out of 90.</strong> `+
+      `Their A1/A2 reading and listening sections were graded before the mark scheme was corrected. `+
+      `Rescaling raises each affected section in proportion to what the candidate already earned in it.`+
+      `<div style="margin-top:10px"><button class="btn-sm btn-gold" onclick="openRescale()">Preview &amp; rescale to /${MARK_SCALE}</button></div>`;
+  } else {
+    html+=`<strong>All marks are on the /${MARK_SCALE} scheme.</strong> ${done.length} record${done.length===1?' was':'s were'} rescaled from 90.`;
+  }
+  if(done.length){
+    html+=`<div style="margin-top:${legacy.length?'10':'8'}px"><button class="btn-sm btn-outline" style="color:#92400e;border-color:#d97706" onclick="undoRescale()">Undo rescale (${done.length})</button></div>`;
+  }
+  el.innerHTML=html;
+}
+
+function openRescale(){
+  const plans=legacyRows().map(planRescale);
+  if(!plans.length){showToast('Nothing to rescale.','error');return;}
+  const rowsHtml=plans.map(p=>`
+    <div style="border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;background:#fff">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px">
+        <div style="font-weight:700;font-size:14px">${esc(p.row.student_name)||'—'} <span style="font-weight:400;color:var(--muted);font-size:12px">· ${p.row._level}</span></div>
+        <div style="font-size:14px;font-weight:700">
+          <span style="color:var(--muted);text-decoration:line-through">${p.before.total}/${p.before.scale||90}</span>
+          &nbsp;→&nbsp;<span style="color:#0f6b45">${p.after.total}/${p.after.scale}</span>
+        </div>
+      </div>
+      ${p.changes.length? p.changes.map(c=>`
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;font-size:12.5px;padding:5px 0;border-top:1px dashed var(--border)">
+          <div>${esc(c.label)}<div style="color:var(--muted);font-size:11.5px;margin-top:2px">${esc(c.note)}</div></div>
+          <div style="white-space:nowrap"><span style="color:var(--muted)">${c.from}</span> → <strong style="color:#0f6b45">${c.to}</strong></div>
+        </div>`).join('')
+        : '<div style="font-size:12.5px;color:var(--muted);border-top:1px dashed var(--border);padding-top:6px">No section maximum changed for this paper — the record is only stamped as /'+MARK_SCALE+'.</div>'}
+    </div>`).join('');
+
+  const o=document.createElement('div');
+  o.id='rescale-overlay';
+  o.style.cssText='position:fixed;inset:0;background:rgba(15,15,19,.6);z-index:99990;display:flex;align-items:center;justify-content:center;padding:24px;font-family:inherit';
+  o.innerHTML=`
+    <div style="background:var(--bg);border-radius:14px;max-width:760px;width:100%;max-height:86vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.35)">
+      <div style="padding:20px 22px 14px;border-bottom:1px solid var(--border);background:#fff;border-radius:14px 14px 0 0">
+        <h3 style="font-family:'Playfair Display',serif;font-size:19px;margin-bottom:4px">Rescale ${plans.length} record${plans.length===1?'':'s'} to /${MARK_SCALE}</h3>
+        <p style="font-size:12.5px;color:var(--muted);line-height:1.6">Each changed section is raised in the same proportion the candidate already earned in it, rounded to the nearest half mark. Nothing is written until you press Apply, and it can be undone afterwards.</p>
+      </div>
+      <div style="padding:16px 18px;overflow-y:auto;flex:1">${rowsHtml}</div>
+      <div style="padding:14px 18px;border-top:1px solid var(--border);background:#fff;border-radius:0 0 14px 14px;display:flex;justify-content:flex-end;gap:10px">
+        <button class="btn-sm btn-outline" style="color:var(--black);border-color:var(--border)" onclick="closeRescale()">Cancel</button>
+        <button class="btn-sm btn-green" onclick="applyRescale()">Apply to ${plans.length} record${plans.length===1?'':'s'}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(o);
+  window.__rescalePlans=plans;
+}
+function closeRescale(){
+  const o=document.getElementById('rescale-overlay');
+  if(o)o.remove();
+  window.__rescalePlans=null;
+}
+function applyRescale(){
+  const plans=window.__rescalePlans||[];
+  if(!plans.length){closeRescale();return;}
+  plans.forEach(p=>setM(p.row.id, p.after));
+  closeRescale();
+  updateStats();renderTable();renderLeaderboard();renderRescaleNote();
+  showToast(`✅ ${plans.length} record${plans.length===1?'':'s'} rescaled to /${MARK_SCALE}`,'success');
+}
+function undoRescale(){
+  const rows=rescaledRows();
+  if(!rows.length){showToast('Nothing to undo.','error');return;}
+  rows.forEach(r=>{
+    const m=getM(r.id);
+    const pre=Object.assign({}, m._pre);
+    delete pre._pre;
+    setM(r.id, pre);
+  });
+  updateStats();renderTable();renderLeaderboard();renderRescaleNote();
+  showToast(`↩ ${rows.length} record${rows.length===1?'':'s'} restored to the original marks`,'success');
+}
+
+// ── STATS ──
+function updateStats(){
+  const total=allData.a2.length+allData.a1.length+allData.a1r.length;
+  document.getElementById('stat-total').textContent=total;
+  document.getElementById('stat-a2').textContent=allData.a2.length;
+  document.getElementById('stat-a1').textContent=allData.a1.length;
+  document.getElementById('stat-a1r').textContent=allData.a1r.length;
+  const all=[...allData.a2,...allData.a1,...allData.a1r];
+  const marked=all.filter(r=>getM(r.id)?.saved).length;
+  document.getElementById('stat-marked').textContent=`${marked}/${total}`;
+  document.getElementById('stat-flagged').textContent=all.filter(r=>r.auto_submitted||(r.tab_switches||0)>0).length;
+  const sorted=[...all].sort((a,b)=>new Date(b.submitted_at)-new Date(a.submitted_at));
+  if(sorted.length){document.getElementById('stat-latest').textContent=fmt(sorted[0].submitted_at);document.getElementById('stat-latest-name').textContent=sorted[0].student_name||'—';}
+}
+
+// ── VIEWS ──
+function switchView(v){
+  currentView=v;
+  document.querySelectorAll('.view-tab').forEach((t,i)=>t.classList.toggle('active',['responses','leaderboard'][i]===v));
+  document.getElementById('view-responses').style.display=v==='responses'?'block':'none';
+  document.getElementById('view-leaderboard').style.display=v==='leaderboard'?'block':'none';
+  if(v==='leaderboard')renderLeaderboard();
+}
+function switchTab(tab){
+  currentTab=tab;
+  document.querySelectorAll('#view-responses .tab').forEach((t,i)=>t.classList.toggle('active',['all','a2','a1','a1r'][i]===tab));
+  renderTable();
+}
+
+// ── TABLE ──
+function renderTable(){
+  const q=document.getElementById('search-box').value.toLowerCase();
+  const fm=document.getElementById('filter-marked').value;
+  let rows=collectRows(currentTab);
+  rows.sort((a,b)=>new Date(b.submitted_at)-new Date(a.submitted_at));
+  if(q)rows=rows.filter(r=>(r.student_name||'').toLowerCase().includes(q)||(r.mobile_number||'').includes(q));
+  if(fm==='marked')rows=rows.filter(r=>getM(r.id)?.saved);
+  if(fm==='unmarked')rows=rows.filter(r=>!getM(r.id)?.saved);
+
+  const tbody=document.getElementById('table-body');
+  const empty=document.getElementById('empty-msg');
+  if(!rows.length){tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+
+  tbody.innerHTML=rows.map((r,i)=>{
+    const lv=r._level;
+    const m=getM(r.id);
+    const total=m?.saved?m.total:null;
+    const badge=levelBadge(lv);
+    const sc=m?.scale||90;
+    const totalHtml=total!==null?`<span class="score-badge ${scoreClass(total,sc)}">${total}/${sc}</span>`:'<span class="score-badge score-none">Not marked</span>';
+    return`<tr>
+      <td style="color:var(--muted);font-size:12px">${i+1}</td>
+      <td>${badge}</td>
+      <td style="font-weight:600">${esc(r.student_name)||'—'}${integrityFlag(r)}${staleScaleFlag(r.id)}</td>
+      <td style="font-size:12.5px">${esc(r.mobile_number)||'—'}</td>
+      <td style="white-space:nowrap;color:var(--muted);font-size:12px">${fmt(r.submitted_at)}</td>
+      <td>${totalHtml}</td>
+      <td><button class="btn-sm btn-blue" onclick="openModal('${r.id}','${lv}')">View & Grade</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── MODAL ──
+function openModal(id,level){
+  modalStudentId=id;modalLevel=level;
+  const isA2=level==='A2';
+  const isA1R=level==='A1R';
+  const lvKey=isA2?'a2':isA1R?'a1r':'a1';
+  const r=(allData[lvKey]||[]).find(x=>x.id===id);
+  if(!r)return;
+  const ans=ANSWERS[lvKey];
+  const M=MAXES[lvKey];
+  const ag=isA2?autoGradeA2(r):isA1R?autoGradeA1R(r):autoGradeA1(r);
+  const saved=getM(id)||{};
+
+  document.getElementById('modal-title').textContent=`${r.student_name||'Student'} — ${isA1R?'A1 Retest':level} Exam`;
+
+  // Helpers
+  const studentVal=(v)=>v?`<span>${v}</span>`:`<em style="color:#d1d5db">not answered</em>`;
+  const tfRow=(q,student,correct)=>{
+    const isCorrect=tfMatch(student,correct);
+    const cls=!student?'empty':isCorrect?'correct':'wrong';
+    const tick=!student?'—':isCorrect?'✓':'✗';
+    return`<div class="qa-row">
+      <div class="qa-q">${q}</div>
+      <div class="qa-student"><span class="${isCorrect?'correct-answer':student?'wrong-answer':''}">${student||'—'}</span></div>
+      <div class="qa-correct" style="display:flex;align-items:center;gap:8px">
+        <span class="auto-tick ${cls}">${tick}</span>
+        <span>${correct}</span>
+      </div>
+    </div>`;
+  };
+  const openRow=(q,student,correct)=>`<div class="qa-row">
+    <div class="qa-q">${q}</div>
+    <div class="qa-student">${studentVal(student)}</div>
+    <div class="qa-correct" style="font-style:italic">${correct}</div>
+  </div>`;
+  const manualRow=(q,student,correct,field,max)=>{
+    const savedVal=saved[field]??'';
+    return`<div class="qa-row has-mark">
+      <div class="qa-q">${q}</div>
+      <div class="qa-student">${studentVal(student)}</div>
+      <div class="qa-correct" style="font-style:italic">${correct}</div>
+      <div class="qa-mark">
+        <input class="mark-inp" type="number" min="0" max="${max}" value="${savedVal}" placeholder="0"
+          id="mf-${field}" oninput="clampMax(this);recalcModal()"/>
+        <span class="mark-max-label">/${max}</span>
+      </div>
+    </div>`;
+  };
+
+  // Build reading section
+  let readingTFRows='', readingOpenRows='';
+  if(isA2){
+    const tfQ=['Sabine arbeitet seit 5 Monaten?','Patientenakten kontrolliert?','Beim Frühstück geholfen?','Keine neuen Patienten?','Beruf wichtig?'];
+    const tfV=[r.tf_sabine_months,r.tf_patientenakten,r.tf_fruehstueck,r.tf_neue_patienten,r.tf_beruf_wichtig];
+    readingTFRows=tfQ.map((q,i)=>tfRow(q,tfV[i],ans.reading_tf[i])).join('');
+    const oQ=['Wie lange schon im Krankenhaus?','Was hat sie am Morgen gemacht?','Mit wem hat sie gesprochen?','Was hat sie erklärt?','Warum macht ihr der Beruf Spaß?'];
+    const oV=[r.q1_wie_lange,r.q2_was_morgen,r.q3_mit_wem,r.q4_was_erklaert,r.q5_warum_spass];
+    readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
+  }else if(isA1R){
+    const tfQ=['Sophie wohnt in Bonn?','Fährt mit dem Bus zur Klinik?','Schicht beginnt um 7 Uhr?','Bringt Frau Klein Wasser?','Geht direkt ins Krankenhaus zurück?'];
+    const tfV=[r.tf_wohnt_bonn,r.tf_bus_klinik,r.tf_schicht_sieben,r.tf_frau_klein_wasser,r.tf_direkt_zurueck];
+    readingTFRows=tfQ.map((q,i)=>tfRow(q,tfV[i],ans.reading_tf[i])).join('');
+    const oQ=['Wann steht Sophie auf?','Wie fährt sie zur Klinik?','Was macht sie zuerst auf der Station?','Wem hilft sie beim Frühstück?','Was macht sie am Abend?'];
+    const oV=[r.q1_wann_aufstehen,r.q2_wie_zur_klinik,r.q3_zuerst_station,r.q4_wem_fruehstueck,r.q5_was_am_abend];
+    readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
+  }else{
+    const tfQ=['Maria arbeitet in einer Schule?','Sie beginnt um 7 Uhr morgens?','Sie spricht mit Ärzten?','Pause im Garten?','Mag ihren Beruf nicht?'];
+    const tfV=[r.tf_schule,r.tf_sieben_uhr,r.tf_aerzte,r.tf_garten,r.tf_mag_nicht];
+    readingTFRows=tfQ.map((q,i)=>tfRow(q,tfV[i],ans.reading_tf[i])).join('');
+    const oQ=['Wo arbeitet Maria?','Wann beginnt ihre Arbeit?','Was macht sie mit den Patienten?','Wo macht sie Pause?','Warum mag sie ihren Beruf?'];
+    const oV=[r.q1_wo_arbeitet,r.q2_wann_arbeit,r.q3_was_patienten,r.q4_wo_pause,r.q5_warum_beruf];
+    readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
+  }
+
+  // Grammar sections
+  let grammarHTML='';
+  if(isA2){
+    const sections=[
+      {label:'1. Conjunctions (5 pts)',key:'grammar_conjunctions',field:'g_conjunctions',vals:r.grammar_conjunctions,answers:ans.grammar_conjunctions},
+      {label:'2. Comparatives & Adjectives (5 pts)',key:'grammar_comparatives',field:'g_comparatives',vals:r.grammar_comparatives,answers:ans.grammar_comparatives},
+      {label:'3. Verbs & Tenses (5 pts)',key:'grammar_verbs_tenses',field:'g_verbs',vals:r.grammar_verbs_tenses,answers:ans.grammar_verbs_tenses},
+      {label:'4. Prepositions (5 pts)',key:'grammar_prepositions',field:'g_prepositions',vals:r.grammar_prepositions,answers:ans.grammar_prepositions},
+      {label:'5. Relativsätze (5 pts)',key:'grammar_relativsaetze',field:'g_relativsaetze',vals:r.grammar_relativsaetze,answers:ans.grammar_relativsaetze},
+    ];
+    sections.forEach(s=>{
+      const parts=(s.vals||'').split('|').map(x=>x.trim());
+      const rows=s.answers.map((a,i)=>{
+        const sv=parts[i]||'';
+        const isOk=normalise(sv)===normalise(a)||s.answers.some(opt=>normalise(sv)===normalise(opt));
+        return`<div class="qa-row">
+          <div class="qa-q">Q${i+1}</div>
+          <div class="qa-student"><span class="${sv?(isOk?'correct-answer':'wrong-answer'):''}">${sv||'—'}</span></div>
+          <div class="qa-correct" style="display:flex;align-items:center;gap:8px">
+            <span class="auto-tick ${!sv?'empty':isOk?'correct':'wrong'}">${!sv?'—':isOk?'✓':'✗'}</span>${a}
+          </div>
+        </div>`;
+      }).join('');
+      grammarHTML+=`<div class="section-header">${s.label}<span class="section-manual-score">Examiner grades section</span></div>
+        <div class="qa-col-heads"><span>Question</span><span>Student Answer</span><span style="min-width:180px">Correct Answer</span></div>
+        <div class="qa-block">${rows}</div>
+        <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+          <label style="font-size:13px;font-weight:500">Section marks:</label>
+          <input class="mark-inp" type="number" min="0" max="5" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
+          <span class="mark-max-label">/5</span>
+        </div>`;
+    });
+  }else if(isA1R){
+    const sections=[
+      {label:'Personal Pronouns (5 pts)',field:'g_pronouns',vals:r.grammar_pronouns,answers:ans.grammar_pronouns},
+      {label:'Possessive Articles (5 pts)',field:'g_possessives',vals:r.grammar_possessives,answers:ans.grammar_possessives},
+      {label:'Prepositions (5 pts)',field:'g_prepositions',vals:r.grammar_prepositions,answers:ans.grammar_prepositions},
+      {label:'Separable Verbs (5 pts)',field:'g_separable',vals:r.grammar_separable_verbs,answers:ans.grammar_separable_verbs},
+      {label:'Perfekt (5 pts)',field:'g_perfekt',vals:r.grammar_perfekt,answers:ans.grammar_perfekt},
+      {label:'Satzbau & W-Fragen (5 pts)',field:'g_satzbau',vals:r.grammar_satzbau,answers:ans.grammar_satzbau},
+    ];
+    sections.forEach(s=>{
+      const parts=(s.vals||'').split('|').map(x=>x.trim());
+      const rows=s.answers.map((a,i)=>`<div class="qa-row">
+          <div class="qa-q">Q${i+1}</div>
+          <div class="qa-student">${parts[i]||'<em style="color:#d1d5db">—</em>'}</div>
+          <div class="qa-correct" style="font-style:italic">${a}</div>
+        </div>`).join('');
+      grammarHTML+=`<div class="section-header">${s.label}<span class="section-manual-score">Examiner grades</span></div>
+        <div class="qa-col-heads"><span>Q</span><span>Student Answer</span><span>Correct Answer</span></div>
+        <div class="qa-block">${rows}</div>
+        <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+          <label style="font-size:13px;font-weight:500">Section marks:</label>
+          <input class="mark-inp" type="number" min="0" max="5" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
+          <span class="mark-max-label">/5 <em style="color:#9ca3af;font-size:11px">(A1 Retest grammar /30 across 6 sections)</em></span>
+        </div>`;
+    });
+  }else{
+    const sections=[
+      {label:'1. Articles & Nouns (5 pts)',field:'g_articles',vals:r.grammar_articles,answers:ans.grammar_articles},
+      {label:'2. Verb Conjugation (5 pts)',field:'g_verbs',vals:r.grammar_verbs,answers:ans.grammar_verbs},
+      {label:'3. Sentence Formation (5 pts)',field:'g_sentences',vals:r.grammar_sentences,answers:ans.grammar_sentences},
+      {label:'4. Prepositions & Time (5 pts)',field:'g_prepositions',vals:r.grammar_prepositions,answers:ans.grammar_prepositions},
+      {label:'5. Negation & Adjectives (5 pts)',field:'g_negation',vals:r.grammar_negation,answers:ans.grammar_negation},
+      {label:'6. Question Words & Modals (5 pts)',field:'g_qmodals',vals:r.grammar_question_modals,answers:ans.grammar_question_modals},
+    ];
+    sections.forEach(s=>{
+      const parts=(s.vals||'').split('|').map(x=>x.trim());
+      const rows=s.answers.map((a,i)=>{
+        const sv=parts[i]||'';
+        const isOk=normalise(sv).includes(normalise(a).split(' ')[0]);
+        return`<div class="qa-row">
+          <div class="qa-q">Q${i+1}</div>
+          <div class="qa-student">${sv||'<em style="color:#d1d5db">—</em>'}</div>
+          <div class="qa-correct" style="font-style:italic">${a}</div>
+        </div>`;
+      }).join('');
+      grammarHTML+=`<div class="section-header">${s.label}<span class="section-manual-score">Examiner grades</span></div>
+        <div class="qa-col-heads"><span>Q</span><span>Student Answer</span><span>Correct Answer</span></div>
+        <div class="qa-block">${rows}</div>
+        <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+          <label style="font-size:13px;font-weight:500">Section marks:</label>
+          <input class="mark-inp" type="number" min="0" max="5" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
+          <span class="mark-max-label">/5 <em style="color:#9ca3af;font-size:11px">(A1 grammar /30 across 6 sections)</em></span>
+        </div>`;
+    });
+  }
+
+  // Listening open & fill
+  let listenOpenRows='';
+  if(isA2){
+    const lQ=['Was hat Thomas am Morgen gemacht?','Mit wem hat er gesprochen?','Was am Nachmittag?','Was hat er den Familien erklärt?','Wie ist er nach Hause?'];
+    const lV=[r.listen_q1_morgen,r.listen_q2_mit_wem,r.listen_q3_nachmittag,r.listen_q4_familien,r.listen_q5_nach_hause];
+    listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
+  }else if(isA1R){
+    const lQ=['Wo arbeitet Daniel?','Wann beginnt sein Dienst?','Wem bringt er Medikamente?','Was macht er in der Pause?','Wie fährt er nach Hause?'];
+    const lV=[r.listen_q1_wo,r.listen_q2_wann,r.listen_q3_wem_medikamente,r.listen_q4_pause,r.listen_q5_wie_hause];
+    listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
+  }else{
+    const lQ=['Wie heißt die Person?','Wo arbeitet sie?','Was macht sie am Morgen?','Was isst sie in der Pause?','Warum mag sie ihren Beruf?'];
+    const lV=[r.listen_q1_name,r.listen_q2_wo,r.listen_q3_morgen,r.listen_q4_pause,r.listen_q5_warum];
+    listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
+  }
+
+  // Fill blanks auto
+  const fills=(r.listen_fill_blanks||'').split('|').map(x=>x.trim());
+  const fillRows=ans.listen_fill.map((a,i)=>{
+    const sv=fills[i]||'';
+    const isOk=normalise(sv)===normalise(a);
+    return`<div class="qa-row">
+      <div class="qa-q">Blank ${i+1}</div>
+      <div class="qa-student"><span class="${sv?(isOk?'correct-answer':'wrong-answer'):''}">${sv||'—'}</span></div>
+      <div class="qa-correct" style="display:flex;align-items:center;gap:8px">
+        <span class="auto-tick ${!sv?'empty':isOk?'correct':'wrong'}">${!sv?'—':isOk?'✓':'✗'}</span>${a}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Speaking
+  const speakingSamples=isA2?[
+    {label:'Room / Home Description (10 marks)',sample:'„In meinem Zimmer steht das Bett neben dem Fenster. Der Tisch steht vor dem Bett. Der Schrank ist in der Ecke."',val:r.speaking_task1,field:'spk_1',max:10},
+    {label:'Last Vacation (5 marks)',sample:'„Letztes Jahr bin ich nach Goa gefahren. Ich habe am Strand geschwommen und viele Fotos gemacht."',val:r.speaking_task2,field:'spk_2',max:5},
+    {label:'Food & Health (5 marks)',sample:'„Ich esse gern Gemüse und Obst, weil das gesund ist. Ich trinke viel Wasser."',val:r.speaking_task3,field:'spk_3',max:5},
+  ]:isA1R?[
+    {label:'Sich vorstellen – Introduction (5 marks)',sample:'„Hallo! Ich heiße Priya. Ich bin 26 Jahre alt und komme aus Pune. Ich lerne Deutsch für meine Arbeit."',val:r.speaking_intro,field:'spk_1',max:5},
+    {label:'Picture Description (5 marks)',sample:'„Das ist eine Klinik. Ich sehe Ärzte, Krankenschwestern und Patienten. Sie sprechen miteinander."',val:r.speaking_picture,field:'spk_2',max:5},
+    {label:'Daily Life / Routine (5 marks)',sample:'„Ich stehe um sechs Uhr auf. Dann frühstücke ich und fahre zur Arbeit. Am Abend lerne ich Deutsch."',val:r.speaking_routine,field:'spk_3',max:5},
+    {label:'Role Play – In der Apotheke (5 marks)',sample:'„Guten Tag! Ich brauche ein Medikament. Ich habe Kopfschmerzen. Was kostet das? Vielen Dank!"',val:r.speaking_roleplay,field:'spk_4',max:5},
+  ]:[
+    {label:'Introduction (5 marks)',sample:'„Hallo! Ich heiße Maria. Ich bin 28 Jahre alt und komme aus Indien."',val:r.speaking_intro,field:'spk_1',max:5},
+    {label:'Picture Description (5 marks)',sample:'„Das ist ein Krankenhaus. Ich sehe Ärzte, Krankenschwestern und Patienten."',val:r.speaking_picture,field:'spk_2',max:5},
+    {label:'Free Time Activity (5 marks)',sample:'„In meiner Freizeit lese ich Bücher und gehe spazieren."',val:r.speaking_freetime,field:'spk_3',max:5},
+    {label:'Role Play (5 marks)',sample:'„Guten Tag! Ich möchte Brot und Milch kaufen. Das kostet drei Euro."',val:r.speaking_roleplay,field:'spk_4',max:5},
+  ];
+  const speakingHTML=speakingSamples.map(s=>`
+    <div class="speaking-task">
+      <div class="task-label">${s.label}</div>
+      <div class="task-sample">📝 Sample: ${s.sample}</div>
+      <div class="task-status">Student sent audio via WhatsApp: <strong>${s.val||'Not confirmed'}</strong></div>
+      <div class="task-mark-row">
+        <label>Marks awarded:</label>
+        <input class="mark-inp" type="number" min="0" max="${s.max}" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
+        <span class="mark-max-label">/${s.max}</span>
+      </div>
+    </div>`).join('');
+
+  // Writing
+  const writingHTML=`<div class="qa-block" style="padding-top:8px">
+    <div class="qa-row has-mark">
+      <div class="qa-q">${isA1R?'Short Message':'Short Writing Task'}</div>
+      <div class="qa-student" style="white-space:pre-wrap;line-height:1.6">${studentVal(isA1R?r.short_message:r.form_details)}</div>
+      <div class="qa-correct" style="font-style:italic">${isA1R?'25–30 Wörter: krank, Grund, Frage nach den Hausaufgaben':'30–40 Wörter in ganzen Sätzen: wer, wo, was, warum Deutsch'}</div>
+      <div class="qa-mark">
+        <input class="mark-inp" type="number" min="0" max="${M.writing_form}" value="${saved.writing_form??''}" placeholder="0" id="mf-writing_form" oninput="clampMax(this);recalcModal()"/>
+        <span class="mark-max-label">/${M.writing_form}</span>
+      </div>
+    </div>
+    <div class="qa-row has-mark" style="align-items:flex-start">
+      <div class="qa-q">Email Writing</div>
+      <div class="qa-student" style="white-space:pre-wrap;line-height:1.6">${studentVal(r.email_writing)}</div>
+      <div class="qa-correct" style="font-style:italic;font-size:12px;line-height:1.5">${isA2?'Gestern hatte ich einen stressigen Tag…':isA1R?'50–70 Wörter: erste Woche, Arbeitszeiten, Kollegen, eine Aufgabe, Pause, was gefällt…':'Ich arbeite jeden Tag im Krankenhaus…'}</div>
+      <div class="qa-mark">
+        <input class="mark-inp" type="number" min="0" max="${M.writing_email}" value="${saved.writing_email??''}" placeholder="0" id="mf-writing_email" oninput="clampMax(this);recalcModal()"/>
+        <span class="mark-max-label">/${M.writing_email}</span>
+      </div>
+    </div>
+  </div>`;
+
+  const clean=(r.tab_switches||0)===0&&!r.auto_submitted;
+  const integrityHTML=clean
+    ? `<div style="padding:14px 20px;font-size:13px;color:#065f46;background:#f0fdf4;border-bottom:1px solid var(--border)">\u2705 No tab or window switches recorded during this attempt.</div>`
+    : `<div style="padding:14px 20px;font-size:13px;background:#fef2f2;color:#991b1b;border-bottom:1px solid var(--border)">
+        <strong>${r.tab_switches||0} tab/window switch${(r.tab_switches||0)===1?'':'es'} recorded.</strong>
+        ${r.auto_submitted?'<strong> Paper was auto-submitted after 3 violations.</strong>':''}
+        <div style="margin-top:8px;font-size:12px;color:#7f1d1d;white-space:pre-wrap;font-family:ui-monospace,monospace">${esc(r.violation_log||'—').split(' | ').join('\n')}</div>
+      </div>`;
+
+  document.getElementById('modal-body').innerHTML=`
+    <!-- EXAM INTEGRITY -->
+    <div class="section-header">Exam integrity<span class="section-manual-score">\ud83d\udd0e Monitoring</span></div>
+    ${integrityHTML}
+
+    <!-- READING T/F MANUAL -->
+    <div class="section-header">Part A – Reading: True/False (Examiner grades, /${M.reading_tf})<span class="section-manual-score">✍ Manual</span></div>
+    <div class="qa-col-heads"><span>Statement</span><span>Student Answer</span><span style="min-width:180px">Correct Answer</span></div>
+    <div class="qa-block">${readingTFRows}</div>
+    <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <label style="font-size:13px;font-weight:500">Section marks:</label>
+      <input class="mark-inp" type="number" min="0" max="${M.reading_tf}" value="${saved.reading_tf??''}" placeholder="0" id="mf-reading_tf" oninput="clampMax(this);recalcModal()"/>
+      <span class="mark-max-label">/${M.reading_tf}</span>
+    </div>
+
+    <!-- READING OPEN MANUAL -->
+    <div class="section-header">Part A – Reading: Answer in German (Examiner grades, /${M.reading_open})<span class="section-manual-score">✍ Manual</span></div>
+    <div class="qa-col-heads"><span>Question</span><span>Student Answer</span><span style="min-width:180px">Sample Answer</span></div>
+    <div class="qa-block">${readingOpenRows}</div>
+    <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <label style="font-size:13px;font-weight:500">Section marks:</label>
+      <input class="mark-inp" type="number" min="0" max="${M.reading_open}" value="${saved.reading_open??''}" placeholder="0" id="mf-reading_open" oninput="clampMax(this);recalcModal()"/>
+      <span class="mark-max-label">/${M.reading_open}</span>
+    </div>
+
+    <!-- GRAMMAR -->
+    <div class="section-header">Part B – Grammar (Examiner grades, /${M.grammar})<span class="section-manual-score">✍ Manual</span></div>
+    ${grammarHTML}
+
+    <!-- WRITING -->
+    <div class="section-header">Part C – Writing (Examiner grades, /${M.writing_form + M.writing_email})<span class="section-manual-score">✍ Manual</span></div>
+    <div class="qa-col-heads"><span>Task</span><span>Student Answer</span><span>Reference</span><span style="min-width:120px">Marks</span></div>
+    ${writingHTML}
+
+    <!-- LISTENING T/F MANUAL -->
+    <div class="section-header">Part D – Listening: True/False (Examiner grades, /${M.listen_tf})<span class="section-manual-score">✍ Manual</span></div>
+    <div class="qa-col-heads"><span>Statement</span><span>Student Answer</span><span style="min-width:180px">Correct Answer</span></div>
+    <div class="qa-block">${(()=>{
+      const ltfQ=isA2?['Thomas ist Arzt?','Im Krankenhaus?','Pause am Mittag?','Hat geschlafen?','Fahrrad nach Hause?']:isA1R?['Arbeitet im Seniorenheim?','Beginnt um 12 Uhr?','Hilft Frau Sommer beim Abendessen?','Pause um 18 Uhr?','Muss morgen wieder arbeiten?']:['Kleines Krankenhaus?','Um 7 Uhr?','Gibt Medikamente?','Keine Pause?','Fährt mit Bus?'];
+      const ltfV=isA2?[r.listen_tf_thomas_arzt,r.listen_tf_krankenhaus,r.listen_tf_pause,r.listen_tf_geschlafen,r.listen_tf_fahrrad]:isA1R?[r.listen_tf_seniorenheim,r.listen_tf_zwoelf_uhr,r.listen_tf_abendessen,r.listen_tf_pause_18,r.listen_tf_morgen_arbeit]:[r.listen_tf_kleines_kh,r.listen_tf_sieben_uhr,r.listen_tf_medikamente,r.listen_tf_keine_pause,r.listen_tf_bus];
+      return ltfQ.map((q,i)=>openRow(q,ltfV[i],ans.listen_tf[i])).join('');
+    })()}</div>
+    <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <label style="font-size:13px;font-weight:500">Section marks:</label>
+      <input class="mark-inp" type="number" min="0" max="${M.listen_tf}" value="${saved.listen_tf??''}" placeholder="0" id="mf-listen_tf" oninput="clampMax(this);recalcModal()"/>
+      <span class="mark-max-label">/${M.listen_tf}</span>
+    </div>
+
+    <!-- LISTENING OPEN MANUAL -->
+    <div class="section-header">Part D – Listening: Answer the Questions (Examiner grades, /${M.listen_open})<span class="section-manual-score">✍ Manual</span></div>
+    <div class="qa-col-heads"><span>Question</span><span>Student Answer</span><span style="min-width:180px">Sample Answer</span></div>
+    <div class="qa-block">${listenOpenRows}</div>
+    <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <label style="font-size:13px;font-weight:500">Section marks:</label>
+      <input class="mark-inp" type="number" min="0" max="${M.listen_open}" value="${saved.listen_open??''}" placeholder="0" id="mf-listen_open" oninput="clampMax(this);recalcModal()"/>
+      <span class="mark-max-label">/${M.listen_open}</span>
+    </div>
+
+    <!-- FILL BLANKS MANUAL -->
+    <div class="section-header">Part D – Listening: Fill in the Missing Words (Examiner grades, /${M.listen_fill})<span class="section-manual-score">✍ Manual</span></div>
+    <div class="qa-col-heads"><span>Blank</span><span>Student Answer</span><span style="min-width:180px">Correct Answer</span></div>
+    <div class="qa-block">${fillRows}</div>
+    <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <label style="font-size:13px;font-weight:500">Section marks:</label>
+      <input class="mark-inp" type="number" min="0" max="${M.listen_fill}" value="${saved.listen_fill??''}" placeholder="0" id="mf-listen_fill" oninput="clampMax(this);recalcModal()"/>
+      <span class="mark-max-label">/${M.listen_fill}</span>
+    </div>
+
+    <!-- SPEAKING MANUAL -->
+    <div class="section-header">Part E – Speaking (Examiner grades, /${M.speaking})<span class="section-manual-score">✍ Manual</span></div>
+    <div class="speaking-block">${speakingHTML}</div>
+
+    <!-- SCORE SUMMARY -->
+    <div class="score-summary">
+      <h4>📊 Score Summary</h4>
+      <div class="score-grid" id="score-grid">
+        <div class="score-mini"><div class="sm-label">Reading T/F</div><div class="sm-val manual" id="ss-reading_tf">—/${M.reading_tf}</div></div>
+        <div class="score-mini"><div class="sm-label">Reading Open</div><div class="sm-val manual" id="ss-reading_open">—/${M.reading_open}</div></div>
+        <div class="score-mini"><div class="sm-label">Grammar</div><div class="sm-val manual" id="ss-grammar">—/${M.grammar}</div></div>
+        <div class="score-mini"><div class="sm-label">Writing</div><div class="sm-val manual" id="ss-writing">—/${M.writing_form + M.writing_email}</div></div>
+        <div class="score-mini"><div class="sm-label">Listen T/F</div><div class="sm-val manual" id="ss-listen_tf">—/${M.listen_tf}</div></div>
+        <div class="score-mini"><div class="sm-label">Listen Open</div><div class="sm-val manual" id="ss-listen_open">—/${M.listen_open}</div></div>
+        <div class="score-mini"><div class="sm-label">Fill Blanks</div><div class="sm-val manual" id="ss-listen_fill">—/${M.listen_fill}</div></div>
+        <div class="score-mini"><div class="sm-label">Speaking</div><div class="sm-val manual" id="ss-speaking">—/${M.speaking}</div></div>
+      </div>
+      <div class="total-bar">
+        <span class="tl">Total Score</span>
+        <span class="tv" id="ss-total">— / ${paperTotal(M)}</span>
+      </div>
+      <button class="btn-save" onclick="saveCurrentMarks()">💾 Save All Marks</button>
+    </div>
+  `;
+
+  // Restore saved values & calc
+  recalcModal();
+  updateModalPill();
+  document.getElementById('modal').classList.add('open');
+}
+
+function clampMax(el){
+  const max=parseFloat(el.max);
+  const min=parseFloat(el.min)||0;
+  if(el.value===''||el.value===null)return;
+  if(parseFloat(el.value)>max){el.value=max;el.style.borderColor='#dc2626';}
+  else if(parseFloat(el.value)<min){el.value=min;el.style.borderColor='#dc2626';}
+  else{el.style.borderColor='';}
+}
+
+function recalcModal(){
+  if(!modalStudentId)return;
+  const isA2=modalLevel==='A2';
+  const isA1R=modalLevel==='A1R';
+  const lvKey=isA2?'a2':isA1R?'a1r':'a1';
+  const r=(allData[lvKey]||[]).find(x=>x.id===modalStudentId);
+  if(!r)return;
+
+  const gv=id=>{const el=document.getElementById('mf-'+id);return el?parseFloat(el.value)||0:0};
+
+  const M=MAXES[lvKey];
+  const readingTF=gv('reading_tf');
+  const readingOpen=gv('reading_open');
+  const grammar=M.grammar_sections.reduce((a,f)=>a+gv(f),0);
+  const writing=gv('writing_form')+gv('writing_email');
+  const listenTF=gv('listen_tf');
+  const listenOpen=gv('listen_open');
+  const listenFill=gv('listen_fill');
+  const speaking=M.speaking_fields.reduce((a,f)=>a+gv(f),0);
+
+  const total=readingTF+readingOpen+grammar+writing+listenTF+listenOpen+listenFill+speaking;
+
+  const ss=id=>document.getElementById('ss-'+id);
+  if(ss('reading_tf'))ss('reading_tf').textContent=`${readingTF}/${M.reading_tf}`;
+  if(ss('reading_open'))ss('reading_open').textContent=`${readingOpen}/${M.reading_open}`;
+  if(ss('grammar'))ss('grammar').textContent=`${grammar}/${M.grammar}`;
+  if(ss('writing'))ss('writing').textContent=`${writing}/${M.writing_form+M.writing_email}`;
+  if(ss('listen_tf'))ss('listen_tf').textContent=`${listenTF}/${M.listen_tf}`;
+  if(ss('listen_open'))ss('listen_open').textContent=`${listenOpen}/${M.listen_open}`;
+  if(ss('listen_fill'))ss('listen_fill').textContent=`${listenFill}/${M.listen_fill}`;
+  if(ss('speaking'))ss('speaking').textContent=`${speaking}/${M.speaking}`;
+  if(ss('total'))ss('total').textContent=`${total} / ${paperTotal(M)}`;
+}
+
+function updateModalPill(){
+  const pill=document.getElementById('modal-score-pill');
+  const m=getM(modalStudentId);
+  if(m?.saved){
+    const sc=m.scale||90;
+    pill.textContent=`${m.total}/${sc}`+(sc!==MARK_SCALE?' (old scale)':(m.rescaled?' (rescaled)':''));
+    pill.className=`score-pill score-badge ${scoreClass(m.total,sc)}`;
+  }else{pill.textContent='Not saved';pill.className='score-pill score-badge score-none';}
+}
+
+function saveCurrentMarks(){
+  if(!modalStudentId)return;
+  const isA2=modalLevel==='A2';
+  const isA1R=modalLevel==='A1R';
+  const lvKey=isA2?'a2':isA1R?'a1r':'a1';
+  const r=(allData[lvKey]||[]).find(x=>x.id===modalStudentId);
+  const gv=id=>{const el=document.getElementById('mf-'+id);return el?Math.min(parseFloat(el.value)||0,parseFloat(el.max)||99):0};
+
+  const M=MAXES[lvKey];
+  const m={
+    reading_tf:gv('reading_tf'),
+    reading_open:gv('reading_open'),
+    writing_form:gv('writing_form'),writing_email:gv('writing_email'),
+    listen_tf:gv('listen_tf'),
+    listen_open:gv('listen_open'),
+    listen_fill:gv('listen_fill'),
+    speaking:M.speaking_fields.reduce((s,f)=>s+gv(f),0),
+    saved:true
+  };
+  m.level=modalLevel;
+  m.scale=paperTotal(M);
+  M.grammar_sections.forEach(f=>{m[f]=gv(f)});
+  m.grammar=M.grammar_sections.reduce((s,f)=>s+gv(f),0);
+  m.total=m.reading_tf+m.reading_open+m.grammar+m.writing_form+m.writing_email+m.listen_tf+m.listen_open+m.listen_fill+m.speaking;
+  setM(modalStudentId,m);
+  updateStats();renderTable();renderLeaderboard();updateModalPill();
+  showToast(`✅ Marks saved for ${r?.student_name||'student'} — ${m.total}/${m.scale}`,'success');
+}
+
+function closeModal(){document.getElementById('modal').classList.remove('open');modalStudentId=null;modalLevel=null;}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal();});
+
+// ── LEADERBOARD ──
+function switchLBTab(t){
+  currentLBTab=t;
+  document.querySelectorAll('#view-leaderboard .tab').forEach((el,i)=>el.classList.toggle('active',['all','a2','a1','a1r'][i]===t));
+  renderLeaderboard();
+}
+function renderLeaderboard(){
+  let rows=collectRows(currentLBTab);
+  const unmarked=rows.filter(r=>!getM(r.id)?.saved);
+  document.getElementById('unmarked-note').style.display=unmarked.length?'block':'none';
+  const marked=rows.filter(r=>getM(r.id)?.saved).sort((a,b)=>getM(b.id).total-getM(a.id).total);
+  const tbody=document.getElementById('lb-body');
+  const empty=document.getElementById('lb-empty');
+  if(!marked.length){tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  const medals=['🥇','🥈','🥉'];
+  tbody.innerHTML=marked.map((r,i)=>{
+    const m=getM(r.id);
+    const badge=levelBadge(r._level);
+    const rowCls=i<3?`lb-rank-${i+1}`:'';
+    return`<tr class="${rowCls}">
+      <td style="text-align:center;font-size:${i<3?'20':'14'}px;font-weight:700">${i<3?medals[i]:i+1}</td>
+      <td style="font-weight:700">${esc(r.student_name)||'—'}${integrityFlag(r)}${staleScaleFlag(r.id)}</td>
+      <td>${badge}</td>
+      <td style="font-size:12px;color:var(--muted)">${r.mobile_number||'—'}</td>
+      <td style="text-align:center">${(m.reading_tf||0)+m.reading_open}/${readingMax(maxesFor(r._level))}</td>
+      <td style="text-align:center">${m.grammar}/${grammarMax(r._level)}</td>
+      <td style="text-align:center">${m.writing_form+m.writing_email}/${maxesFor(r._level).writing_form+maxesFor(r._level).writing_email}</td>
+      <td style="text-align:center">${(m.listen_tf||0)+m.listen_open+(m.listen_fill||0)}/${listeningMax(maxesFor(r._level))}</td>
+      <td style="text-align:center">${m.speaking}/${maxesFor(r._level).speaking}</td>
+      <td style="text-align:center"><span class="score-badge ${scoreClass(m.total,m.scale||90)}">${m.total}</span></td>
+      <td><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${Math.min(100, m.total/(m.scale||90)*100)}%"></div></div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── PDF ──
+function downloadLeaderboardPDF(){
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+  let rows=collectRows(currentLBTab);
+  const marked=rows.filter(r=>getM(r.id)?.saved).sort((a,b)=>getM(b.id).total-getM(a.id).total);
+  if(!marked.length){showToast('No marked students to export.','error');return;}
+  doc.setFillColor(26,26,46);doc.rect(0,0,297,22,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(16);doc.setFont('helvetica','bold');
+  doc.text('German Exam — Leaderboard',14,14);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.text(new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}),283,14,{align:'right'});
+  let y=32;
+  const headers=['#','Name','Level','Mobile','Reading /10','Grammar','Writing /20','Listening','Speaking /20','Total /100'];
+  const widths=[10,50,14,32,20,20,18,20,20,20];
+  doc.setFillColor(59,91,219);doc.rect(10,y-5,277,8,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(8);doc.setFont('helvetica','bold');
+  let x=12;headers.forEach((h,i)=>{doc.text(h,x,y);x+=widths[i];});y+=7;
+  marked.forEach((r,i)=>{
+    const m=getM(r.id);
+    if(i%2===0){doc.setFillColor(248,249,252);doc.rect(10,y-4.5,277,7,'F');}
+    doc.setTextColor(26,26,46);doc.setFont('helvetica',i<3?'bold':'normal');doc.setFontSize(8.5);
+    x=12;
+    const cells=[i+1,r.student_name||'—',r._level,r.mobile_number||'—',
+      `${(m.reading_tf||0)+m.reading_open}/${readingMax(maxesFor(r._level))}`,`${m.grammar}/${grammarMax(r._level)}`,`${m.writing_form+m.writing_email}/${maxesFor(r._level).writing_form+maxesFor(r._level).writing_email}`,
+      `${(m.listen_tf||0)+m.listen_open+(m.listen_fill||0)}/${listeningMax(maxesFor(r._level))}`,`${m.speaking}/${maxesFor(r._level).speaking}`,`${m.total}/${m.scale||90}`];
+    cells.forEach((c,ci)=>{doc.text(String(c).substring(0,ci===1?30:20),x,y);x+=widths[ci];});
+    y+=7;if(y>190){doc.addPage();y=20;}
+  });
+  doc.setFontSize(8);doc.setTextColor(107,114,128);
+  doc.text(`Total students: ${marked.length}  ·  Global Careers by Testbook`,14,y+10);
+  doc.save(`german_exam_leaderboard_${new Date().toISOString().slice(0,10)}.pdf`);
+  showToast('PDF downloaded!','success');
+}
+
+// ── CSV ──
+function downloadCSV(){
+  let rows=collectRows(currentTab);
+  rows.sort((a,b)=>new Date(b.submitted_at)-new Date(a.submitted_at));
+  if(!rows.length){showToast('No data.','error');return;}
+  const esc=v=>{const s=String(v??'');return(s.includes(',')||s.includes('"')||s.includes('\n'))?`"${s.replace(/"/g,'""')}"`:`${s}`};
+  const headers=['Level','Name','Mobile','Submitted','Tab switches','Auto-submitted','Violation log','Auto (T/F + Fill)','Reading','Grammar','Writing','Listening','Speaking','Total','Out of'];
+  const csv=[headers.join(','),...rows.map(r=>{
+    const m=getM(r.id);
+    const ag=r._level==='A2'?autoGradeA2(r):r._level==='A1R'?autoGradeA1R(r):autoGradeA1(r);
+    const g=m?.saved;
+    return[r._level,r.student_name,r.mobile_number,r.submitted_at,r.tab_switches||0,r.auto_submitted?'YES':'',r.violation_log||'',ag.auto_total,
+      g?(m.reading_tf||0)+m.reading_open:'',
+      g?m.grammar:'',
+      g?m.writing_form+m.writing_email:'',
+      g?(m.listen_tf||0)+m.listen_open+(m.listen_fill||0):'',
+      g?m.speaking:'',
+      g?m.total:'', g?(m.scale||90):''].map(esc).join(',');
+  })].join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`german_exam_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+  showToast('CSV downloaded!','success');
+}
+
+
+
+// ── TOAST ──
+function showToast(msg,type){
+  const t=document.getElementById('toast');t.textContent=msg;
+  t.className='toast '+(type||'')+' show';
+  setTimeout(()=>t.className='toast',3500);
+}
+</script>
+</body>
+</html>
