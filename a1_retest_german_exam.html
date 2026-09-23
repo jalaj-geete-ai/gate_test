@@ -331,7 +331,8 @@ renderSteps();
    interruption -- a phone call, a notification, a quick app switch -- is NOT
    leaving the exam: an absence is only counted once it passes GRACE_MS.
    Five warnings, then the paper is submitted automatically. Also blocks copy
-   and paste and the usual view-source shortcuts.
+   and paste, the usual view-source shortcuts, and right-click on a mouse
+   (never a long-press on a touchscreen).
    This is client-side only: a deterrent and an audit trail, not a
    guarantee. It cannot see a second device. */
 const PROCTOR = (function () {
@@ -438,6 +439,19 @@ const PROCTOR = (function () {
       e.preventDefault();
       showToast(ev === 'paste' ? 'Pasting is disabled during this exam.' : 'Copying is disabled during this exam.', 'error-t');
     });
+  });
+
+  // Right-click is blocked on laptops and desktops only. On a phone or tablet
+  // the same event is a long-press, which is how a student selects text or
+  // places the cursor, so it is left alone there. A touchscreen laptop gets
+  // both: the mouse is blocked, the long-press is not.
+  const hasMouse = !window.matchMedia || window.matchMedia('(any-pointer: fine)').matches;
+  let lastPointerType = '';
+  document.addEventListener('pointerdown', function (e) { lastPointerType = e.pointerType || ''; }, true);
+  document.addEventListener('contextmenu', function (e) {
+    if (!armed() || !hasMouse) return;
+    if (lastPointerType === 'touch' || lastPointerType === 'pen') return;
+    e.preventDefault();
   });
 
   document.addEventListener('keydown', function (e) {
