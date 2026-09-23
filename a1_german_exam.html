@@ -379,7 +379,8 @@ renderSteps();
 /* ── EXAM INTEGRITY MONITOR ──────────────────────────────────────────────
    Counts tab / window switches once the exam has actually started. A short
    interruption -- a phone call, a notification, a quick app switch -- is NOT
-   leaving the exam: an absence is only counted once it passes GRACE_MS.
+   leaving the exam: an absence is only counted once it passes GRACE_MS. Every
+   counted switch raises a warning popup naming the consequence.
    Five warnings, then the paper is submitted automatically. Also blocks copy
    and paste, the usual view-source shortcuts, and right-click on a mouse
    (never a long-press on a touchscreen).
@@ -387,7 +388,8 @@ renderSteps();
    guarantee. It cannot see a second device. */
 const PROCTOR = (function () {
   const MAX_STRIKES = 6;
-  const GRACE_MS    = 60000; // an absence shorter than this is ignored entirely
+  const GRACE_MS    = 30000; // an absence shorter than this is ignored entirely
+  const GRACE_S     = Math.round(GRACE_MS / 1000);  // the copy below reads from this
   const BLUR_MS     = GRACE_MS; // window must stay unfocused this long to count
   const DEDUPE_MS   = 2000;  // one switch fires blur AND visibilitychange
   const MAX_BRIEF   = 25;    // cap on logged-but-not-counted interruptions
@@ -404,16 +406,20 @@ const PROCTOR = (function () {
     return o;
   }
 
-  function showWarning() {
+  function showWarning(secs) {
     const left = MAX_STRIKES - strikes;
     const o = overlay(99998);
     o.innerHTML =
       '<div style="background:#fff;border-radius:14px;max-width:430px;width:100%;padding:30px 28px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)">' +
         '<div style="font-size:42px;line-height:1;margin-bottom:12px">&#9888;&#65039;</div>' +
         '<h3 style="font-size:19px;margin-bottom:10px;color:#991b1b;font-weight:700">Warning ' + strikes + ' of ' + MAX_STRIKES + '</h3>' +
-        '<p style="font-size:13.5px;line-height:1.75;color:#374151;margin-bottom:22px">You were away from the exam screen for more than a minute. This has been recorded and your examiner will see it.<br><br>' +
-          '<span style="color:#6b7280">A short interruption &mdash; a phone call, a notification, a quick app switch &mdash; is not counted.</span><br><br>' +
-          '<strong>' + left + ' more ' + (left === 1 ? 'time' : 'times') + ' and your exam will be submitted automatically.</strong></p>' +
+        '<p style="font-size:13.5px;line-height:1.75;color:#374151;margin-bottom:16px">You left the exam screen for about ' + secs + ' seconds. This has been recorded and your examiner will see it.</p>' +
+        '<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:9px;padding:13px 15px;margin-bottom:16px">' +
+          '<p style="font-size:13.5px;line-height:1.7;color:#991b1b;margin:0">' +
+            '<strong>If you keep switching tabs or leaving this screen, your exam will be submitted automatically and you will not be able to carry on.</strong><br><br>' +
+            'You have <strong>' + left + ' more ' + (left === 1 ? 'chance' : 'chances') + '</strong> before that happens.</p>' +
+        '</div>' +
+        '<p style="font-size:12.5px;line-height:1.65;color:#6b7280;margin-bottom:20px">Staying away for under ' + GRACE_S + ' seconds &mdash; a quick call or a notification &mdash; is never counted.</p>' +
         '<button type="button" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:12px 30px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">Return to exam</button>' +
       '</div>';
     o.querySelector('button').onclick = function () { o.remove(); };
@@ -436,14 +442,14 @@ const PROCTOR = (function () {
     ended = true;
     showEnd('<div style="font-size:42px;margin-bottom:12px">&#128274;</div>' +
       '<h3 style="font-size:19px;margin-bottom:10px;color:#991b1b;font-weight:700">Exam ended</h3>' +
-      '<p style="font-size:13.5px;line-height:1.7;color:#374151">You were away from the exam screen for more than a minute on ' + MAX_STRIKES + ' separate occasions. Your answers are being submitted&hellip;</p>');
+      '<p style="font-size:13.5px;line-height:1.7;color:#374151">You left the exam screen ' + MAX_STRIKES + ' times after being warned. Your answers are being submitted&hellip;</p>');
     try { await submitExam(); } catch (e) { /* submitExam handles its own errors */ }
     const scr = document.getElementById('success-screen');
     const ok = scr && scr.style.display === 'block';
     if (ok) {
       showEnd('<div style="font-size:42px;margin-bottom:12px">&#128274;</div>' +
         '<h3 style="font-size:19px;margin-bottom:10px;color:#991b1b;font-weight:700">Exam submitted automatically</h3>' +
-        '<p style="font-size:13.5px;line-height:1.7;color:#374151">You were away from the exam screen for more than a minute on ' + MAX_STRIKES + ' separate occasions, so the paper was submitted with the answers you had completed.<br><br>Please speak to your teacher.</p>');
+        '<p style="font-size:13.5px;line-height:1.7;color:#374151">You left the exam screen ' + MAX_STRIKES + ' times after being warned, so the paper was submitted with the answers you had completed.<br><br>Please speak to your teacher.</p>');
     } else {
       showEnd('<div style="font-size:42px;margin-bottom:12px">&#9888;&#65039;</div>' +
         '<h3 style="font-size:19px;margin-bottom:10px;color:#991b1b;font-weight:700">Exam ended — submission failed</h3>' +
@@ -455,14 +461,14 @@ const PROCTOR = (function () {
     }
   }
 
-  function violation(kind) {
+  function violation(kind, secs) {
     if (!armed() || (window.__gcbProctorQuiet && window.__gcbProctorQuiet())) return;
     const now = Date.now();
     if (now - lastAt < DEDUPE_MS) return;
     lastAt = now;
     strikes++;
     log.push('#' + strikes + ' ' + kind + ' at ' + stamp());
-    if (strikes >= MAX_STRIKES) endExam(); else showWarning();
+    if (strikes >= MAX_STRIKES) endExam(); else showWarning(secs || GRACE_S);
   }
 
   document.addEventListener('visibilitychange', function () {
@@ -470,7 +476,7 @@ const PROCTOR = (function () {
     if (!hiddenAt) return;
     const away = Date.now() - hiddenAt;
     hiddenAt = 0;
-    if (away > GRACE_MS) { violation('left the exam tab for ' + Math.round(away / 1000) + 's'); }
+    if (away > GRACE_MS) { violation('left the exam tab for ' + Math.round(away / 1000) + 's', Math.round(away / 1000)); }
     else if (armed() && brief < MAX_BRIEF) {
       // Kept for the examiner's audit trail, but it costs the student nothing.
       brief++;
@@ -479,7 +485,7 @@ const PROCTOR = (function () {
   });
   window.addEventListener('blur', function () {
     clearTimeout(blurTimer);
-    blurTimer = setTimeout(function () { if (!document.hidden) violation('switched to another window'); }, BLUR_MS);
+    blurTimer = setTimeout(function () { if (!document.hidden) violation('switched to another window', GRACE_S); }, BLUR_MS);
   });
   window.addEventListener('focus', function () { clearTimeout(blurTimer); });
 
@@ -525,8 +531,8 @@ const PROCTOR = (function () {
     d.style.cssText = 'background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;padding:16px 18px;margin-bottom:20px;font-size:13px;line-height:1.75;color:#991b1b';
     d.innerHTML = '<strong style="display:block;font-size:13.5px;margin-bottom:8px">&#9888;&#65039; Exam rules — please read before you begin</strong>' +
       'This exam is monitored. Once you press Start, please stay on this screen and do not switch to another app or window.<br>' +
-      '<strong>A short interruption is fine.</strong> If a call or a notification takes you away for less than a minute, nothing is counted against you.<br>' +
-      'Leaving for longer than a minute is recorded. After ' + (MAX_STRIKES - 1) + ' warnings, the ' + MAX_STRIKES + 'th time your exam is <strong>submitted automatically</strong>.<br>' +
+      '<strong>A short interruption is fine.</strong> If a call or a notification takes you away for less than ' + GRACE_S + ' seconds, nothing is counted against you.<br>' +
+      'Leaving for longer than ' + GRACE_S + ' seconds is recorded and you will see a warning each time. After ' + (MAX_STRIKES - 1) + ' warnings, the ' + MAX_STRIKES + 'th time your exam is <strong>submitted automatically</strong> and you cannot carry on.<br>' +
       'Your microphone is requested <strong>once</strong>, on this screen &mdash; allow it and you will not be asked again.<br>' +
       'Copying and pasting are disabled. Keep this tab open until you press Submit.';
     const nav = p0.querySelector('.nav-row');
