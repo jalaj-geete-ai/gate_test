@@ -975,18 +975,21 @@
   renderSteps();
 
 /* ── EXAM INTEGRITY MONITOR ──────────────────────────────────────────────
-   Counts tab / window switches once the exam has actually started. Two
-   warnings, then the paper is submitted automatically. Also blocks copy,
-   paste and the usual view-source shortcuts.
+   Counts tab / window switches once the exam has actually started. A short
+   interruption -- a phone call, a notification, a quick app switch -- is NOT
+   leaving the exam: an absence is only counted once it passes GRACE_MS.
+   Five warnings, then the paper is submitted automatically. Also blocks copy
+   and paste and the usual view-source shortcuts.
    This is client-side only: a deterrent and an audit trail, not a
    guarantee. It cannot see a second device. */
 const PROCTOR = (function () {
-  const MAX_STRIKES = 3;
-  const HIDDEN_MS   = 400;   // ignore sub-400ms blips (audio player, autofill)
-  const BLUR_MS     = 1200;  // window must stay unfocused this long to count
+  const MAX_STRIKES = 6;
+  const GRACE_MS    = 60000; // an absence shorter than this is ignored entirely
+  const BLUR_MS     = GRACE_MS; // window must stay unfocused this long to count
   const DEDUPE_MS   = 2000;  // one switch fires blur AND visibilitychange
+  const MAX_BRIEF   = 25;    // cap on logged-but-not-counted interruptions
 
-  let strikes = 0, ended = false, hiddenAt = 0, blurTimer = null, lastAt = 0;
+  let strikes = 0, ended = false, hiddenAt = 0, blurTimer = null, lastAt = 0, brief = 0;
   const log = [];
   const armed = () => !ended && typeof currentPhase !== 'undefined' && currentPhase >= 1;
   const stamp = () => new Date().toLocaleTimeString('en-GB', {hour12: false});
@@ -1005,7 +1008,8 @@ const PROCTOR = (function () {
       '<div style="background:#fff;border-radius:14px;max-width:430px;width:100%;padding:30px 28px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)">' +
         '<div style="font-size:42px;line-height:1;margin-bottom:12px">&#9888;&#65039;</div>' +
         '<h3 style="font-size:19px;margin-bottom:10px;color:#991b1b;font-weight:700">Warning ' + strikes + ' of ' + MAX_STRIKES + '</h3>' +
-        '<p style="font-size:13.5px;line-height:1.75;color:#374151;margin-bottom:22px">You left the exam screen. This has been recorded and your examiner will see it.<br><br>' +
+        '<p style="font-size:13.5px;line-height:1.75;color:#374151;margin-bottom:22px">You were away from the exam screen for more than a minute. This has been recorded and your examiner will see it.<br><br>' +
+          '<span style="color:#6b7280">A short interruption &mdash; a phone call, a notification, a quick app switch &mdash; is not counted.</span><br><br>' +
           '<strong>' + left + ' more ' + (left === 1 ? 'time' : 'times') + ' and your exam will be submitted automatically.</strong></p>' +
         '<button type="button" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:12px 30px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">Return to exam</button>' +
       '</div>';
@@ -1029,14 +1033,14 @@ const PROCTOR = (function () {
     ended = true;
     showEnd('<div style="font-size:42px;margin-bottom:12px">&#128274;</div>' +
       '<h3 style="font-size:19px;margin-bottom:10px;color:#991b1b;font-weight:700">Exam ended</h3>' +
-      '<p style="font-size:13.5px;line-height:1.7;color:#374151">You left the exam screen ' + MAX_STRIKES + ' times. Your answers are being submitted&hellip;</p>');
+      '<p style="font-size:13.5px;line-height:1.7;color:#374151">You were away from the exam screen for more than a minute on ' + MAX_STRIKES + ' separate occasions. Your answers are being submitted&hellip;</p>');
     try { await submitExam(); } catch (e) { /* submitExam handles its own errors */ }
     const scr = document.getElementById('success-screen');
     const ok = scr && scr.style.display === 'block';
     if (ok) {
       showEnd('<div style="font-size:42px;margin-bottom:12px">&#128274;</div>' +
         '<h3 style="font-size:19px;margin-bottom:10px;color:#991b1b;font-weight:700">Exam submitted automatically</h3>' +
-        '<p style="font-size:13.5px;line-height:1.7;color:#374151">You left the exam screen ' + MAX_STRIKES + ' times, so the paper was submitted with the answers you had completed.<br><br>Please speak to your teacher.</p>');
+        '<p style="font-size:13.5px;line-height:1.7;color:#374151">You were away from the exam screen for more than a minute on ' + MAX_STRIKES + ' separate occasions, so the paper was submitted with the answers you had completed.<br><br>Please speak to your teacher.</p>');
     } else {
       showEnd('<div style="font-size:42px;margin-bottom:12px">&#9888;&#65039;</div>' +
         '<h3 style="font-size:19px;margin-bottom:10px;color:#991b1b;font-weight:700">Exam ended — submission failed</h3>' +
@@ -1059,8 +1063,16 @@ const PROCTOR = (function () {
   }
 
   document.addEventListener('visibilitychange', function () {
-    if (document.hidden) { hiddenAt = Date.now(); }
-    else if (hiddenAt && Date.now() - hiddenAt > HIDDEN_MS) { hiddenAt = 0; violation('left the exam tab'); }
+    if (document.hidden) { hiddenAt = Date.now(); return; }
+    if (!hiddenAt) return;
+    const away = Date.now() - hiddenAt;
+    hiddenAt = 0;
+    if (away > GRACE_MS) { violation('left the exam tab for ' + Math.round(away / 1000) + 's'); }
+    else if (armed() && brief < MAX_BRIEF) {
+      // Kept for the examiner's audit trail, but it costs the student nothing.
+      brief++;
+      log.push('(not counted) brief interruption of ' + Math.round(away / 1000) + 's at ' + stamp());
+    }
   });
   window.addEventListener('blur', function () {
     clearTimeout(blurTimer);
@@ -1076,7 +1088,6 @@ const PROCTOR = (function () {
     });
   });
 
-  document.addEventListener('contextmenu', function (e) { if (armed()) e.preventDefault(); });
   document.addEventListener('keydown', function (e) {
     if (!armed() || !e.key) return;
     const k = String(e.key).toUpperCase();
@@ -1097,8 +1108,10 @@ const PROCTOR = (function () {
     const d = document.createElement('div');
     d.style.cssText = 'background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;padding:16px 18px;margin-bottom:20px;font-size:13px;line-height:1.75;color:#991b1b';
     d.innerHTML = '<strong style="display:block;font-size:13.5px;margin-bottom:8px">&#9888;&#65039; Exam rules — please read before you begin</strong>' +
-      'This exam is monitored. Once you press Start, do <strong>not</strong> switch tabs, open another window, or minimise your browser.<br>' +
-      'You will receive <strong>2 warnings</strong>. On the <strong>3rd</strong> switch your exam is <strong>submitted automatically</strong> and you cannot continue.<br>' +
+      'This exam is monitored. Once you press Start, please stay on this screen and do not switch to another app or window.<br>' +
+      '<strong>A short interruption is fine.</strong> If a call or a notification takes you away for less than a minute, nothing is counted against you.<br>' +
+      'Leaving for longer than a minute is recorded. After ' + (MAX_STRIKES - 1) + ' warnings, the ' + MAX_STRIKES + 'th time your exam is <strong>submitted automatically</strong>.<br>' +
+      'Your microphone is requested <strong>once</strong>, on this screen &mdash; allow it and you will not be asked again.<br>' +
       'Copying and pasting are disabled. Keep this tab open until you press Submit.';
     const nav = p0.querySelector('.nav-row');
     if (nav) p0.insertBefore(d, nav); else p0.appendChild(d);
@@ -1179,10 +1192,30 @@ const VOICE = (function () {
   // page. That is not the student leaving the exam, so the monitor stays quiet.
   let quietUntil = 0;
   window.__gcbProctorQuiet = function () { return Date.now() < quietUntil; };
+  // The microphone is requested ONCE and the stream is then kept alive for the
+  // whole exam, so the browser asks for permission a single time. Releasing a
+  // stream and re-acquiring it per question is exactly what makes phones
+  // (Android's one-tap "Allow this time", iOS Safari) prompt again every time.
+  let micStream = null;
+  function micLive() {
+    return !!(micStream && micStream.getAudioTracks().some(function (t) { return t.readyState === 'live'; }));
+  }
+  function releaseMic() {
+    if (micStream) { micStream.getTracks().forEach(function (t) { t.stop(); }); micStream = null; }
+  }
+  // Holding the permission open is not the same as listening: between questions
+  // the track is muted, so nothing is captured until the student presses Record.
+  function micCapture(on) {
+    if (micStream) micStream.getAudioTracks().forEach(function (t) { t.enabled = !!on; });
+  }
   async function getMic() {
+    if (micLive()) return micStream;   // already granted and still open: no second prompt
+    releaseMic();                      // a dead stream (interrupted by a call) is replaced
     quietUntil = Date.now() + 60000;
-    try { return await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); }
-    finally { quietUntil = Date.now() + 2500; }
+    try {
+      micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+      return micStream;
+    } finally { quietUntil = Date.now() + 2500; }
   }
 
   function syncHidden(task) {
@@ -1220,6 +1253,7 @@ const VOICE = (function () {
     let stream;
     try { stream = await getMic(); }
     catch (e) { showToast('Microphone blocked. Allow microphone access for this page and try again.', 'error-t'); return; }
+    micCapture(true);
     const mime = pickMime();
     let rec;
     try { rec = new MediaRecorder(stream, mime ? { mimeType: mime, audioBitsPerSecond: 32000 } : { audioBitsPerSecond: 32000 }); }
@@ -1229,8 +1263,8 @@ const VOICE = (function () {
     rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
     rec.onstop = function () {
       clearInterval(timer);
-      stream.getTracks().forEach(function (t) { t.stop(); });
-      active = null;
+      micCapture(false);   // permission stays granted, but the mic stops listening
+      active = null;       // the stream stays open, ready for the next question
       const secs = (Date.now() - started) / 1000;
       const blob = new Blob(chunks, { type: rec.mimeType || mime || 'audio/webm' });
       if (blob.size < 500 || secs < 1) {
@@ -1251,6 +1285,10 @@ const VOICE = (function () {
       s.secs = secs;
       const el = document.getElementById('vr-t-' + task);
       if (el) el.textContent = fmt(secs);
+      if (!micLive() && rec.state === 'recording') {
+        showToast('The microphone was interrupted. Whatever was recorded has been kept — please check it and re-record if needed.', 'error-t');
+        rec.stop(); return;
+      }
       if (secs >= SAFETY_MAX_S && rec.state === 'recording') { showToast('Recording stopped automatically at 10 minutes.', ''); rec.stop(); }
     }, 500);
   }
@@ -1331,9 +1369,9 @@ const VOICE = (function () {
           let peak = 0; for (let i = 0; i < buf.length; i++) peak = Math.max(peak, Math.abs(buf[i] - 128));
           bar.style.width = Math.min(100, peak / 64 * 100) + '%';
           if (Date.now() - t0 < 5000) requestAnimationFrame(tick);
-          else { bar.style.width = '0'; stream.getTracks().forEach(function (t) { t.stop(); }); ac.close(); }
+          else { bar.style.width = '0'; ac.close(); micCapture(false); }   // stays granted, stops listening
         })();
-      } catch (e) { stream.getTracks().forEach(function (t) { t.stop(); }); }
+      } catch (e) { micCapture(false); /* meter unavailable; the mic itself is fine and stays granted */ }
     };
   })();
 
@@ -1416,6 +1454,7 @@ const VOICE = (function () {
         try { m = JSON.parse(t).message || t; } catch (e) {}
         throw new Error(m || ('HTTP ' + res.status));
       }
+      releaseMic();
       showSuccess();
       showToast('Exam submitted!', 'success');
     } catch (err) {
@@ -1426,7 +1465,9 @@ const VOICE = (function () {
   };
 
   return { id: function () { return SUB_ID; }, state: state, paths: paths,
-           micReady: function () { return micOK; }, recordingFor: function (t) { return state[t].status; } };
+           micReady: function () { return micOK; }, micLive: micLive, releaseMic: releaseMic,
+           micCapturing: function () { return !!(micStream && micStream.getAudioTracks().some(function (t) { return t.enabled; })); },
+           recordingFor: function (t) { return state[t].status; } };
 })();
 </script>
 </body>
