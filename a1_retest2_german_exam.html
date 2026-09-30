@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+<title>A1 Retest 02 – German Language Exam</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap');
+  :root{--black:#1a1a2e;--accent:#059669;--accent-light:#d1fae5;--muted:#6b7280;--border:#d1d5db;--bg:#f8f9fc;--p1:#059669;--p2:#0891b2;--p3:#d97706;--p4:#7c3aed;--success:#059669;--error:#dc2626;--radius:10px}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--black);min-height:100vh}
+  .exam-header{background:var(--black);color:#fff;padding:36px 24px 28px;text-align:center}
+  .lang-badge{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+  .exam-header h1{font-family:'Playfair Display',serif;font-size:clamp(24px,5vw,40px);line-height:1.2;margin-bottom:10px}
+  .meta{font-size:13px;color:#9ca3af;display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:10px}
+  .progress-wrap{background:#fff;border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100}
+  .progress-inner{max-width:780px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:12px 0}
+  .progress-bar-track{flex:1;height:6px;background:var(--border);border-radius:6px;overflow:hidden}
+  .progress-bar-fill{height:100%;background:var(--accent);border-radius:6px;transition:width .4s ease;width:0%}
+  .progress-label{font-size:12px;color:var(--muted);white-space:nowrap}
+  main{max-width:780px;margin:32px auto;padding:0 16px 60px}
+  .phase{display:none;animation:fadeIn .3s ease}.phase.active{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .phase-header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+  .phase-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;color:#fff}
+  .phase-header h2{font-family:'Playfair Display',serif;font-size:22px}
+  .phase-header .marks{font-size:12px;color:var(--muted);margin-top:2px}
+  .reading-text{background:var(--accent-light);border-left:4px solid var(--accent);border-radius:var(--radius);padding:18px 20px;font-size:14px;line-height:1.7;margin-bottom:26px;color:#065f46}
+  .reading-text strong{display:block;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+  .section-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:20px}
+  .section-card h3{font-size:14px;font-weight:600;letter-spacing:.5px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+  .marks-badge{margin-left:auto;background:var(--bg);border:1px solid var(--border);font-size:11px;font-weight:500;color:var(--muted);padding:2px 8px;border-radius:20px}
+  .q-row{margin-bottom:16px}
+  .q-row label{display:block;font-size:13.5px;color:#374151;margin-bottom:6px;line-height:1.5}
+  .q-num{font-weight:600;color:var(--accent);margin-right:4px}
+  input[type=text],input[type=tel],textarea,select{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:10px 13px;font-family:'Inter',sans-serif;font-size:13.5px;color:var(--black);background:#fff;transition:border-color .2s;outline:none}
+  input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(5,150,105,.1)}
+  textarea{resize:vertical;min-height:90px}
+  .tf-grid{display:flex;flex-direction:column;gap:10px}
+  .tf-item{display:flex;align-items:flex-start;gap:14px;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px}
+  .tf-statement{flex:1;font-size:13.5px;line-height:1.5;padding-top:2px}
+  .tf-options{display:flex;gap:8px;flex-shrink:0}
+  .tf-btn{border:1.5px solid var(--border);background:#fff;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;color:var(--muted)}
+  .tf-btn:hover{border-color:var(--accent);color:var(--accent)}
+  .tf-btn.selected-true{background:#d1fae5;border-color:#059669;color:#065f46}
+  .tf-btn.selected-false{background:#fee2e2;border-color:#dc2626;color:#991b1b}
+  .fill-table{width:100%;border-collapse:collapse;font-size:13.5px}
+  .fill-table td{padding:9px 10px;vertical-align:middle}
+  .fill-table tr:nth-child(even) td{background:var(--bg)}
+  .q-label{width:3%;color:var(--accent);font-weight:600}
+  .q-text{width:52%;line-height:1.5}
+  .q-answer{width:45%}
+  .fill-table input[type=text]{padding:7px 10px;font-size:13px}
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:520px){.info-grid{grid-template-columns:1fr}}
+  .nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:28px;gap:12px}
+  .btn{padding:12px 28px;border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:#047857;transform:translateY(-1px)}
+  .btn-secondary{background:#fff;color:var(--black);border:1.5px solid var(--border)}
+  .btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+  .btn-submit{background:#7c3aed;color:#fff}
+  .btn-submit:hover{background:#6d28d9}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+  .steps{display:flex;justify-content:center;gap:8px;margin-bottom:28px;flex-wrap:wrap}
+  .step-dot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:all .3s;cursor:default}
+  .step-dot.done{background:var(--accent)}
+  .step-dot.active{background:var(--accent);transform:scale(1.4)}
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--black);color:#fff;padding:14px 20px;border-radius:var(--radius);font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:all .35s ease;z-index:999;max-width:320px}
+  .toast.show{transform:translateY(0);opacity:1}
+  .toast.success{background:var(--success)}
+  .toast.error-t{background:var(--error)}
+  #success-screen{display:none;text-align:center;padding:60px 24px;animation:fadeIn .4s ease}
+  #success-screen .check{width:72px;height:72px;background:#d1fae5;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 20px}
+  #success-screen h2{font-family:'Playfair Display',serif;font-size:28px;margin-bottom:10px}
+  #success-screen p{color:var(--muted);font-size:14px;max-width:360px;margin:0 auto;line-height:1.7}
+  .ref-id{margin-top:20px;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 16px;display:inline-block;color:var(--muted)}
+  .speaking-cards{display:flex;flex-direction:column;gap:14px}
+  .speaking-card{border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start}
+  .topic-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:var(--p4);color:#fff;flex-shrink:0}
+  .topic-body{flex:1}
+  .speaking-card h4{font-size:13.5px;font-weight:600;margin-bottom:4px}
+  .speaking-card p{font-size:12.5px;color:var(--muted);margin-bottom:10px;line-height:1.5}
+  .speaking-card select{font-size:13px;padding:7px 10px}
+  .picture-card{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:var(--radius);padding:16px;margin-bottom:12px;text-align:center}
+  .picture-card img{max-width:100%;border-radius:8px;margin-top:10px}
+  .audio-wrap{background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius);padding:18px 20px;margin-bottom:20px}
+  .audio-wrap p{font-size:13px;color:#92400e;margin-bottom:12px;line-height:1.5}
+  audio{width:100%;border-radius:8px;outline:none}
+</style>
+</head>
+<body>
+<header class="exam-header">
+  <div class="lang-badge">🇩🇪 Deutsch A1 · Retest 02</div>
+  <h1>A1 Retest 02 – German Language Exam</h1>
+  <div class="meta"><span>📋 100 Marks</span><span>⏱ 2 Hours</span><span>🎙 Speaking 8–10 min</span></div>
+</header>
+<div class="progress-wrap"><div class="progress-inner"><div class="progress-bar-track"><div class="progress-bar-fill" id="progress-fill"></div></div><div class="progress-label" id="progress-label">Step 1 of 5</div></div></div>
+<main>
+  <div class="steps" id="steps"></div>
+
+  <!-- PHASE 0: STUDENT INFO -->
+  <div class="phase active" id="phase-0">
+    <div class="phase-header"><div class="phase-icon" style="background:#1a1a2e">👤</div><div><h2>Student Information</h2><div class="marks">Fill in your details before starting the exam.</div></div></div>
+    <div class="section-card"><h3>Your Details <span class="marks-badge">Required</span></h3>
+      <div class="info-grid">
+        <div class="q-row"><label>Full Name</label><input type="text" id="student_name" placeholder="e.g. Priya Sharma"/></div>
+        <div class="q-row"><label>Mobile Number</label><input type="tel" id="mobile_number" placeholder="e.g. +91 98765 43210"/></div>
+      </div>
+    </div>
+    <div class="section-card" style="background:#f0fdf4;border-color:#86efac">
+      <p style="font-size:13px;color:#065f46;line-height:1.7">📌 <strong>Instructions</strong><br/>
+      Answer all questions. Read carefully before answering. Use German where required. The listening audio may be replayed. Speak in simple A1 sentences.</p>
+    </div>
+    <div class="nav-row"><div></div><button class="btn btn-primary" onclick="nextPhase()">Start Exam →</button></div>
+  </div>
+
+  <!-- PHASE 1: READING & GRAMMAR -->
+  <div class="phase" id="phase-1">
+    <div class="phase-header"><div class="phase-icon" style="background:var(--p1)">📖</div><div><h2>Phase 1 – Reading &amp; Grammar</h2><div class="marks">40 Marks</div></div></div>
+
+    <div class="reading-text">
+      <strong>Lesen Sie den Text</strong>
+      Tarek ist 27 Jahre alt und kommt aus Ägypten. Seit August wohnt er in Dresden. Er hat eine kleine Wohnung im dritten Stock. Die Wohnung hat zwei Zimmer, eine Küche und ein Bad. Das Zimmer von Tarek ist hell, denn es hat ein großes Fenster. Die Miete kostet 420 Euro im Monat. Tarek wohnt zusammen mit Jonas. Jonas kommt aus Leipzig und studiert Musik. Der Supermarkt ist direkt neben dem Haus, und die Straßenbahn fährt bis zur Universität. Am Samstag putzen die beiden die Wohnung und kochen zusammen. Tarek findet Dresden schön, aber im Winter ist es sehr kalt.
+    </div>
+
+    <!-- TRUE/FALSE -->
+    <div class="section-card"><h3>Part A – Richtig oder Falsch? <span class="marks-badge">5 × 1 = 5 marks</span></h3>
+      <div class="tf-grid">
+        <div class="tf-item"><div class="tf-statement"><span class="q-num">1.</span>Tarek wohnt seit August in Dresden.</div><div class="tf-options"><button class="tf-btn" onclick="selectTF(this,'tf1','True')">✓ True</button><button class="tf-btn" onclick="selectTF(this,'tf1','False')">✗ False</button></div></div><div class="tf-item"><div class="tf-statement"><span class="q-num">2.</span>Seine Wohnung ist im ersten Stock.</div><div class="tf-options"><button class="tf-btn" onclick="selectTF(this,'tf2','True')">✓ True</button><button class="tf-btn" onclick="selectTF(this,'tf2','False')">✗ False</button></div></div><div class="tf-item"><div class="tf-statement"><span class="q-num">3.</span>Das Zimmer von Tarek hat ein großes Fenster.</div><div class="tf-options"><button class="tf-btn" onclick="selectTF(this,'tf3','True')">✓ True</button><button class="tf-btn" onclick="selectTF(this,'tf3','False')">✗ False</button></div></div><div class="tf-item"><div class="tf-statement"><span class="q-num">4.</span>Jonas studiert Medizin.</div><div class="tf-options"><button class="tf-btn" onclick="selectTF(this,'tf4','True')">✓ True</button><button class="tf-btn" onclick="selectTF(this,'tf4','False')">✗ False</button></div></div><div class="tf-item"><div class="tf-statement"><span class="q-num">5.</span>Am Samstag kochen Tarek und Jonas zusammen.</div><div class="tf-options"><button class="tf-btn" onclick="selectTF(this,'tf5','True')">✓ True</button><button class="tf-btn" onclick="selectTF(this,'tf5','False')">✗ False</button></div></div>
+      </div>
+    </div>
+
+    <!-- OPEN QUESTIONS -->
+    <div class="section-card"><h3>Part A – Antworten Sie auf Deutsch <span class="marks-badge">5 × 1 = 5 marks</span></h3>
+      <div class="q-row"><label><span class="q-num">1.</span>Woher kommt Tarek?</label><input type="text" id="q1" placeholder="Your answer in German…"/></div><div class="q-row"><label><span class="q-num">2.</span>Wie viele Zimmer hat die Wohnung?</label><input type="text" id="q2" placeholder="Your answer in German…"/></div><div class="q-row"><label><span class="q-num">3.</span>Wie viel kostet die Miete?</label><input type="text" id="q3" placeholder="Your answer in German…"/></div><div class="q-row"><label><span class="q-num">4.</span>Was macht Jonas?</label><input type="text" id="q4" placeholder="Your answer in German…"/></div><div class="q-row"><label><span class="q-num">5.</span>Was ist neben dem Haus?</label><input type="text" id="q5" placeholder="Your answer in German…"/></div>
+    </div>
+
+    <!-- PERSONAL PRONOUNS -->
+    <div class="section-card"><h3>Part B – Plural der Nomen <span class="marks-badge">5 marks</span></h3>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Schreiben Sie den Plural mit Artikel.</p>
+      <table class="fill-table"><tr><td class="q-label">1.</td><td class="q-text">der Arzt → ___</td><td class="q-answer"><input type="text" id="plur1"/></td></tr><tr><td class="q-label">2.</td><td class="q-text">die Ärztin → ___</td><td class="q-answer"><input type="text" id="plur2"/></td></tr><tr><td class="q-label">3.</td><td class="q-text">das Formular → ___</td><td class="q-answer"><input type="text" id="plur3"/></td></tr><tr><td class="q-label">4.</td><td class="q-text">der Mann → ___</td><td class="q-answer"><input type="text" id="plur4"/></td></tr><tr><td class="q-label">5.</td><td class="q-text">die Stadt → ___</td><td class="q-answer"><input type="text" id="plur5"/></td></tr></table>
+    </div>
+
+    <!-- POSSESSIVE ARTICLES -->
+    <div class="section-card"><h3>Part B – Artikel im Akkusativ und Dativ <span class="marks-badge">5 marks</span></h3>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Ergänzen Sie den richtigen Artikel.</p>
+      <table class="fill-table"><tr><td class="q-label">1.</td><td class="q-text">Ich gebe ___ Patientin die Tabletten.</td><td class="q-answer"><input type="text" id="art1"/></td></tr><tr><td class="q-label">2.</td><td class="q-text">Kannst du bitte ___ Arzt rufen?</td><td class="q-answer"><input type="text" id="art2"/></td></tr><tr><td class="q-label">3.</td><td class="q-text">Wir helfen ___ Kindern im Krankenhaus.</td><td class="q-answer"><input type="text" id="art3"/></td></tr><tr><td class="q-label">4.</td><td class="q-text">Ich habe ___ Termin am Montag.</td><td class="q-answer"><input type="text" id="art4"/></td></tr><tr><td class="q-label">5.</td><td class="q-text">Sie zeigt ___ Studenten das Zimmer.</td><td class="q-answer"><input type="text" id="art5"/></td></tr></table>
+    </div>
+
+    <!-- PREPOSITIONS -->
+    <div class="section-card"><h3>Part B – Präpositionen mit Kasus <span class="marks-badge">5 marks</span></h3>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Ergänzen Sie das fehlende Wort.</p>
+      <table class="fill-table"><tr><td class="q-label">1.</td><td class="q-text">Ich fahre mit ___ Straßenbahn zur Arbeit.</td><td class="q-answer"><input type="text" id="prep1"/></td></tr><tr><td class="q-label">2.</td><td class="q-text">Nach ___ Arbeit gehe ich einkaufen.</td><td class="q-answer"><input type="text" id="prep2"/></td></tr><tr><td class="q-label">3.</td><td class="q-text">Das Geschenk ist für ___ Kollegin.</td><td class="q-answer"><input type="text" id="prep3"/></td></tr><tr><td class="q-label">4.</td><td class="q-text">Am Dienstag gehen wir zu ___ Arzt.</td><td class="q-answer"><input type="text" id="prep4"/></td></tr><tr><td class="q-label">5.</td><td class="q-text">Ohne ___ Schlüssel kann ich nicht in die Wohnung.</td><td class="q-answer"><input type="text" id="prep5"/></td></tr></table>
+    </div>
+
+    <!-- SEPARABLE VERBS -->
+    <div class="section-card"><h3>Part B – Unregelmäßige Verbformen <span class="marks-badge">5 marks</span></h3>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Ergänzen Sie die richtige Verbform.</p>
+      <table class="fill-table"><tr><td class="q-label">1.</td><td class="q-text">Jonas liest ein Buch. Ich ___ eine Zeitung.</td><td class="q-answer"><input type="text" id="verb1"/></td></tr><tr><td class="q-label">2.</td><td class="q-text">Sie schläft acht Stunden. Wir ___ nur sechs Stunden.</td><td class="q-answer"><input type="text" id="verb2"/></td></tr><tr><td class="q-label">3.</td><td class="q-text">Nimmst du Zucker? Nein, ich ___ keinen Zucker.</td><td class="q-answer"><input type="text" id="verb3"/></td></tr><tr><td class="q-label">4.</td><td class="q-text">Er spricht Arabisch. ___ du auch Arabisch?</td><td class="q-answer"><input type="text" id="verb4"/></td></tr><tr><td class="q-label">5.</td><td class="q-text">Ich esse um zwölf Uhr. Wann ___ ihr?</td><td class="q-answer"><input type="text" id="verb5"/></td></tr></table>
+    </div>
+
+    <!-- PERFEKT -->
+    <div class="section-card"><h3>Part B – Negation <span class="marks-badge">5 marks</span></h3>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Schreiben Sie das fehlende Wort.</p>
+      <table class="fill-table"><tr><td class="q-label">1.</td><td class="q-text">Ich habe Hunger. → Ich habe ___ Hunger.</td><td class="q-answer"><input type="text" id="neg1"/></td></tr><tr><td class="q-label">2.</td><td class="q-text">Das ist meine Jacke. → Das ist ___ meine Jacke.</td><td class="q-answer"><input type="text" id="neg2"/></td></tr><tr><td class="q-label">3.</td><td class="q-text">Wir haben Milch. → Wir haben ___ Milch mehr.</td><td class="q-answer"><input type="text" id="neg3"/></td></tr><tr><td class="q-label">4.</td><td class="q-text">Er versteht alles. → Er versteht ___.</td><td class="q-answer"><input type="text" id="neg4"/></td></tr><tr><td class="q-label">5.</td><td class="q-text">Ich gehe heute ins Kino. → Ich gehe heute ___ ins Kino.</td><td class="q-answer"><input type="text" id="neg5"/></td></tr></table>
+    </div>
+
+    <!-- SATZBAU & W-FRAGEN -->
+    <div class="section-card"><h3>Part B – Nebensätze mit weil und dass <span class="marks-badge">5 marks</span></h3>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Connect the two sentences with the word at the end. Write the whole sentence.</p>
+      <div class="q-row"><label><span class="q-num">1.</span>Ich lerne Deutsch. / Ich möchte in Deutschland arbeiten. — weil</label><input type="text" id="clause1" placeholder="Write the whole sentence…"/></div><div class="q-row"><label><span class="q-num">2.</span>Er kommt heute nicht. / Er ist krank. — weil</label><input type="text" id="clause2" placeholder="Write the whole sentence…"/></div><div class="q-row"><label><span class="q-num">3.</span>Ich glaube. / Der Zug hat Verspätung. — dass</label><input type="text" id="clause3" placeholder="Write the whole sentence…"/></div><div class="q-row"><label><span class="q-num">4.</span>Sie sagt. / Die Wohnung ist zu teuer. — dass</label><input type="text" id="clause4" placeholder="Write the whole sentence…"/></div><div class="q-row"><label><span class="q-num">5.</span>Wir bleiben zu Hause. / Es regnet. — weil</label><input type="text" id="clause5" placeholder="Write the whole sentence…"/></div>
+    </div>
+
+    <div class="nav-row"><button class="btn btn-secondary" onclick="prevPhase()">← Back</button><button class="btn btn-primary" onclick="nextPhase()">Next: Writing →</button></div>
+  </div>
+
+  <!-- PHASE 2: WRITING -->
+  <div class="phase" id="phase-2">
+    <div class="phase-header"><div class="phase-icon" style="background:var(--p2)">✍️</div><div><h2>Phase 2 – Writing</h2><div class="marks">20 Marks</div></div></div>
+
+    <div class="section-card"><h3>Short Message <span class="marks-badge">5 marks</span></h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">It is your birthday on Saturday and you want to invite your friend Sara. Write a short <strong>WhatsApp message</strong> in German. Say what you are celebrating, when and where it is, what she should bring, and ask her to answer. Write <strong>25–30 words</strong>.</p>
+      <textarea id="short_message" placeholder="Schreib hier deine Nachricht auf Deutsch…" style="min-height:100px"></textarea>
+      <div style="font-size:12px;color:var(--muted);margin-top:6px;text-align:right" id="msg-count">0 words</div>
+    </div>
+
+    <div class="section-card"><h3>Email Writing <span class="marks-badge">15 marks</span></h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Write <strong>50–70 words in German</strong> to a German friend about your city and your week. Mention where you live, how you travel, what you do on weekdays, what you do at the weekend, and invite your friend to visit you.</p>
+      <textarea id="email_writing" placeholder="Schreib hier deine E-Mail auf Deutsch…" style="min-height:140px"></textarea>
+      <div style="font-size:12px;color:var(--muted);margin-top:6px;text-align:right" id="word-count">0 words</div>
+    </div>
+
+    <div class="nav-row"><button class="btn btn-secondary" onclick="prevPhase()">← Back</button><button class="btn btn-primary" onclick="nextPhase()">Next: Listening →</button></div>
+  </div>
+
+  <!-- PHASE 3: LISTENING -->
+  <div class="phase" id="phase-3">
+    <div class="phase-header"><div class="phase-icon" style="background:var(--p3)">🎧</div><div><h2>Phase 3 – Listening</h2><div class="marks">20 Marks</div></div></div>
+
+    <div class="audio-wrap" style="background:#fef2f2;border-color:#fca5a5">
+      <p>🔊 <strong>Ein Wochenende in München</strong> — Listen carefully, then answer all questions below about Julia. You may replay the recording as needed.</p>
+      <p style="color:#991b1b;font-weight:700;font-size:12.5px;margin:-6px 0 12px">⚠️ Recording not yet uploaded — the teacher's audio must be added here before this paper is used.</p>
+      <audio controls controlsList="nodownload" style="width:100%;border-radius:8px">
+        <!-- TODO: replace the line below with the recorded MP3, e.g.
+             <source src="data:audio/mpeg;base64,PASTE_THE_BASE64_HERE" type="audio/mpeg"> -->
+        <source src="" type="audio/mpeg">
+        Your browser does not support audio playback.
+      </audio>
+    </div>
+
+    <!-- LISTEN T/F -->
+    <div class="section-card"><h3>Part A – Richtig oder Falsch? <span class="marks-badge">5 × 1 = 5 marks</span></h3>
+      <div class="tf-grid">
+        <div class="tf-item"><div class="tf-statement"><span class="q-num">1.</span>Julia ist mit dem Zug nach München gefahren.</div><div class="tf-options"><button class="tf-btn" onclick="selectTF(this,'listen_tf1','True')">✓ True</button><button class="tf-btn" onclick="selectTF(this,'listen_tf1','False')">✗ False</button></div></div><div class="tf-item"><div class="tf-statement"><span class="q-num">2.</span>Die Fahrt hat zwei Stunden gedauert.</div><div class="tf-options"><button class="tf-btn" onclick="selectTF(this,'listen_tf2','True')">✓ True</button><button class="tf-btn" onclick="selectTF(this,'listen_tf2','False')">✗ False</button></div></div><div class="tf-item"><div class="tf-statement"><span class="q-num">3.</span>Das Hotel war teuer.</div><div class="tf-options"><button class="tf-btn" onclick="selectTF(this,'listen_tf3','True')">✓ True</button><button class="tf-btn" onclick="selectTF(this,'listen_tf3','False')">✗ False</button></div></div><div class="tf-item"><div class="tf-statement"><span class="q-num">4.</span>Am Samstag hat es geregnet.</div><div class="tf-options"><button class="tf-btn" onclick="selectTF(this,'listen_tf4','True')">✓ True</button><button class="tf-btn" onclick="selectTF(this,'listen_tf4','False')">✗ False</button></div></div><div class="tf-item"><div class="tf-statement"><span class="q-num">5.</span>Am Sonntag hat sie mit Laura gefrühstückt.</div><div class="tf-options"><button class="tf-btn" onclick="selectTF(this,'listen_tf5','True')">✓ True</button><button class="tf-btn" onclick="selectTF(this,'listen_tf5','False')">✗ False</button></div></div>
+      </div>
+    </div>
+
+    <!-- LISTEN OPEN -->
+    <div class="section-card"><h3>Part B – Antworten Sie auf die Fragen <span class="marks-badge">5 × 2 = 10 marks</span></h3>
+      <div class="q-row"><label><span class="q-num">1.</span>Wann ist Julia nach München gefahren?</label><input type="text" id="listen_q1" placeholder="Your answer in German…"/></div><div class="q-row"><label><span class="q-num">2.</span>Wie lange hat die Fahrt gedauert?</label><input type="text" id="listen_q2" placeholder="Your answer in German…"/></div><div class="q-row"><label><span class="q-num">3.</span>Was hat sie am Samstag gemacht?</label><input type="text" id="listen_q3" placeholder="Your answer in German…"/></div><div class="q-row"><label><span class="q-num">4.</span>Warum hat sie einen Regenschirm gekauft?</label><input type="text" id="listen_q4" placeholder="Your answer in German…"/></div><div class="q-row"><label><span class="q-num">5.</span>Was haben Julia und Laura gegessen?</label><input type="text" id="listen_q5" placeholder="Your answer in German…"/></div>
+    </div>
+
+    <!-- FILL BLANKS -->
+    <div class="section-card"><h3>Part C – Ergänzen Sie die Wörter <span class="marks-badge">5 × 1 = 5 marks</span></h3>
+      <table class="fill-table"><tr><td class="q-label">1.</td><td class="q-text">Julia ist mit dem ______ gefahren.</td><td class="q-answer"><input type="text" id="fill1"/></td></tr><tr><td class="q-label">2.</td><td class="q-text">Das Hotel kostet ______ Euro pro Nacht.</td><td class="q-answer"><input type="text" id="fill2"/></td></tr><tr><td class="q-label">3.</td><td class="q-text">Am Samstag war sie im Deutschen ______.</td><td class="q-answer"><input type="text" id="fill3"/></td></tr><tr><td class="q-label">4.</td><td class="q-text">Sie hat einen ______ gekauft.</td><td class="q-answer"><input type="text" id="fill4"/></td></tr><tr><td class="q-label">5.</td><td class="q-text">Um ______ Uhr ist sie nach Hause gefahren.</td><td class="q-answer"><input type="text" id="fill5"/></td></tr></table>
+    </div>
+
+    <div class="nav-row"><button class="btn btn-secondary" onclick="prevPhase()">← Back</button><button class="btn btn-primary" onclick="nextPhase()">Next: Speaking →</button></div>
+  </div>
+
+  <!-- PHASE 4: SPEAKING -->
+  <div class="phase" id="phase-4">
+    <div class="phase-header"><div class="phase-icon" style="background:var(--p4)">🗣️</div><div><h2>Phase 4 – Speaking</h2><div class="marks">20 Marks · 8–10 min per student</div></div></div>
+    <div class="section-card" style="background:#faf5ff;border-color:#d8b4fe"><p style="font-size:13.5px;color:#6b21a8">🎙️ <strong>Record your answer to each task here.</strong> Press <strong>Record</strong>, speak, then press <strong>Stop</strong>. Listen back and re-record as often as you like — only your last recording is kept. <strong>Every task must be recorded before you can submit.</strong> Speak confidently — simple German is good German!</p></div>
+
+    <div class="speaking-cards">
+      <div class="speaking-card">
+        <div class="topic-num">1</div>
+        <div class="topic-body">
+          <h4>Sich vorstellen – Introduction <span style="float:right;font-size:11px;color:var(--muted);font-weight:400">5 marks</span></h4>
+          <p>Introduce yourself in German — your <strong>name, age, hometown, family, job or studies</strong> and why you want to work in Germany.</p>
+          <input type="hidden" id="speaking_intro" value=""/><div class="voice-rec" data-task="speaking_intro"></div>
+        </div>
+      </div>
+      <div class="speaking-card">
+        <div class="topic-num">2</div>
+        <div class="topic-body">
+          <h4>My Family <span style="float:right;font-size:11px;color:var(--muted);font-weight:400">5 marks</span></h4>
+          <p>Describe your family in German — the people, where they live, what they do, and who you are closest to. Speak for <strong>1–2 minutes</strong>.</p>
+          <input type="hidden" id="speaking_family" value=""/><div class="voice-rec" data-task="speaking_family"></div>
+        </div>
+      </div>
+      <div class="speaking-card">
+        <div class="topic-num">3</div>
+        <div class="topic-body">
+          <h4>Meine Wohnung &amp; meine Stadt <span style="float:right;font-size:11px;color:var(--muted);font-weight:400">5 marks</span></h4>
+          <p>Talk for <strong>1–2 minutes</strong> about where you live. How many rooms are there, what is in your room, who do you live with, and what do you like about your city?</p>
+          <input type="hidden" id="speaking_wohnung" value=""/><div class="voice-rec" data-task="speaking_wohnung"></div>
+        </div>
+      </div>
+      <div class="speaking-card">
+        <div class="topic-num">4</div>
+        <div class="topic-body">
+          <h4>Role Play – Am Bahnhof <span style="float:right;font-size:11px;color:var(--muted);font-weight:400">5 marks</span></h4>
+          <p>You are buying a train ticket, the examiner works at the ticket counter. Say where you want to travel, when, ask for the price, ask which platform, and say thank you. Use: <strong>Ich möchte nach…, Wann fährt…?, Was kostet…?, Welches Gleis?, Vielen Dank!</strong></p>
+          <input type="hidden" id="speaking_roleplay" value=""/><div class="voice-rec" data-task="speaking_roleplay"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-row"><button class="btn btn-secondary" onclick="prevPhase()">← Back</button><button class="btn btn-submit" onclick="submitExam()" id="submit-btn">Submit Exam ✓</button></div>
+  </div>
+
+  <div id="success-screen"><div class="check">✓</div><h2>Exam Submitted!</h2><p>Your answers have been saved. Your teacher will review your responses.</p><div class="ref-id" id="ref-id-display"></div></div>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL='https://uxdrldreaockdloqvojs.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4ZHJsZHJlYW9ja2Rsb3F2b2pzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzE2MjIsImV4cCI6MjA4OTQwNzYyMn0.swqYBfGzHP5qSDPnZ_AivFE0zljyK33Kq-_ephz4Ybc';
+const EXAM_TABLE='a1_retest2_german_exam_responses';
+let currentPhase=0;const totalPhases=5;const tfAnswers={};
+function renderSteps(){const c=document.getElementById('steps');c.innerHTML='';['Info','Reading','Writing','Listening','Speaking'].forEach((_,i)=>{const d=document.createElement('div');d.className='step-dot'+(i<currentPhase?' done':'')+(i===currentPhase?' active':'');c.appendChild(d)});document.getElementById('progress-fill').style.width=(currentPhase/(totalPhases-1)*100)+'%';document.getElementById('progress-label').textContent='Step '+(currentPhase+1)+' of '+totalPhases}
+function showPhase(n){document.querySelectorAll('.phase').forEach(el=>el.classList.remove('active'));document.getElementById('phase-'+n).classList.add('active');currentPhase=n;renderSteps();window.scrollTo({top:0,behavior:'smooth'})}
+function nextPhase(){if(currentPhase===0){if(!document.getElementById('student_name').value.trim()){showToast('Please enter your name.','error-t');return}if(!document.getElementById('mobile_number').value.trim()){showToast('Please enter your mobile number.','error-t');return}}if(currentPhase<totalPhases-1)showPhase(currentPhase+1)}
+function prevPhase(){if(currentPhase>0)showPhase(currentPhase-1)}
+function selectTF(btn,field,value){const p=btn.closest('.tf-options');p.querySelectorAll('.tf-btn').forEach(b=>b.classList.remove('selected-true','selected-false'));btn.classList.add(value==='True'?'selected-true':'selected-false');tfAnswers[field]=value}
+function wordCounter(taId,outId,lo,hi){const ta=document.getElementById(taId);ta.addEventListener('input',function(){const w=this.value.trim().split(/\s+/).filter(x=>x).length;const el=document.getElementById(outId);el.textContent=w+' words';el.style.color=w>=lo&&w<=hi?'#059669':w>hi?'#dc2626':'#6b7280'})}
+wordCounter('short_message','msg-count',25,30);
+wordCounter('email_writing','word-count',50,70);
+function v(id){const el=document.getElementById(id);return el?el.value.trim():''}
+function collectData(){return{
+  student_name:v('student_name'),mobile_number:v('mobile_number'),
+  tf1:tfAnswers['tf1']||'',tf2:tfAnswers['tf2']||'',tf3:tfAnswers['tf3']||'',tf4:tfAnswers['tf4']||'',tf5:tfAnswers['tf5']||'',
+  q1:v('q1'),q2:v('q2'),q3:v('q3'),q4:v('q4'),q5:v('q5'),
+  grammar_plural:[v('plur1'),v('plur2'),v('plur3'),v('plur4'),v('plur5')].join(' | '),
+  grammar_kasus:[v('art1'),v('art2'),v('art3'),v('art4'),v('art5')].join(' | '),
+  grammar_praepositionen:[v('prep1'),v('prep2'),v('prep3'),v('prep4'),v('prep5')].join(' | '),
+  grammar_verben:[v('verb1'),v('verb2'),v('verb3'),v('verb4'),v('verb5')].join(' | '),
+  grammar_negation:[v('neg1'),v('neg2'),v('neg3'),v('neg4'),v('neg5')].join(' | '),
+  grammar_nebensatz:[v('clause1'),v('clause2'),v('clause3'),v('clause4'),v('clause5')].join(' | '),
+  short_message:v('short_message'),
+  email_writing:v('email_writing'),
+  listen_tf1:tfAnswers['listen_tf1']||'',listen_tf2:tfAnswers['listen_tf2']||'',listen_tf3:tfAnswers['listen_tf3']||'',listen_tf4:tfAnswers['listen_tf4']||'',listen_tf5:tfAnswers['listen_tf5']||'',
+  listen_q1:v('listen_q1'),listen_q2:v('listen_q2'),listen_q3:v('listen_q3'),listen_q4:v('listen_q4'),listen_q5:v('listen_q5'),
+  listen_fill_blanks:[v('fill1'),v('fill2'),v('fill3'),v('fill4'),v('fill5')].join(' | '),
+  speaking_intro:v('speaking_intro'),speaking_family:v('speaking_family'),speaking_wohnung:v('speaking_wohnung'),speaking_roleplay:v('speaking_roleplay')
+}}
+async function submitExam(){
+  const btn=document.getElementById('submit-btn');btn.disabled=true;btn.textContent='Submitting…';
+  const data=collectData();
+  if(!data.student_name){showToast('Missing name — go back and fill it in.','error-t');btn.disabled=false;btn.textContent='Submit Exam ✓';return}
+  try{
+    const res=await fetch(SUPABASE_URL+'/rest/v1/'+EXAM_TABLE,{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=representation'},body:JSON.stringify(data)});
+    if(!res.ok){const t=await res.text();throw new Error(t||('HTTP '+res.status))}
+    const rows=await res.json();
+    document.querySelectorAll('.phase').forEach(el=>el.classList.remove('active'));
+    document.querySelector('.progress-wrap').style.display='none';
+    document.getElementById('steps').style.display='none';
+    document.getElementById('success-screen').style.display='block';
+    document.getElementById('ref-id-display').textContent='Ref: '+((rows&&rows[0]&&rows[0].id)?String(rows[0].id).slice(0,8).toUpperCase():'SAVED');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }catch(e){
+    showToast('Submit failed: '+e.message,'error-t');
+    btn.disabled=false;btn.textContent='Submit Exam ✓';
+  }
+}
+function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type||'')+' show';setTimeout(()=>t.className='toast',3500)}
+renderSteps();
+
+/* ── EXAM INTEGRITY MONITOR ──────────────────────────────────────────────
+   Counts tab / window switches once the exam has actually started. A short
+   interruption -- a phone call, a notification, a quick app switch -- is NOT
+   leaving the exam: an absence is only counted once it passes GRACE_MS. Every
+   counted switch raises a warning popup naming the consequence.
+   Five warnings, then the paper is submitted automatically. Also blocks copy
+   and paste, the usual view-source shortcuts, and right-click on a mouse
+   (never a long-press on a touchscreen).
+   This is client-side only: a deterrent and an audit trail, not a
+   guarantee. It cannot see a second device. */
+const PROCTOR = (function () {
+  const MAX_STRIKES = 6;
+  const GRACE_MS    = 30000; // an absence shorter than this is ignored entirely
+  const GRACE_S     = Math.round(GRACE_MS / 1000);  // the copy below reads from this
+  const BLUR_MS     = GRACE_MS; // window must stay unfocused this long to count
+  const DEDUPE_MS   = 2000;  // one switch fires blur AND visibilitychange
+  const MAX_BRIEF   = 25;    // cap on logged-but-not-counted interruptions
+
+  let strikes = 0, ended = false, hiddenAt = 0, blurTimer = null, lastAt = 0, brief = 0;
+  const log = [];
+  const armed = () => !ended && typeof currentPhase !== 'undefined' && currentPhase >= 1;
+  const stamp = () => new Date().toLocaleTimeString('en-GB', {hour12: false});
+
+  function overlay(zIndex) {
+    const o = document.createElement('div');
+    o.style.cssText = 'position:fixed;inset:0;background:rgba(15,15,19,.85);z-index:' + zIndex +
+      ';display:flex;align-items:center;justify-content:center;padding:24px;font-family:inherit';
+    return o;
+  }
+
+  function showWarning(secs) {
+    const left = MAX_STRIKES - strikes;
+    const o = overlay(99998);
+    o.innerHTML =
+      '<div style="background:#fff;border-radius:14px;max-width:430px;width:100%;padding:30px 28px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)">' +
+        '<div style="font-size:42px;line-height:1;margin-bottom:12px">&#9888;&#65039;</div>' +
+        '<h3 style="font-size:19px;margin-bottom:10px;color:#991b1b;font-weight:700">Warning ' + strikes + ' of ' + MAX_STRIKES + '</h3>' +
+        '<p style="font-size:13.5px;line-height:1.75;color:#374151;margin-bottom:16px">You left the exam screen for about ' + secs + ' seconds. This has been recorded and your examiner will see it.</p>' +
+        '<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:9px;padding:13px 15px;margin-bottom:16px">' +
+          '<p style="font-size:13.5px;line-height:1.7;color:#991b1b;margin:0">' +
+            '<strong>If you keep switching tabs or leaving this screen, your exam will be submitted automatically and you will not be able to carry on.</strong><br><br>' +
+            'You have <strong>' + left + ' more ' + (left === 1 ? 'chance' : 'chances') + '</strong> before that happens.</p>' +
+        '</div>' +
+        '<p style="font-size:12.5px;line-height:1.65;color:#6b7280;margin-bottom:20px">Staying away for under ' + GRACE_S + ' seconds &mdash; a quick call or a notification &mdash; is never counted.</p>' +
+        '<button type="button" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:12px 30px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">Return to exam</button>' +
+      '</div>';
+    o.querySelector('button').onclick = function () { o.remove(); };
+    document.body.appendChild(o);
+  }
+
+  let endBox = null;
+  function showEnd(html) {
+    if (!endBox) {
+      const o = overlay(99999);
+      o.innerHTML = '<div id="proctor-end-box" style="background:#fff;border-radius:14px;max-width:440px;width:100%;padding:32px 28px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4)"></div>';
+      document.body.appendChild(o);
+      endBox = o.querySelector('#proctor-end-box');
+    }
+    endBox.innerHTML = html;
+  }
+
+  async function endExam() {
+    if (ended) return;
+    ended = true;
+    showEnd('<div style="font-size:42px;margin-bottom:12px">&#128274;</div>' +
+      '<h3 style="font-size:19px;margin-bottom:10px;color:#991b1b;font-weight:700">Exam ended</h3>' +
+      '<p style="font-size:13.5px;line-height:1.7;color:#374151">You left the exam screen ' + MAX_STRIKES + ' times after being warned. Your answers are being submitted&hellip;</p>');
+    try { await submitExam(); } catch (e) { /* submitExam handles its own errors */ }
+    const scr = document.getElementById('success-screen');
+    const ok = scr && scr.style.display === 'block';
+    if (ok) {
+      showEnd('<div style="font-size:42px;margin-bottom:12px">&#128274;</div>' +
+        '<h3 style="font-size:19px;margin-bottom:10px;color:#991b1b;font-weight:700">Exam submitted automatically</h3>' +
+        '<p style="font-size:13.5px;line-height:1.7;color:#374151">You left the exam screen ' + MAX_STRIKES + ' times after being warned, so the paper was submitted with the answers you had completed.<br><br>Please speak to your teacher.</p>');
+    } else {
+      showEnd('<div style="font-size:42px;margin-bottom:12px">&#9888;&#65039;</div>' +
+        '<h3 style="font-size:19px;margin-bottom:10px;color:#991b1b;font-weight:700">Exam ended — submission failed</h3>' +
+        '<p style="font-size:13.5px;line-height:1.7;color:#374151;margin-bottom:20px">Your exam was ended but the answers could not be sent. Check your internet connection and press retry, or tell your teacher immediately.</p>' +
+        '<button type="button" id="proctor-retry" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:12px 30px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">Retry submission</button>');
+      const btn = document.getElementById('proctor-retry');
+      if (btn) btn.onclick = function () { ended = false; endBox = null;
+        document.querySelectorAll('div[style*="99999"]').forEach(function (n) { n.remove(); }); endExam(); };
+    }
+  }
+
+  function violation(kind, secs) {
+    if (!armed() || (window.__gcbProctorQuiet && window.__gcbProctorQuiet())) return;
+    const now = Date.now();
+    if (now - lastAt < DEDUPE_MS) return;
+    lastAt = now;
+    strikes++;
+    log.push('#' + strikes + ' ' + kind + ' at ' + stamp());
+    if (strikes >= MAX_STRIKES) endExam(); else showWarning(secs || GRACE_S);
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) { hiddenAt = Date.now(); return; }
+    if (!hiddenAt) return;
+    const away = Date.now() - hiddenAt;
+    hiddenAt = 0;
+    if (away > GRACE_MS) { violation('left the exam tab for ' + Math.round(away / 1000) + 's', Math.round(away / 1000)); }
+    else if (armed() && brief < MAX_BRIEF) {
+      // Kept for the examiner's audit trail, but it costs the student nothing.
+      brief++;
+      log.push('(not counted) brief interruption of ' + Math.round(away / 1000) + 's at ' + stamp());
+    }
+  });
+  window.addEventListener('blur', function () {
+    clearTimeout(blurTimer);
+    blurTimer = setTimeout(function () { if (!document.hidden) violation('switched to another window', GRACE_S); }, BLUR_MS);
+  });
+  window.addEventListener('focus', function () { clearTimeout(blurTimer); });
+
+  ['copy', 'cut', 'paste'].forEach(function (ev) {
+    document.addEventListener(ev, function (e) {
+      if (!armed()) return;
+      e.preventDefault();
+      showToast(ev === 'paste' ? 'Pasting is disabled during this exam.' : 'Copying is disabled during this exam.', 'error-t');
+    });
+  });
+
+  // Right-click is blocked on laptops and desktops only. On a phone or tablet
+  // the same event is a long-press, which is how a student selects text or
+  // places the cursor, so it is left alone there. A touchscreen laptop gets
+  // both: the mouse is blocked, the long-press is not.
+  const hasMouse = !window.matchMedia || window.matchMedia('(any-pointer: fine)').matches;
+  let lastPointerType = '';
+  document.addEventListener('pointerdown', function (e) { lastPointerType = e.pointerType || ''; }, true);
+  document.addEventListener('contextmenu', function (e) {
+    if (!armed() || !hasMouse) return;
+    if (lastPointerType === 'touch' || lastPointerType === 'pen') return;
+    e.preventDefault();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (!armed() || !e.key) return;
+    const k = String(e.key).toUpperCase();
+    if (k === 'F12' || (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].indexOf(k) > -1) ||
+        (e.ctrlKey && ['U', 'S', 'P'].indexOf(k) > -1)) {
+      e.preventDefault();
+      showToast('That shortcut is disabled during the exam.', 'error-t');
+    }
+  });
+
+  window.addEventListener('beforeunload', function (e) {
+    if (armed()) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  (function () {
+    const p0 = document.getElementById('phase-0');
+    if (!p0) return;
+    const d = document.createElement('div');
+    d.style.cssText = 'background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;padding:16px 18px;margin-bottom:20px;font-size:13px;line-height:1.75;color:#991b1b';
+    d.innerHTML = '<strong style="display:block;font-size:13.5px;margin-bottom:8px">&#9888;&#65039; Exam rules — please read before you begin</strong>' +
+      'This exam is monitored. Once you press Start, please stay on this screen and do not switch to another app or window.<br>' +
+      '<strong>A short interruption is fine.</strong> If a call or a notification takes you away for less than ' + GRACE_S + ' seconds, nothing is counted against you.<br>' +
+      'Leaving for longer than ' + GRACE_S + ' seconds is recorded and you will see a warning each time. After ' + (MAX_STRIKES - 1) + ' warnings, the ' + MAX_STRIKES + 'th time your exam is <strong>submitted automatically</strong> and you cannot carry on.<br>' +
+      'Your microphone is requested <strong>once</strong>, on this screen &mdash; allow it and you will not be asked again.<br>' +
+      'Copying and pasting are disabled. Keep this tab open until you press Submit.';
+    const nav = p0.querySelector('.nav-row');
+    if (nav) p0.insertBefore(d, nav); else p0.appendChild(d);
+  })();
+
+  return {
+    count: function () { return strikes; },
+    log:   function () { return log.join(' | '); },
+    auto:  function () { return strikes >= MAX_STRIKES; }
+  };
+})();
+
+const _collectDataBase = collectData;
+collectData = function () {
+  const d = _collectDataBase();
+  d.tab_switches   = PROCTOR.count();
+  d.violation_log  = PROCTOR.log();
+  d.auto_submitted = PROCTOR.auto();
+  return d;
+};
+
+</script>
+
+<style id="voice-rec-css">
+.voice-rec{margin-top:10px;padding:12px 14px;border:1.5px dashed #d8b4fe;border-radius:10px;background:#fdfaff}
+.voice-rec.vr-saved{border-style:solid;border-color:#86efac;background:#f0fdf4}
+.voice-rec.vr-failed{border-style:solid;border-color:#fca5a5;background:#fef2f2}
+.voice-rec.vr-recording{border-style:solid;border-color:#f87171;background:#fff1f2}
+.voice-rec.vr-missing{box-shadow:0 0 0 3px rgba(220,38,38,.35)}
+.voice-rec audio{width:100%;height:38px;margin-bottom:8px}
+.vr-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.vr-btn{font:inherit;font-size:13px;font-weight:600;border-radius:8px;padding:8px 16px;cursor:pointer;border:1.5px solid #7c3aed;background:#7c3aed;color:#fff}
+.vr-btn.vr-stop{background:#dc2626;border-color:#dc2626}
+.vr-btn.vr-ghost{background:#fff;color:#7c3aed}
+.vr-btn:disabled{opacity:.5;cursor:default}
+.vr-note{font-size:12.5px;color:#6b7280}
+.vr-dot{width:12px;height:12px;border-radius:50%;background:#dc2626;animation:vrpulse 1s infinite}
+@keyframes vrpulse{50%{opacity:.25}}
+.vr-time{font-variant-numeric:tabular-nums;font-weight:700;font-size:15px;color:#991b1b;min-width:44px}
+.vr-st{font-size:13px;font-weight:600}
+.vr-st.ok{color:#15803d}.vr-st.up{color:#7c3aed}.vr-st.bad{color:#b91c1c}
+.vr-meter{height:8px;border-radius:4px;background:#ede9fe;margin-top:10px;overflow:hidden}
+#vr-meter-bar{height:100%;width:0;background:#22c55e;transition:width .08s}
+</style>
+
+<script id="voice-rec-js">
+/* ── SPEAKING: IN-BROWSER VOICE RECORDING ─────────────────────────────────
+   Each clip is uploaded to the private `speaking-audio` bucket the moment the
+   student presses Stop. Students can upload but cannot list or play back any
+   stored file; only signed-in examiners can. Files are deleted after 15 days. */
+const VOICE = (function () {
+  const LEVEL = "a1r2", TABLE = "a1_retest2_german_exam_responses", TASKS = ["speaking_intro", "speaking_family", "speaking_wohnung", "speaking_roleplay"];
+  const BUCKET = 'speaking-audio';
+  const SAFETY_MAX_S = 600;           // a forgotten recording stops itself at 10 min
+  const SUB_ID = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+    : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); });
+  const state = {};
+  TASKS.forEach(function (t) { state[t] = { status: 'empty' }; });
+  let active = null, micOK = false;
+  const sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+
+  function supported() {
+    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+  }
+  function pickMime() {
+    const c = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'];
+    for (let i = 0; i < c.length; i++) { try { if (MediaRecorder.isTypeSupported(c[i])) return c[i]; } catch (e) {} }
+    return '';
+  }
+  function extFor(t) {
+    t = (t || '').split(';')[0];
+    return t === 'audio/mp4' ? 'm4a' : t === 'audio/ogg' ? 'ogg' : t === 'audio/mpeg' ? 'mp3' : t === 'audio/wav' ? 'wav' : 'webm';
+  }
+  function fmt(s) { s = Math.round(s || 0); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+
+  // The browser's microphone permission popup can take focus away from the
+  // page. That is not the student leaving the exam, so the monitor stays quiet.
+  let quietUntil = 0;
+  window.__gcbProctorQuiet = function () { return Date.now() < quietUntil; };
+  // The microphone is requested ONCE and the stream is then kept alive for the
+  // whole exam, so the browser asks for permission a single time. Releasing a
+  // stream and re-acquiring it per question is exactly what makes phones
+  // (Android's one-tap "Allow this time", iOS Safari) prompt again every time.
+  let micStream = null;
+  function micLive() {
+    return !!(micStream && micStream.getAudioTracks().some(function (t) { return t.readyState === 'live'; }));
+  }
+  function releaseMic() {
+    if (micStream) { micStream.getTracks().forEach(function (t) { t.stop(); }); micStream = null; }
+  }
+  // Holding the permission open is not the same as listening: between questions
+  // the track is muted, so nothing is captured until the student presses Record.
+  function micCapture(on) {
+    if (micStream) micStream.getAudioTracks().forEach(function (t) { t.enabled = !!on; });
+  }
+  async function getMic() {
+    if (micLive()) return micStream;   // already granted and still open: no second prompt
+    releaseMic();                      // a dead stream (interrupted by a call) is replaced
+    quietUntil = Date.now() + 60000;
+    try {
+      micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+      return micStream;
+    } finally { quietUntil = Date.now() + 2500; }
+  }
+
+  function syncHidden(task) {
+    const h = document.getElementById(task);
+    if (h) h.value = state[task].status === 'saved' ? 'recorded' : '';
+  }
+
+  function render(task) {
+    const box = document.querySelector('.voice-rec[data-task="' + task + '"]');
+    if (!box) return;
+    const s = state[task];
+    let h;
+    if (s.status === 'recording') {
+      h = '<div class="vr-row"><span class="vr-dot"></span><span class="vr-time" id="vr-t-' + task + '">' + fmt(s.secs) + '</span>' +
+          '<button type="button" class="vr-btn vr-stop" data-act="stop">&#9632; Stop</button></div>' +
+          '<div class="vr-note" style="margin-top:6px">Recording&hellip; speak now. Press Stop when you have finished.</div>';
+    } else if (s.status === 'empty') {
+      h = '<div class="vr-row"><button type="button" class="vr-btn" data-act="rec">&#9679; Record answer</button>' +
+          '<span class="vr-note">Not recorded yet</span></div>';
+    } else {
+      const st = s.status === 'uploading' ? '<span class="vr-st up">Saving&hellip;</span>'
+        : s.status === 'saved' ? '<span class="vr-st ok">&#10003; Saved (' + fmt(s.secs) + ')</span>'
+        : '<span class="vr-st bad">Not saved &mdash; check your internet</span><button type="button" class="vr-btn" data-act="retry">Retry upload</button>';
+      h = '<audio controls preload="metadata" src="' + s.url + '"></audio><div class="vr-row">' + st +
+          (s.status !== 'uploading' ? '<button type="button" class="vr-btn vr-ghost" data-act="rec">&#8634; Re-record</button>' : '') + '</div>';
+    }
+    box.innerHTML = h;
+    box.className = 'voice-rec vr-' + s.status;
+  }
+
+  async function start(task) {
+    if (active) { showToast('Stop the other recording first.', 'error-t'); return; }
+    if (!supported()) { showToast('This browser cannot record audio. Please use Google Chrome.', 'error-t'); return; }
+    const s = state[task];
+    let stream;
+    try { stream = await getMic(); }
+    catch (e) { showToast('Microphone blocked. Allow microphone access for this page and try again.', 'error-t'); return; }
+    micCapture(true);
+    const mime = pickMime();
+    let rec;
+    try { rec = new MediaRecorder(stream, mime ? { mimeType: mime, audioBitsPerSecond: 32000 } : { audioBitsPerSecond: 32000 }); }
+    catch (e) { rec = new MediaRecorder(stream); }
+    const chunks = [], prev = Object.assign({}, s), started = Date.now();
+    let timer = null;
+    rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = function () {
+      clearInterval(timer);
+      micCapture(false);   // permission stays granted, but the mic stops listening
+      active = null;       // the stream stays open, ready for the next question
+      const secs = (Date.now() - started) / 1000;
+      const blob = new Blob(chunks, { type: rec.mimeType || mime || 'audio/webm' });
+      if (blob.size < 500 || secs < 1) {
+        Object.assign(s, prev); if (s.status === 'recording') s.status = 'empty';
+        syncHidden(task); render(task);
+        showToast('That recording was empty — please try again.', 'error-t');
+        return;
+      }
+      if (prev.url) URL.revokeObjectURL(prev.url);
+      s.blob = blob; s.url = URL.createObjectURL(blob); s.secs = secs; s.path = null;
+      upload(task);
+    };
+    active = { task: task, rec: rec };
+    rec.start(1000);
+    s.status = 'recording'; s.secs = 0; syncHidden(task); render(task);
+    timer = setInterval(function () {
+      const secs = (Date.now() - started) / 1000;
+      s.secs = secs;
+      const el = document.getElementById('vr-t-' + task);
+      if (el) el.textContent = fmt(secs);
+      if (!micLive() && rec.state === 'recording') {
+        showToast('The microphone was interrupted. Whatever was recorded has been kept — please check it and re-record if needed.', 'error-t');
+        rec.stop(); return;
+      }
+      if (secs >= SAFETY_MAX_S && rec.state === 'recording') { showToast('Recording stopped automatically at 10 minutes.', ''); rec.stop(); }
+    }, 500);
+  }
+  function stop() { if (active && active.rec.state === 'recording') active.rec.stop(); }
+
+  function upload(task) {
+    const s = state[task];
+    s.status = 'uploading'; syncHidden(task); render(task);
+    const type = (s.blob.type || 'audio/webm').split(';')[0];
+    const path = LEVEL + '/' + SUB_ID + '/' + task + '_' + Date.now() + '.' + extFor(type);
+    const p = (async function () {
+      for (let i = 0; i < 3; i++) {
+        try {
+          const r = await fetch(SUPABASE_URL + '/storage/v1/object/' + BUCKET + '/' + path, {
+            method: 'POST',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': type, 'x-upsert': 'false' },
+            body: s.blob
+          });
+          if (r.ok) return true;
+          if (r.status >= 400 && r.status < 500 && r.status !== 408 && r.status !== 429) {
+            console.error('audio upload rejected', r.status, await r.text()); return false;
+          }
+        } catch (e) { console.error('audio upload', e); }
+        await sleep(1500 * (i + 1));
+      }
+      return false;
+    })();
+    s.pending = p;
+    return p.then(function (ok) {
+      if (s.pending !== p) return;          // superseded by a newer recording
+      s.pending = null;
+      s.status = ok ? 'saved' : 'failed';
+      s.path = ok ? path : null;
+      syncHidden(task); render(task);
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+    const b = e.target.closest && e.target.closest('.voice-rec [data-act]');
+    if (!b) return;
+    const task = b.closest('.voice-rec').getAttribute('data-task');
+    const act = b.getAttribute('data-act');
+    if (act === 'rec') start(task); else if (act === 'stop') stop(); else if (act === 'retry') upload(task);
+  });
+
+  // ── microphone check on the first screen ──
+  (function () {
+    const p0 = document.getElementById('phase-0');
+    if (!p0) return;
+    const card = document.createElement('div');
+    card.className = 'section-card'; card.id = 'vr-miccheck';
+    card.innerHTML = '<h3>Microphone check</h3>' +
+      '<p style="font-size:13px;color:#6b7280;margin-bottom:12px;line-height:1.6">The speaking part is recorded here in your browser. ' +
+      'Test your microphone now &mdash; you cannot start the exam until it works.</p>' +
+      '<div class="vr-row"><button type="button" class="vr-btn" id="vr-mic-btn">&#127908; Test microphone</button>' +
+      '<span class="vr-note" id="vr-mic-st"></span></div><div class="vr-meter"><div id="vr-meter-bar"></div></div>';
+    const nav = p0.querySelector('.nav-row');
+    if (nav) p0.insertBefore(card, nav); else p0.appendChild(card);
+    const st = card.querySelector('#vr-mic-st'), bar = card.querySelector('#vr-meter-bar');
+    if (!supported()) {
+      st.innerHTML = '<span style="color:#b91c1c;font-weight:600">This browser cannot record audio. Open this exam in Google Chrome on a phone or laptop.</span>';
+    }
+    card.querySelector('#vr-mic-btn').onclick = async function () {
+      if (!supported()) return;
+      st.textContent = 'Asking for permission…';
+      let stream;
+      try { stream = await getMic(); }
+      catch (e) { st.innerHTML = '<span style="color:#b91c1c;font-weight:600">Microphone blocked. Click the lock icon in the address bar, allow the microphone, then test again.</span>'; return; }
+      micOK = true;
+      st.innerHTML = '<span style="color:#15803d;font-weight:600">&#10003; Microphone works. Say something &mdash; the bar should move.</span>';
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        const ac = new AC(), an = ac.createAnalyser();
+        ac.createMediaStreamSource(stream).connect(an);
+        const buf = new Uint8Array(an.fftSize), t0 = Date.now();
+        (function tick() {
+          an.getByteTimeDomainData(buf);
+          let peak = 0; for (let i = 0; i < buf.length; i++) peak = Math.max(peak, Math.abs(buf[i] - 128));
+          bar.style.width = Math.min(100, peak / 64 * 100) + '%';
+          if (Date.now() - t0 < 5000) requestAnimationFrame(tick);
+          else { bar.style.width = '0'; ac.close(); micCapture(false); }   // stays granted, stops listening
+        })();
+      } catch (e) { micCapture(false); /* meter unavailable; the mic itself is fine and stays granted */ }
+    };
+  })();
+
+  const _nextPhase = nextPhase;
+  nextPhase = function () {
+    if (currentPhase === 0 && !micOK &&
+        document.getElementById('student_name').value.trim() && document.getElementById('mobile_number').value.trim()) {
+      showToast('Please test your microphone first.', 'error-t');
+      const c = document.getElementById('vr-miccheck'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    return _nextPhase();
+  };
+
+  TASKS.forEach(render);
+
+  function paths() {
+    const o = {};
+    TASKS.forEach(function (t) { if (state[t].status === 'saved' && state[t].path) o[t] = state[t].path; });
+    return o;
+  }
+
+  function showSuccess() {
+    document.querySelectorAll('.phase').forEach(function (el) { el.classList.remove('active'); });
+    const pw = document.querySelector('.progress-wrap'); if (pw) pw.style.display = 'none';
+    const steps = document.getElementById('steps'); if (steps) steps.style.display = 'none';
+    const main = document.querySelector('main'); if (main) main.style.display = '';
+    document.getElementById('success-screen').style.display = 'block';
+    document.getElementById('ref-id-display').textContent = 'Submission ID: ' + SUB_ID.slice(0, 8).toUpperCase();
+    currentPhase = -1;                        // exam over: switch the monitor off
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  submitExam = async function () {
+    const btn = document.getElementById('submit-btn');
+    const auto = (typeof PROCTOR !== 'undefined') && PROCTOR.auto();
+    if (!document.getElementById('student_name').value.trim()) {
+      showToast('Missing name — go back and fill it in.', 'error-t'); return;
+    }
+    if (!auto) {
+      if (active) { showToast('Stop your recording before submitting.', 'error-t'); return; }
+      if (TASKS.some(function (t) { return state[t].status === 'uploading'; })) {
+        showToast('Please wait — your recordings are still saving.', 'error-t'); return;
+      }
+      const missing = TASKS.filter(function (t) { return state[t].status !== 'saved'; });
+      document.querySelectorAll('.voice-rec').forEach(function (b) { b.classList.remove('vr-missing'); });
+      if (missing.length) {
+        missing.forEach(function (t) { const b = document.querySelector('.voice-rec[data-task="' + t + '"]'); if (b) b.classList.add('vr-missing'); });
+        const nums = missing.map(function (t) { return TASKS.indexOf(t) + 1; });
+        showToast('Record every speaking task before submitting. Missing: task ' + nums.join(', '), 'error-t');
+        const first = document.querySelector('.voice-rec[data-task="' + missing[0] + '"]');
+        if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+    } else {
+      stop();                                 // keep whatever was being said
+      await sleep(400);
+      const pend = TASKS.map(function (t) { return state[t].pending; }).filter(Boolean);
+      await Promise.race([Promise.all(pend), sleep(20000)]);
+    }
+    if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+    const data = collectData();
+    data.id = SUB_ID;
+    data.speaking_audio = paths();
+    try {
+      let res = null;
+      for (let i = 0; i < 3; i++) {
+        try {
+          res = await fetch(SUPABASE_URL + '/rest/v1/' + TABLE, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Prefer': 'return=minimal' },
+            body: JSON.stringify(data)
+          });
+          break;
+        } catch (e) { if (i === 2) throw e; await sleep(1500 * (i + 1)); }
+      }
+      // 409 = this exact submission is already saved (an earlier attempt got through)
+      if (!res.ok && res.status !== 409) {
+        const t = await res.text(); let m = t;
+        try { m = JSON.parse(t).message || t; } catch (e) {}
+        throw new Error(m || ('HTTP ' + res.status));
+      }
+      releaseMic();
+      showSuccess();
+      showToast('Exam submitted!', 'success');
+    } catch (err) {
+      console.error(err);
+      showToast('Error: ' + err.message, 'error-t');
+      if (btn) { btn.disabled = false; btn.textContent = 'Submit Exam ✓'; }
+    }
+  };
+
+  return { id: function () { return SUB_ID; }, state: state, paths: paths,
+           micReady: function () { return micOK; }, micLive: micLive, releaseMic: releaseMic,
+           micCapturing: function () { return !!(micStream && micStream.getAudioTracks().some(function (t) { return t.enabled; })); },
+           recordingFor: function (t) { return state[t].status; } };
+})();
+</script>
+</body>
+</html>
