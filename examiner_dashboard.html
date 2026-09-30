@@ -78,6 +78,7 @@ td{padding:12px 14px;vertical-align:middle}
 .badge-a1{background:#d1fae5;color:#065f46}
 .badge-a2{background:#e0e7ff;color:#3730a3}
 .badge-a1r{background:#fef3c7;color:#92400e}
+.badge-a1r2{background:#dbeafe;color:#1e40af}
 .score-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700}
 .score-none{background:#f3f4f6;color:#9ca3af}
 .score-low{background:#fee2e2;color:#991b1b}
@@ -211,7 +212,8 @@ td{padding:12px 14px;vertical-align:middle}
         <div class="stat-card"><div class="label">Total</div><div class="value" id="stat-total">—</div><div class="sub">submissions</div></div>
         <div class="stat-card"><div class="label">A2</div><div class="value" id="stat-a2">—</div></div>
         <div class="stat-card"><div class="label">A1</div><div class="value" id="stat-a1">—</div></div>
-        <div class="stat-card"><div class="label">A1 Retest</div><div class="value" id="stat-a1r">—</div></div>
+        <div class="stat-card"><div class="label">A1 Retest 01</div><div class="value" id="stat-a1r">—</div></div>
+        <div class="stat-card"><div class="label">A1 Retest 02</div><div class="value" id="stat-a1r2">—</div></div>
         <div class="stat-card"><div class="label">Marked</div><div class="value" id="stat-marked">—</div><div class="sub">of total</div></div>
         <div class="stat-card"><div class="label">Flagged</div><div class="value" id="stat-flagged">—</div><div class="sub">integrity</div></div>
         <div class="stat-card"><div class="label">Latest</div><div class="value" style="font-size:15px;margin-top:4px" id="stat-latest">—</div><div class="sub" id="stat-latest-name">—</div></div>
@@ -223,7 +225,8 @@ td{padding:12px 14px;vertical-align:middle}
         <button class="tab active" onclick="switchTab('all')">All</button>
         <button class="tab" onclick="switchTab('a2')">A2 Exam</button>
         <button class="tab" onclick="switchTab('a1')">A1 Exam</button>
-        <button class="tab" onclick="switchTab('a1r')">A1 Retest</button>
+        <button class="tab" onclick="switchTab('a1r')">A1 Retest 01</button>
+        <button class="tab" onclick="switchTab('a1r2')">A1 Retest 02</button>
       </div>
 
       <div class="controls">
@@ -256,7 +259,8 @@ td{padding:12px 14px;vertical-align:middle}
             <button class="tab active" onclick="switchLBTab('all')">All</button>
             <button class="tab" onclick="switchLBTab('a2')">A2</button>
             <button class="tab" onclick="switchLBTab('a1')">A1</button>
-            <button class="tab" onclick="switchLBTab('a1r')">A1 Retest</button>
+            <button class="tab" onclick="switchLBTab('a1r')">A1 Retest 01</button>
+            <button class="tab" onclick="switchLBTab('a1r2')">A1 Retest 02</button>
           </div>
           <button class="btn-sm btn-gold" onclick="downloadLeaderboardPDF()">📄 Download PDF</button>
         </div>
@@ -334,6 +338,19 @@ const ANSWERS = {
     listen_tf: ['True','False','True','True','False'],
     listen_open: ['In einem Seniorenheim in Leipzig','Um 14 Uhr','Herrn Braun','Er trinkt Tee und isst einen Apfel','Mit der Straßenbahn'],
     listen_fill: ['Spätdienst','Leipzig','Medikamente','Tee','22 Uhr']
+  },
+  a1r2: {
+    reading_tf: ['True','False','True','False','True'],
+    reading_open: ['Er kommt aus Ägypten','Zwei Zimmer','420 Euro im Monat','Er studiert Musik','Der Supermarkt'],
+    grammar_plural: ['die Ärzte','die Ärztinnen','die Formulare','die Männer','die Städte'],
+    grammar_kasus: ['der','den','den','einen','dem'],
+    grammar_praepositionen: ['der','der','die','zum / dem','den'],
+    grammar_verben: ['lese','schlafen','nehme','Sprichst','esst'],
+    grammar_negation: ['keinen','nicht','keine','nichts','nicht'],
+    grammar_nebensatz: ['Ich lerne Deutsch, weil ich in Deutschland arbeiten möchte.','Er kommt heute nicht, weil er krank ist.','Ich glaube, dass der Zug Verspätung hat.','Sie sagt, dass die Wohnung zu teuer ist.','Wir bleiben zu Hause, weil es regnet.'],
+    listen_tf: ['True','False','False','True','True'],
+    listen_open: ['Am Freitagabend','Vier Stunden','Sie war im Deutschen Museum','Weil es geregnet hat','Brezeln'],
+    listen_fill: ['Zug','sechzig / 60','Museum','Regenschirm','sechzehn / 16']
   }
 };
 
@@ -358,6 +375,12 @@ const MAXES = {
     listen_tf:5, listen_open:10, listen_fill:5, speaking:20,
     grammar_sections:['g_pronouns','g_possessives','g_prepositions','g_separable','g_perfekt','g_satzbau'],
     speaking_fields:['spk_1','spk_2','spk_3','spk_4'],
+  },
+  a1r2: {
+    reading_tf:5, reading_open:5, grammar:30, writing_form:5, writing_email:15,
+    listen_tf:5, listen_open:10, listen_fill:5, speaking:20,
+    grammar_sections:['g_plural','g_kasus','g_praepositionen','g_verben','g_negation','g_nebensatz'],
+    speaking_fields:['spk_1','spk_2','spk_3','spk_4'],
   }
 };
 // The scheme marks were originally saved under, before the /100 correction.
@@ -379,7 +402,7 @@ const OLD_MAXES = {
   }
 };
 const MARK_SCALE = 100;
-const LVKEY = {A1:'a1', A2:'a2', A1R:'a1r'};
+const LVKEY = {A1:'a1', A2:'a2', A1R:'a1r', A1R2:'a1r2'};
 function maxesFor(code){ return MAXES[LVKEY[code]] || MAXES.a1 }
 function oldMaxesFor(code){ return OLD_MAXES[LVKEY[code]] || OLD_MAXES.a1 }
 function paperTotal(M){
@@ -399,7 +422,7 @@ function assertMaxes(){
 }
 
 let marksStore={};
-let allData={a2:[],a1:[],a1r:[]};
+let allData={a2:[],a1:[],a1r:[],a1r2:[]};
 let currentTab='all', currentLBTab='all', currentView='responses';
 let modalStudentId=null, modalLevel=null;
 
@@ -502,8 +525,8 @@ async function loadData(){
   try{
     const schemeErr=assertMaxes();
     if(schemeErr)showToast('Mark scheme error: '+schemeErr,'error');
-    const [a2,a1,a1r]=await Promise.all([fetchTable('german_exam_responses'),fetchTable('a1_german_exam_responses'),fetchTable('a1_retest_german_exam_responses')]);
-    allData={a2,a1,a1r};updateStats();renderTable();renderLeaderboard();renderRescaleNote();
+    const [a2,a1,a1r,a1r2]=await Promise.all([fetchTable('german_exam_responses'),fetchTable('a1_german_exam_responses'),fetchTable('a1_retest_german_exam_responses'),fetchTable('a1_retest2_german_exam_responses')]);
+    allData={a2,a1,a1r,a1r2};updateStats();renderTable();renderLeaderboard();renderRescaleNote();
   }catch(e){showToast('Error: '+e.message,'error');}
   finally{document.getElementById('loading-msg').style.display='none';}
 }
@@ -552,16 +575,27 @@ function autoGradeA1R(r){
   return {reading_tf:rtfScore,listen_tf:ltfScore,listen_fill:fillScore,auto_total:rtfScore+ltfScore+fillScore};
 }
 
+function autoGradeA1R2(r){
+  const ans=ANSWERS.a1r2;
+  const rtf=[r.tf1,r.tf2,r.tf3,r.tf4,r.tf5];
+  const rtfScore=rtf.reduce((s,v,i)=>s+(tfMatch(v,ans.reading_tf[i])?1:0),0);
+  const ltf=[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5];
+  const ltfScore=ltf.reduce((s,v,i)=>s+(tfMatch(v,ans.listen_tf[i])?1:0),0);
+  const fills=(r.listen_fill_blanks||'').split('|').map(x=>x.trim());
+  const fillScore=ans.listen_fill.reduce((s,a,i)=>s+(normalise(fills[i])===normalise(a)?1:0),0);
+  return {reading_tf:rtfScore,listen_tf:ltfScore,listen_fill:fillScore,auto_total:rtfScore+ltfScore+fillScore};
+}
+
 // ── LEVELS ──
-const LEVELS=[{tab:'a2',code:'A2',key:'a2'},{tab:'a1',code:'A1',key:'a1'},{tab:'a1r',code:'A1R',key:'a1r'}];
+const LEVELS=[{tab:'a2',code:'A2',key:'a2'},{tab:'a1',code:'A1',key:'a1'},{tab:'a1r',code:'A1R',key:'a1r'},{tab:'a1r2',code:'A1R2',key:'a1r2'}];
 function collectRows(tab){
   const rows=[];
   LEVELS.forEach(L=>{ if(tab==='all'||tab===L.tab)(allData[L.key]||[]).forEach(r=>rows.push({...r,_level:L.code})); });
   return rows;
 }
 function levelBadge(code){
-  const cls=code==='A2'?'badge-a2':code==='A1R'?'badge-a1r':'badge-a1';
-  const txt=code==='A1R'?'A1 Retest':code;
+  const cls=code==='A2'?'badge-a2':code==='A1R'?'badge-a1r':code==='A1R2'?'badge-a1r2':'badge-a1';
+  const txt=code==='A1R'?'A1 Retest 01':code==='A1R2'?'A1 Retest 02':code;
   return `<span class="badge-pill ${cls}">${txt}</span>`;
 }
 function grammarMax(code){return maxesFor(code).grammar}
@@ -760,12 +794,13 @@ function undoRescale(){
 
 // ── STATS ──
 function updateStats(){
-  const total=allData.a2.length+allData.a1.length+allData.a1r.length;
+  const total=allData.a2.length+allData.a1.length+allData.a1r.length+allData.a1r2.length;
   document.getElementById('stat-total').textContent=total;
   document.getElementById('stat-a2').textContent=allData.a2.length;
   document.getElementById('stat-a1').textContent=allData.a1.length;
   document.getElementById('stat-a1r').textContent=allData.a1r.length;
-  const all=[...allData.a2,...allData.a1,...allData.a1r];
+  document.getElementById('stat-a1r2').textContent=allData.a1r2.length;
+  const all=[...allData.a2,...allData.a1,...allData.a1r,...allData.a1r2];
   const marked=all.filter(r=>getM(r.id)?.saved).length;
   document.getElementById('stat-marked').textContent=`${marked}/${total}`;
   document.getElementById('stat-flagged').textContent=all.filter(r=>r.auto_submitted||(r.tab_switches||0)>0).length;
@@ -783,7 +818,7 @@ function switchView(v){
 }
 function switchTab(tab){
   currentTab=tab;
-  document.querySelectorAll('#view-responses .tab').forEach((t,i)=>t.classList.toggle('active',['all','a2','a1','a1r'][i]===tab));
+  document.querySelectorAll('#view-responses .tab').forEach((t,i)=>t.classList.toggle('active',['all','a2','a1','a1r','a1r2'][i]===tab));
   renderTable();
 }
 
@@ -826,15 +861,16 @@ function openModal(id,level){
   modalStudentId=id;modalLevel=level;
   const isA2=level==='A2';
   const isA1R=level==='A1R';
-  const lvKey=isA2?'a2':isA1R?'a1r':'a1';
+  const isA1R2=level==='A1R2';
+  const lvKey=isA2?'a2':isA1R?'a1r':isA1R2?'a1r2':'a1';
   const r=(allData[lvKey]||[]).find(x=>x.id===id);
   if(!r)return;
   const ans=ANSWERS[lvKey];
   const M=MAXES[lvKey];
-  const ag=isA2?autoGradeA2(r):isA1R?autoGradeA1R(r):autoGradeA1(r);
+  const ag=isA2?autoGradeA2(r):isA1R?autoGradeA1R(r):isA1R2?autoGradeA1R2(r):autoGradeA1(r);
   const saved=getM(id)||{};
 
-  document.getElementById('modal-title').textContent=`${r.student_name||'Student'} — ${isA1R?'A1 Retest':level} Exam`;
+  document.getElementById('modal-title').textContent=`${r.student_name||'Student'} — ${isA1R?'A1 Retest 01':isA1R2?'A1 Retest 02':level} Exam`;
 
   // Helpers
   const studentVal=(v)=>v?`<span>${v}</span>`:`<em style="color:#d1d5db">not answered</em>`;
@@ -885,6 +921,13 @@ function openModal(id,level){
     readingTFRows=tfQ.map((q,i)=>tfRow(q,tfV[i],ans.reading_tf[i])).join('');
     const oQ=['Wann steht Sophie auf?','Wie fährt sie zur Klinik?','Was macht sie zuerst auf der Station?','Wem hilft sie beim Frühstück?','Was macht sie am Abend?'];
     const oV=[r.q1_wann_aufstehen,r.q2_wie_zur_klinik,r.q3_zuerst_station,r.q4_wem_fruehstueck,r.q5_was_am_abend];
+    readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
+  }else if(isA1R2){
+    const tfQ=['Tarek wohnt seit August in Dresden?','Seine Wohnung ist im ersten Stock?','Sein Zimmer hat ein großes Fenster?','Jonas studiert Medizin?','Am Samstag kochen sie zusammen?'];
+    const tfV=[r.tf1,r.tf2,r.tf3,r.tf4,r.tf5];
+    readingTFRows=tfQ.map((q,i)=>tfRow(q,tfV[i],ans.reading_tf[i])).join('');
+    const oQ=['Woher kommt Tarek?','Wie viele Zimmer hat die Wohnung?','Wie viel kostet die Miete?','Was macht Jonas?','Was ist neben dem Haus?'];
+    const oV=[r.q1,r.q2,r.q3,r.q4,r.q5];
     readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
   }else{
     const tfQ=['Maria arbeitet in einer Schule?','Sie beginnt um 7 Uhr morgens?','Sie spricht mit Ärzten?','Pause im Garten?','Mag ihren Beruf nicht?'];
@@ -952,6 +995,31 @@ function openModal(id,level){
           <span class="mark-max-label">/5 <em style="color:#9ca3af;font-size:11px">(A1 Retest grammar /30 across 6 sections)</em></span>
         </div>`;
     });
+  }else if(isA1R2){
+    const sections=[
+      {label:'1. Plural der Nomen (5 pts)',field:'g_plural',vals:r.grammar_plural,answers:ans.grammar_plural},
+      {label:'2. Artikel im Akkusativ und Dativ (5 pts)',field:'g_kasus',vals:r.grammar_kasus,answers:ans.grammar_kasus},
+      {label:'3. Präpositionen mit Kasus (5 pts)',field:'g_praepositionen',vals:r.grammar_praepositionen,answers:ans.grammar_praepositionen},
+      {label:'4. Unregelmäßige Verbformen (5 pts)',field:'g_verben',vals:r.grammar_verben,answers:ans.grammar_verben},
+      {label:'5. Negation (5 pts)',field:'g_negation',vals:r.grammar_negation,answers:ans.grammar_negation},
+      {label:'6. Nebensätze mit weil und dass (5 pts)',field:'g_nebensatz',vals:r.grammar_nebensatz,answers:ans.grammar_nebensatz},
+    ];
+    sections.forEach(s=>{
+      const parts=(s.vals||'').split('|').map(x=>x.trim());
+      const rows=s.answers.map((a,i)=>`<div class="qa-row">
+          <div class="qa-q">Q${i+1}</div>
+          <div class="qa-student">${parts[i]||'<em style="color:#d1d5db">—</em>'}</div>
+          <div class="qa-correct" style="font-style:italic">${a}</div>
+        </div>`).join('');
+      grammarHTML+=`<div class="section-header">${s.label}<span class="section-manual-score">Examiner grades</span></div>
+        <div class="qa-col-heads"><span>Q</span><span>Student Answer</span><span>Correct Answer</span></div>
+        <div class="qa-block">${rows}</div>
+        <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+          <label style="font-size:13px;font-weight:500">Section marks:</label>
+          <input class="mark-inp" type="number" min="0" max="5" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
+          <span class="mark-max-label">/5 <em style="color:#9ca3af;font-size:11px">(A1 Retest 02 grammar /30 across 6 sections)</em></span>
+        </div>`;
+    });
   }else{
     const sections=[
       {label:'1. Articles & Nouns (5 pts)',field:'g_articles',vals:r.grammar_articles,answers:ans.grammar_articles},
@@ -993,6 +1061,10 @@ function openModal(id,level){
     const lQ=['Wo arbeitet Daniel?','Wann beginnt sein Dienst?','Wem bringt er Medikamente?','Was macht er in der Pause?','Wie fährt er nach Hause?'];
     const lV=[r.listen_q1_wo,r.listen_q2_wann,r.listen_q3_wem_medikamente,r.listen_q4_pause,r.listen_q5_wie_hause];
     listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
+  }else if(isA1R2){
+    const lQ=['Wann ist Julia nach München gefahren?','Wie lange hat die Fahrt gedauert?','Was hat sie am Samstag gemacht?','Warum hat sie einen Regenschirm gekauft?','Was haben Julia und Laura gegessen?'];
+    const lV=[r.listen_q1,r.listen_q2,r.listen_q3,r.listen_q4,r.listen_q5];
+    listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
   }else{
     const lQ=['Wie heißt die Person?','Wo arbeitet sie?','Was macht sie am Morgen?','Was isst sie in der Pause?','Warum mag sie ihren Beruf?'];
     const lV=[r.listen_q1_name,r.listen_q2_wo,r.listen_q3_morgen,r.listen_q4_pause,r.listen_q5_warum];
@@ -1023,6 +1095,11 @@ function openModal(id,level){
     {label:'Picture Description (5 marks)',sample:'„Das ist eine Klinik. Ich sehe Ärzte, Krankenschwestern und Patienten. Sie sprechen miteinander."',akey:'speaking_picture',val:r.speaking_picture,field:'spk_2',max:5},
     {label:'Daily Life / Routine (5 marks)',sample:'„Ich stehe um sechs Uhr auf. Dann frühstücke ich und fahre zur Arbeit. Am Abend lerne ich Deutsch."',akey:'speaking_routine',val:r.speaking_routine,field:'spk_3',max:5},
     {label:'Role Play – In der Apotheke (5 marks)',sample:'„Guten Tag! Ich brauche ein Medikament. Ich habe Kopfschmerzen. Was kostet das? Vielen Dank!"',akey:'speaking_roleplay',val:r.speaking_roleplay,field:'spk_4',max:5},
+  ]:isA1R2?[
+    {label:'Sich vorstellen – Introduction (5 marks)',sample:'„Hallo! Ich heiße Ayesha. Ich bin 24 Jahre alt und komme aus Hyderabad. Ich bin Krankenschwester und lerne Deutsch."',akey:'speaking_intro',val:r.speaking_intro,field:'spk_1',max:5},
+    {label:'My Family (5 marks)',sample:'„Meine Familie ist nicht groß. Mein Vater ist Lehrer und meine Mutter arbeitet im Krankenhaus. Ich habe eine Schwester. Sie wohnt in Delhi."',akey:'speaking_family',val:r.speaking_family,field:'spk_2',max:5},
+    {label:'Meine Wohnung & meine Stadt (5 marks)',sample:'„Ich wohne in einer kleinen Wohnung. Sie hat zwei Zimmer und eine Küche. Mein Zimmer ist hell. Die Stadt ist schön und nicht teuer."',akey:'speaking_wohnung',val:r.speaking_wohnung,field:'spk_3',max:5},
+    {label:'Role Play – Am Bahnhof (5 marks)',sample:'„Guten Tag! Ich möchte nach München fahren. Wann fährt der nächste Zug? Was kostet die Fahrkarte? Welches Gleis, bitte? Vielen Dank!"',akey:'speaking_roleplay',val:r.speaking_roleplay,field:'spk_4',max:5},
   ]:[
     {label:'Introduction (5 marks)',sample:'„Hallo! Ich heiße Maria. Ich bin 28 Jahre alt und komme aus Indien."',akey:'speaking_intro',val:r.speaking_intro,field:'spk_1',max:5},
     {label:'Picture Description (5 marks)',sample:'„Das ist ein Krankenhaus. Ich sehe Ärzte, Krankenschwestern und Patienten."',akey:'speaking_picture',val:r.speaking_picture,field:'spk_2',max:5},
@@ -1044,9 +1121,9 @@ function openModal(id,level){
   // Writing
   const writingHTML=`<div class="qa-block" style="padding-top:8px">
     <div class="qa-row has-mark">
-      <div class="qa-q">${isA1R?'Short Message':'Short Writing Task'}</div>
-      <div class="qa-student" style="white-space:pre-wrap;line-height:1.6">${studentVal(isA1R?r.short_message:r.form_details)}</div>
-      <div class="qa-correct" style="font-style:italic">${isA1R?'25–30 Wörter: krank, Grund, Frage nach den Hausaufgaben':'30–40 Wörter in ganzen Sätzen: wer, wo, was, warum Deutsch'}</div>
+      <div class="qa-q">${(isA1R||isA1R2)?'Short Message':'Short Writing Task'}</div>
+      <div class="qa-student" style="white-space:pre-wrap;line-height:1.6">${studentVal((isA1R||isA1R2)?r.short_message:r.form_details)}</div>
+      <div class="qa-correct" style="font-style:italic">${isA1R?'25–30 Wörter: krank, Grund, Frage nach den Hausaufgaben':isA1R2?'25–30 Wörter: Geburtstag, wann/wo, Mitbringsel, Antwort erbeten':'30–40 Wörter in ganzen Sätzen: wer, wo, was, warum Deutsch'}</div>
       <div class="qa-mark">
         <input class="mark-inp" type="number" min="0" max="${M.writing_form}" value="${saved.writing_form??''}" placeholder="0" id="mf-writing_form" oninput="clampMax(this);recalcModal()"/>
         <span class="mark-max-label">/${M.writing_form}</span>
@@ -1055,7 +1132,7 @@ function openModal(id,level){
     <div class="qa-row has-mark" style="align-items:flex-start">
       <div class="qa-q">Email Writing</div>
       <div class="qa-student" style="white-space:pre-wrap;line-height:1.6">${studentVal(r.email_writing)}</div>
-      <div class="qa-correct" style="font-style:italic;font-size:12px;line-height:1.5">${isA2?'Gestern hatte ich einen stressigen Tag…':isA1R?'50–70 Wörter: erste Woche, Arbeitszeiten, Kollegen, eine Aufgabe, Pause, was gefällt…':'Ich arbeite jeden Tag im Krankenhaus…'}</div>
+      <div class="qa-correct" style="font-style:italic;font-size:12px;line-height:1.5">${isA2?'Gestern hatte ich einen stressigen Tag…':isA1R?'50–70 Wörter: erste Woche, Arbeitszeiten, Kollegen, eine Aufgabe, Pause, was gefällt…':isA1R2?'50–70 Wörter: Wohnort, Transport, Wochentage, Wochenende, Einladung':'Ich arbeite jeden Tag im Krankenhaus…'}</div>
       <div class="qa-mark">
         <input class="mark-inp" type="number" min="0" max="${M.writing_email}" value="${saved.writing_email??''}" placeholder="0" id="mf-writing_email" oninput="clampMax(this);recalcModal()"/>
         <span class="mark-max-label">/${M.writing_email}</span>
@@ -1110,8 +1187,8 @@ function openModal(id,level){
     <div class="section-header">Part D – Listening: True/False (Examiner grades, /${M.listen_tf})<span class="section-manual-score">✍ Manual</span></div>
     <div class="qa-col-heads"><span>Statement</span><span>Student Answer</span><span style="min-width:180px">Correct Answer</span></div>
     <div class="qa-block">${(()=>{
-      const ltfQ=isA2?['Thomas ist Arzt?','Im Krankenhaus?','Pause am Mittag?','Hat geschlafen?','Fahrrad nach Hause?']:isA1R?['Arbeitet im Seniorenheim?','Beginnt um 12 Uhr?','Hilft Frau Sommer beim Abendessen?','Pause um 18 Uhr?','Muss morgen wieder arbeiten?']:['Kleines Krankenhaus?','Um 7 Uhr?','Gibt Medikamente?','Keine Pause?','Fährt mit Bus?'];
-      const ltfV=isA2?[r.listen_tf_thomas_arzt,r.listen_tf_krankenhaus,r.listen_tf_pause,r.listen_tf_geschlafen,r.listen_tf_fahrrad]:isA1R?[r.listen_tf_seniorenheim,r.listen_tf_zwoelf_uhr,r.listen_tf_abendessen,r.listen_tf_pause_18,r.listen_tf_morgen_arbeit]:[r.listen_tf_kleines_kh,r.listen_tf_sieben_uhr,r.listen_tf_medikamente,r.listen_tf_keine_pause,r.listen_tf_bus];
+      const ltfQ=isA2?['Thomas ist Arzt?','Im Krankenhaus?','Pause am Mittag?','Hat geschlafen?','Fahrrad nach Hause?']:isA1R?['Arbeitet im Seniorenheim?','Beginnt um 12 Uhr?','Hilft Frau Sommer beim Abendessen?','Pause um 18 Uhr?','Muss morgen wieder arbeiten?']:isA1R2?['Mit dem Zug gefahren?','Fahrt zwei Stunden?','Hotel war teuer?','Am Samstag geregnet?','Mit Laura gefrühstückt?']:['Kleines Krankenhaus?','Um 7 Uhr?','Gibt Medikamente?','Keine Pause?','Fährt mit Bus?'];
+      const ltfV=isA2?[r.listen_tf_thomas_arzt,r.listen_tf_krankenhaus,r.listen_tf_pause,r.listen_tf_geschlafen,r.listen_tf_fahrrad]:isA1R?[r.listen_tf_seniorenheim,r.listen_tf_zwoelf_uhr,r.listen_tf_abendessen,r.listen_tf_pause_18,r.listen_tf_morgen_arbeit]:isA1R2?[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5]:[r.listen_tf_kleines_kh,r.listen_tf_sieben_uhr,r.listen_tf_medikamente,r.listen_tf_keine_pause,r.listen_tf_bus];
       return ltfQ.map((q,i)=>openRow(q,ltfV[i],ans.listen_tf[i])).join('');
     })()}</div>
     <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
@@ -1185,7 +1262,8 @@ function recalcModal(){
   if(!modalStudentId)return;
   const isA2=modalLevel==='A2';
   const isA1R=modalLevel==='A1R';
-  const lvKey=isA2?'a2':isA1R?'a1r':'a1';
+  const isA1R2=modalLevel==='A1R2';
+  const lvKey=isA2?'a2':isA1R?'a1r':isA1R2?'a1r2':'a1';
   const r=(allData[lvKey]||[]).find(x=>x.id===modalStudentId);
   if(!r)return;
 
@@ -1229,7 +1307,8 @@ function saveCurrentMarks(){
   if(!modalStudentId)return;
   const isA2=modalLevel==='A2';
   const isA1R=modalLevel==='A1R';
-  const lvKey=isA2?'a2':isA1R?'a1r':'a1';
+  const isA1R2=modalLevel==='A1R2';
+  const lvKey=isA2?'a2':isA1R?'a1r':isA1R2?'a1r2':'a1';
   const r=(allData[lvKey]||[]).find(x=>x.id===modalStudentId);
   const gv=id=>{const el=document.getElementById('mf-'+id);return el?Math.min(parseFloat(el.value)||0,parseFloat(el.max)||99):0};
 
@@ -1260,7 +1339,7 @@ document.getElementById('modal').addEventListener('click',e=>{if(e.target===docu
 // ── LEADERBOARD ──
 function switchLBTab(t){
   currentLBTab=t;
-  document.querySelectorAll('#view-leaderboard .tab').forEach((el,i)=>el.classList.toggle('active',['all','a2','a1','a1r'][i]===t));
+  document.querySelectorAll('#view-leaderboard .tab').forEach((el,i)=>el.classList.toggle('active',['all','a2','a1','a1r','a1r2'][i]===t));
   renderLeaderboard();
 }
 function renderLeaderboard(){
@@ -1337,7 +1416,7 @@ function downloadCSV(){
   const headers=['Level','Name','Mobile','Submitted','Tab switches','Auto-submitted','Violation log','Auto (T/F + Fill)','Reading','Grammar','Writing','Listening','Speaking','Total','Out of'];
   const csv=[headers.join(','),...rows.map(r=>{
     const m=getM(r.id);
-    const ag=r._level==='A2'?autoGradeA2(r):r._level==='A1R'?autoGradeA1R(r):autoGradeA1(r);
+    const ag=r._level==='A2'?autoGradeA2(r):r._level==='A1R'?autoGradeA1R(r):r._level==='A1R2'?autoGradeA1R2(r):autoGradeA1(r);
     const g=m?.saved;
     return[r._level,r.student_name,r.mobile_number,r.submitted_at,r.tab_switches||0,r.auto_submitted?'YES':'',r.violation_log||'',ag.auto_total,
       g?(m.reading_tf||0)+m.reading_open:'',
