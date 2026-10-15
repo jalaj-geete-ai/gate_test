@@ -2,7 +2,7 @@
 """Generate the dry-run page from the live one.
 
 The demo is derived rather than hand-maintained so the two cannot drift:
-regenerate after any change to gc_scholarship_test.html and the rehearsal
+regenerate after any change to scholarship.html and the rehearsal
 always exercises exactly the code the students will get.
 
 What it changes, and nothing else:
@@ -21,9 +21,9 @@ the repo must not carry the rehearsal page once the test is live.
 """
 import re, sys, pathlib
 
-SRC = pathlib.Path(__file__).resolve().parent / 'gc_scholarship_test.html'
+SRC = pathlib.Path(__file__).resolve().parent / 'scholarship.html'
 OUT = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 \
-      else SRC.parent / 'gc_scholarship_test_demo.html'
+      else SRC.parent / 'scholarship_demo.html'
 DEMO_KEY = 'gcb-dryrun-d624e6437556bf1f8db0bc05'
 
 s = SRC.read_text(encoding='utf-8')

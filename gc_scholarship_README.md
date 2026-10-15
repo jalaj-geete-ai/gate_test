@@ -8,7 +8,7 @@ Landing page, test engine and anti-cheat for the scholarship test on
 
 | File | What it is |
 |---|---|
-| `gc_scholarship_test.html` | The whole student-facing portal: landing, countdown, registration, instructions, test engine, result. Single file, no build step. |
+| `scholarship.html` | The whole student-facing portal: landing, countdown, registration, instructions, test engine, result. Single file, no build step. |
 | `gc_scholarship_questions.json` | **The live question paper** — 30 nursing MCQs with answers and explanations. Source of truth; edit here and re-import. |
 | `gc_scholarship_questions_template.csv` | CSV import format, if you prefer a spreadsheet to JSON. |
 | `gc_scholarship_build_demo.py` | Regenerates the dry-run page from the live one. Kept for a future rehearsal; the page itself is not in the repo while the test is live. |
@@ -77,7 +77,7 @@ the page shows.
 > is here for the next time you need one: regenerate the page, set
 > `demo_enabled` back to `'true'`, and reverse both before going live again.
 
-`gc_scholarship_test_demo.html` is the rehearsal page. It is **generated** from
+`scholarship_demo.html` is the rehearsal page. It is **generated** from
 the live page rather than maintained by hand, so it always exercises exactly
 the code students will get:
 
@@ -114,7 +114,7 @@ update scholarship_config set value = 'false' where key = 'demo_enabled';
 
 That one row kills the demo path entirely — the key stops working everywhere,
 within the 30-second config cache and without a redeploy. Both steps are done:
-the row is set and `gc_scholarship_test_demo.html` is deleted, so the page is
+the row is set and `scholarship_demo.html` is deleted, so the page is
 no longer served at all.
 
 Leads and attempts left over from the rehearsal are all flagged `is_demo`, so

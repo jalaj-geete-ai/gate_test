@@ -1,0 +1,9 @@
+# The scholarship test moved from /gc_scholarship_test to /scholarship after
+# the first link had already been shared. Keep the old path working: a dead
+# link to a test with a three-hour window is not recoverable.
+/gc_scholarship_test      /scholarship   301
+/gc_scholarship_test.html /scholarship   301
+# The rehearsal page is gone now the test is live. Anyone still holding that
+# link lands on the real page rather than a 404.
+/gc_scholarship_test_demo      /scholarship   301
+/gc_scholarship_test_demo.html /scholarship   301
