@@ -398,8 +398,8 @@ footer.site{background:var(--primary);color:#9FC6CF;text-align:center;padding:26
         <p id="reg-done-msg"></p>
         <p class="fineprint" id="reg-done-sub" style="margin-top:14px"></p>
         <div class="wa-card" style="margin-bottom:4px">
-          <h4>Join our WhatsApp community</h4>
-          <p>Your result and the scholarship winners will be announced there on Wednesday, 21 October.</p>
+          <h4>Stay connected on WhatsApp</h4>
+          <p>All updates about the test, plus your result and the scholarship winners on Wednesday, 21 October, go out in our community.</p>
           <a class="btn btn-wa wa-link" target="_blank" rel="noopener noreferrer">Join the community</a>
         </div>
       </div>
@@ -885,9 +885,15 @@ function doRegister() {
     }
     $('reg-form-box').style.display = 'none';
     $('reg-done').style.display = 'block';
-    $('reg-done-title').textContent = r.returning ? 'You are already registered' : "You're registered";
-    $('reg-done-msg').textContent = 'See you on Sunday, 18 October at 2:00 PM IST, ' + r.name.split(' ')[0] + '.';
-    $('reg-done-sub').textContent = 'Keep this page bookmarked — come back here on test day and press Start Test. We will also send you a reminder by SMS.';
+    $('reg-done-title').textContent = r.returning
+      ? 'You are already registered'
+      : 'Thanks for registering' + (r.name ? ', ' + r.name.split(' ')[0] : '') + '!';
+    $('reg-done-msg').innerHTML =
+      'Your test starts at <b>2:00 PM on Sunday, 18 October 2026</b>.<br>Duration: <b>30 minutes</b>.';
+    // No SMS promise here — nothing in this build sends one, and the
+    // community is the channel that actually carries the updates.
+    $('reg-done-sub').textContent =
+      'Bookmark this page and come back on test day. Stay connected on our WhatsApp community for further updates.';
     return true;
   }).catch(function () {
     busy(false);

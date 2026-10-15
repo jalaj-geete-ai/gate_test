@@ -11,6 +11,8 @@ Landing page, test engine and anti-cheat for the scholarship test on
 | `gc_scholarship_test.html` | The whole student-facing portal: landing, countdown, registration, instructions, test engine, result. Single file, no build step. |
 | `gc_scholarship_questions.json` | **The live question paper** — 30 nursing MCQs with answers and explanations. Source of truth; edit here and re-import. |
 | `gc_scholarship_questions_template.csv` | CSV import format, if you prefer a spreadsheet to JSON. |
+| `gc_scholarship_test_demo.html` | **Dry-run page.** Generated from the live page; delete before go-live. |
+| `gc_scholarship_build_demo.py` | Regenerates the dry-run page from the live one. |
 
 Backend lives in Supabase project `uxdrldreaockdloqvojs`:
 Edge Function **`scholarship-api`** plus the `scholarship_*` tables and views.
@@ -30,6 +32,50 @@ This matters because the prize is a free course. If the key shipped with the
 page, View Source would be worth ₹1,00,000+.
 
 ---
+
+## Registration is open from the moment you share the link
+
+Registration does not wait for test day. Anyone landing on the page can enter
+their name and number straight away, which is the point — the lead is captured
+on first visit, days before anyone sits anything. The confirmation then states
+the start time, the duration and pushes the WhatsApp community.
+
+What waits for test day is only the Start Test button, and the server enforces
+that: `start` returns `not_open` until 2:00 PM on 18 October regardless of what
+the page shows.
+
+## The dry run
+
+`gc_scholarship_test_demo.html` is the rehearsal page. It is **generated** from
+the live page rather than maintained by hand, so it always exercises exactly
+the code students will get:
+
+```bash
+python3 gc_scholarship_build_demo.py     # after any change to the live page
+```
+
+It differs in three ways and no others: a standing purple banner, a Start Test
+button that ignores the countdown, and a demo key carried on every API call.
+
+The key is what actually opens the paper. It is verified **server-side**
+against `scholarship_config.demo_key` — the page only presents it, so the
+window check cannot be bypassed by editing the page. Everything a demo caller
+creates is flagged `is_demo` and filtered out of `scholarship_results`,
+`scholarship_tie_groups` and `scholarship_lead_export`, so a rehearsal can
+never reach the leaderboard or the CRM. Demo attempts are also repeatable: the
+one-attempt rule holds absolutely for real students, but a demo attempt is
+cleared and re-run so the team can go round more than once.
+
+### Shutting the dry run down before go-live
+
+```sql
+update scholarship_config set value = 'false' where key = 'demo_enabled';
+```
+
+That one row kills the demo path entirely — the key stops working everywhere,
+immediately, without a redeploy. Do it before sharing the real link, and
+delete `gc_scholarship_test_demo.html` from the repo so the page stops being
+served at all.
 
 ## Timeline
 
