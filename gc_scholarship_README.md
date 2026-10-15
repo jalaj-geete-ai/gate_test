@@ -229,15 +229,26 @@ This is cosmetic only. An answer is stored as the *position* the student
 clicked and mapped back through `option_order` on the server, so scoring never
 used the letters and is unaffected.
 
-### The paper no longer has a pool
+### One paper for everyone — a deliberate choice
 
 With exactly 30 questions and 30 served, every student sits the same paper.
-Question order and option order are still shuffled per student, which stops a
-plain "answer is B, C, A…" list being useful, but it does **not** stop someone
-photographing the questions at 2:30 PM and sending them to a friend who starts
-at 4:00 PM. The only real fix is more questions than the paper needs: adding
-30–60 more to `scholarship_questions` turns the draw back on with no code
-change.
+**Keep it that way.** This was decided on fairness grounds: drawing a random
+subset from a larger pool means two students are scored against different
+questions, and with a ₹60,000 scholarship on the line the student who happened
+to draw the harder set has a real grievance. One paper for everyone removes
+that argument entirely.
+
+The cost is accepted knowingly. Question order and option order are still
+shuffled per student, which stops a plain "answer is B, C, A…" list being
+useful, but it does **not** stop someone photographing the questions at
+2:30 PM and sending them to a friend who starts at 4:00 PM. That is what
+`scholarship_integrity` and the manual top-10 review before awarding are for.
+
+**Do not "fix" this by loading more questions.** Adding more rows to
+`scholarship_questions` than `questions_per_paper` silently switches the draw
+back on and every student gets a different paper — which is the thing this
+decision rules out. If the pool ever does need to grow, raise
+`questions_per_paper` to match it in the same change.
 
 ---
 
@@ -315,7 +326,8 @@ Enforced on the server, cannot be bypassed from a browser:
 * **The clock** — start, expiry and the window are all server time. Changing
   the device clock does nothing.
 * **The score** — computed server-side from question IDs the client can't alter.
-* **Paper selection** — random 30 of the pool, options shuffled per student.
+* **Paper selection** — the same 30 questions for everyone, with question
+  order and option order shuffled per student.
 
 Client-side, a deterrent and an audit trail:
 
@@ -350,7 +362,8 @@ winners before awarding is worth the half hour.
 * **Result lookup is by mobile number alone.** Anyone who knows a student's
   number could view that student's marks. That follows from having no OTP; it
   is consistent with the rest of the identity model, but worth knowing.
-* **Only 30 questions exist**, so the paper is identical for everyone — see
-  "The paper no longer has a pool" above. Question and option order are still
-  shuffled per student, and there are no option letters to share, but the
-  questions themselves can still be photographed and passed on.
+* **The paper is identical for everyone**, by choice — see "One paper for
+  everyone" above. Question and option order are still shuffled per student,
+  and there are no option letters to share, but the questions themselves can
+  still be photographed and passed on. This is the accepted cost of scoring
+  every student against the same questions.
