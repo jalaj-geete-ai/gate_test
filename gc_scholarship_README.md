@@ -81,24 +81,32 @@ select count(*) filter (where not is_placeholder) as real_questions,
 from scholarship_questions where active;           -- expect 30, 0
 ```
 
-### ⚠ Question 4 needs a decision
+### Question 4 — corrected
 
-Q4 asks what to monitor most closely after craniopharyngioma surgery. The key
-says **B) Blood sugar level**, but the explanation printed beneath it says the
-surgery causes **Diabetes Insipidus** — which is monitored by **C) Urine output
-and specific gravity**. The answer and its own explanation disagree.
+As supplied, Q4 gave **B) Blood sugar level** as the answer while its own
+explanation described **Diabetes Insipidus**, which is monitored by urine
+output and specific gravity. The answer and its explanation disagreed, and
+the explanation publishes to every student at 6 PM.
 
-This matters because the explanation is published to every student at 6 PM, so
-the contradiction becomes public. It was loaded exactly as supplied rather than
-silently corrected. To switch it to C:
+It is now **C) Urine output and specific gravity**, with the explanation
+rewritten to match (`SCH-04`). Both the database and
+`gc_scholarship_questions.json` carry the correction.
 
-```sql
-update scholarship_questions set correct_index = 2 where code = 'SCH-04';
-```
+If you ever need to change an answer again, do it **before 2 PM on test day**.
+Scores are computed at submission, so an edit afterwards would leave the
+published key disagreeing with marks already awarded.
 
-Changing it **after** students have sat the paper is safe — scores are computed
-at submission time, so a late edit would make the published key disagree with
-the marks already awarded. Decide before 2 PM.
+### No A/B/C/D labels
+
+Options carry no letter — not on the paper, not in the downloaded answer key.
+Each student sees the options in their own shuffled order, so a letter would
+point at a different option for the next student; removing it means there is
+no shorthand ("Q2 is B, Q3 is C") worth passing around mid-window. The key
+names the correct answer in words instead.
+
+This is cosmetic only. An answer is stored as the *position* the student
+clicked and mapped back through `option_order` on the server, so scoring never
+used the letters and is unaffected.
 
 ### The paper no longer has a pool
 
@@ -221,4 +229,6 @@ winners before awarding is worth the half hour.
   number could view that student's marks. That follows from having no OTP; it
   is consistent with the rest of the identity model, but worth knowing.
 * **Only 30 questions exist**, so the paper is identical for everyone — see
-  "The paper no longer has a pool" above.
+  "The paper no longer has a pool" above. Question and option order are still
+  shuffled per student, and there are no option letters to share, but the
+  questions themselves can still be photographed and passed on.

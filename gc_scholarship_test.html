@@ -191,9 +191,10 @@ footer.site{background:var(--primary);color:#9FC6CF;text-align:center;padding:26
   border-radius:var(--r-md);cursor:pointer;transition:.14s;background:var(--surface)}
 .opt:hover{border-color:var(--accent);background:var(--accent-wash)}
 .opt.sel{border-color:var(--accent-mute);background:var(--accent-pale);box-shadow:0 0 0 2px var(--accent-pale)}
-.opt .k{width:27px;height:27px;flex-shrink:0;border-radius:50%;border:1.5px solid var(--border);
-  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--text-2);background:var(--surface)}
-.opt.sel .k{background:var(--accent-mute);border-color:var(--accent-mute);color:#fff}
+.opt .k{width:23px;height:23px;flex-shrink:0;border-radius:50%;border:2px solid var(--border);
+  background:var(--surface);margin-top:3px;transition:.14s}
+.opt.sel .k{background:var(--accent-mute);border-color:var(--accent-mute);
+  box-shadow:inset 0 0 0 3.5px var(--surface)}
 .opt .txt{font-size:15.5px;line-height:1.5;padding-top:2px}
 .qnav{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;padding-top:20px;border-top:1px solid var(--border-l)}
 .qnav .spacer{flex:1}
@@ -245,7 +246,9 @@ footer.site{background:var(--primary);color:#9FC6CF;text-align:center;padding:26
   .palette .btn{margin-top:9px;padding:12px}
   .exam-bar{padding:9px 13px}
   .timer{font-size:16px;padding:6px 13px}
-  .qnav .btn{flex:1;min-width:0;padding:12px 10px;font-size:13.5px}
+  .qnav{gap:7px}
+  .qnav .spacer{display:none}
+  .qnav .btn{flex:1;min-width:0;padding:12px 6px;font-size:13px;white-space:nowrap}
 }
 
 /* ══ MODALS ══════════════════════════════════════════════════════════ */
@@ -928,7 +931,12 @@ function beginTest() {
 /* ========================================================================
    TEST ENGINE
    ===================================================================== */
-var LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
+// Options carry no A/B/C/D label anywhere: not on the paper, not in the
+// answer key. Each student sees the options in their own shuffled order, so a
+// letter would mean something different to the next student — and without one
+// there is no shorthand ("2 is B, 3 is C") worth passing around mid-window.
+// This is cosmetic only: an answer is stored as a position and mapped back
+// through option_order on the server, so scoring is untouched.
 
 function qid(i) { return String(S.questions[i].id); }
 function isAnswered(i) { var v = S.answers[qid(i)]; return v !== undefined && v !== null && v >= 0; }
@@ -952,8 +960,9 @@ function renderQuestion() {
     el.setAttribute('role', 'radio');
     el.setAttribute('aria-checked', sel ? 'true' : 'false');
     el.tabIndex = 0;
-    el.innerHTML = '<span class="k">' + LETTERS[pos] + '</span><span class="txt"></span>';
+    el.innerHTML = '<span class="k"></span><span class="txt"></span>';
     el.querySelector('.txt').textContent = text;
+    el.setAttribute('aria-label', text);
     el.addEventListener('click', function () { choose(pos); });
     el.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(pos); }
@@ -961,10 +970,17 @@ function renderQuestion() {
     box.appendChild(el);
   });
 
+  // On a phone the full labels wrap to three lines and bloat the nav row,
+  // so they shorten below the breakpoint. Same actions, less wrapping.
+  var narrow = window.innerWidth < 1024;
   $('btn-prev').disabled = S.idx === 0;
-  $('btn-next').textContent = (S.idx === S.questions.length - 1) ? 'Last question' : 'Next →';
+  $('btn-prev').textContent = narrow ? '← Prev' : '← Previous';
+  $('btn-next').textContent = (S.idx === S.questions.length - 1)
+    ? (narrow ? 'Last' : 'Last question') : 'Next →';
   $('btn-next').disabled = S.idx === S.questions.length - 1;
-  $('btn-review').textContent = isMarked(S.idx) ? 'Unmark review' : 'Mark for review';
+  $('btn-review').textContent = isMarked(S.idx)
+    ? (narrow ? 'Unmark' : 'Unmark review')
+    : (narrow ? 'Review' : 'Mark for review');
   renderPalette();
 }
 
@@ -1244,18 +1260,17 @@ function esc(t) {
 function downloadAnswerKey() {
   var k = S.answerKey || [];
   if (!k.length) { toast('Answer key is not loaded yet.', true); return; }
-  var L = ['A', 'B', 'C', 'D'];
   var body = k.map(function (q) {
     var blank = (q.your_choice === null || q.your_choice === undefined);
     var yours = blank ? '<span class="skip">Not answered</span>'
-                      : L[q.your_choice] + ') ' + esc(q.options[q.your_choice]);
-    var corr = L[q.correct_choice] + ') ' + esc(q.options[q.correct_choice]);
+                      : esc(q.options[q.your_choice]);
+    var corr = esc(q.options[q.correct_choice]);
     var tag = blank ? '<span class="t skip">Skipped · 0</span>'
       : (q.is_correct ? '<span class="t ok">Correct · +4</span>'
                       : '<span class="t bad">Wrong · −1</span>');
     var opts = q.options.map(function (o, i) {
       var cls = i === q.correct_choice ? ' class="c"' : (i === q.your_choice ? ' class="y"' : '');
-      return '<li' + cls + '>' + L[i] + ') ' + esc(o) + '</li>';
+      return '<li' + cls + '>' + esc(o) + '</li>';
     }).join('');
     return '<article><h3>Q' + q.n + '. ' + esc(q.question) + ' ' + tag + '</h3>'
       + '<div class="sub">' + esc(q.subject || '') + '</div>'
@@ -1423,6 +1438,8 @@ var PROCTOR = (function () {
       if (!document.hidden && armed) strike('switched to another window', S.tabAway);
     }, AWAY_MS());
   });
+  // Rotating the phone crosses the breakpoint, so relabel on resize.
+  window.addEventListener('resize', function () { if (S.running) renderQuestion(); });
   window.addEventListener('focus', function () {
     clearTimeout(blurTimer);
     $('blur-shield').classList.remove('show');
