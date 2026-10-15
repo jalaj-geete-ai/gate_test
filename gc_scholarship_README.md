@@ -11,7 +11,8 @@ Landing page, test engine and anti-cheat for the scholarship test on
 | `scholarship.html` | The whole student-facing portal: landing, countdown, registration, instructions, test engine, result. Single file, no build step. |
 | `gc_scholarship_questions.json` | **The live question paper** — 30 nursing MCQs with answers and explanations. Source of truth; edit here and re-import. |
 | `gc_scholarship_questions_template.csv` | CSV import format, if you prefer a spreadsheet to JSON. |
-| `gc_scholarship_build_demo.py` | Regenerates the dry-run page from the live one. Kept for a future rehearsal; the page itself is not in the repo while the test is live. |
+| `seminar-edom.html` | **Dry-run page**, served at `/seminar-edom`. Generated from the live page. Delete it and set `demo_enabled` to `'false'` before 18 October. |
+| `gc_scholarship_build_demo.py` | Regenerates the dry-run page from the live one. |
 | `gc_scholarship_api.ts` | Source of the `scholarship-api` Edge Function — the whole server half: scoring, the one-attempt rule, the window. Deployed copy of record. |
 | `gc_logo.png` | Brand logo, white field flood-filled out to transparency. |
 | `gc_bg_desktop.jpg` / `gc_bg_mobile.jpg` | Hero backgrounds, served at ~34% opacity under a white scrim. |
@@ -72,12 +73,11 @@ the page shows.
 
 ## The dry run
 
-> **The dry run is shut down.** `demo_enabled` is `'false'` and the rehearsal
-> page has been removed from the repo, so nothing below is active. This section
-> is here for the next time you need one: regenerate the page, set
-> `demo_enabled` back to `'true'`, and reverse both before going live again.
+> **The dry run is ON.** `demo_enabled` is `'true'` and the rehearsal page is
+> live at `/seminar-edom` on the production domain. **Both must be reversed
+> before 18 October** — see "Shutting the dry run down" below.
 
-`scholarship_demo.html` is the rehearsal page. It is **generated** from
+`seminar-edom.html` is the rehearsal page. It is **generated** from
 the live page rather than maintained by hand, so it always exercises exactly
 the code students will get:
 
@@ -93,7 +93,13 @@ against `scholarship_config.demo_key` — the page only presents it, so the
 window check cannot be bypassed by editing the page. Everything a demo caller
 creates is flagged `is_demo` and filtered out of `scholarship_results`,
 `scholarship_tie_groups` and `scholarship_lead_export`, so a rehearsal can
-never reach the leaderboard or the CRM. Demo attempts are also repeatable: the
+never reach the leaderboard, the CRM or the integrity review: all four views
+-- `scholarship_lead_export`, `scholarship_results`, `scholarship_tie_groups`
+and `scholarship_integrity` -- exclude them. Note what this does and does not
+mean: a rehearsal still **writes rows** to `scholarship_leads`,
+`scholarship_attempts` and `scholarship_events`. They are tagged and invisible
+to everything you report from, not absent. `delete from scholarship_leads where
+is_demo;` removes them whenever you want. Demo attempts are also repeatable: the
 one-attempt rule holds absolutely for real students, but a demo attempt is
 cleared and re-run so the team can go round more than once.
 
@@ -113,9 +119,16 @@ update scholarship_config set value = 'false' where key = 'demo_enabled';
 ```
 
 That one row kills the demo path entirely — the key stops working everywhere,
-within the 30-second config cache and without a redeploy. Both steps are done:
-the row is set and `scholarship_demo.html` is deleted, so the page is
-no longer served at all.
+within the 30-second config cache and without a redeploy. **This has not been
+done yet: the dry run is currently ON.** Before 18 October, run that statement
+and delete `seminar-edom.html` from the repo in the same change, so the page
+stops being served at all.
+
+Rotate `demo_key` to a fresh value every time you re-enable a dry run.
+Cloudflare Pages keeps every past deployment alive at its own permanent URL, so
+an old snapshot of a rehearsal page still exists and still presents whatever key
+it was built with. A new key is what makes those snapshots inert — it is why the
+`gcb-dryrun-…` key from the first rehearsal no longer opens anything.
 
 Leads and attempts left over from the rehearsal are all flagged `is_demo`, so
 they are already absent from `scholarship_lead_export`, `scholarship_results`
