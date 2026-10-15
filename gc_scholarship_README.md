@@ -13,6 +13,8 @@ Landing page, test engine and anti-cheat for the scholarship test on
 | `gc_scholarship_questions_template.csv` | CSV import format, if you prefer a spreadsheet to JSON. |
 | `gc_scholarship_test_demo.html` | **Dry-run page.** Generated from the live page; delete before go-live. |
 | `gc_scholarship_build_demo.py` | Regenerates the dry-run page from the live one. |
+| `gc_logo.png` | Brand logo, white field flood-filled out to transparency. |
+| `gc_bg_desktop.jpg` / `gc_bg_mobile.jpg` | Hero backgrounds, served at ~34% opacity under a white scrim. |
 
 Backend lives in Supabase project `uxdrldreaockdloqvojs`:
 Edge Function **`scholarship-api`** plus the `scholarship_*` tables and views.
@@ -32,6 +34,30 @@ This matters because the prize is a free course. If the key shipped with the
 page, View Source would be worth ₹1,00,000+.
 
 ---
+
+## Leaving the test ends the attempt
+
+Up to the moment **Begin test** is pressed, nothing exists: a student can open
+the instructions, press Back, and walk in again freely. No attempt row is
+created until they begin.
+
+After that, **refreshing or leaving the test submits the paper**. This closes
+the obvious hole in the strike rule — without it, a refresh would shake off
+accumulated strikes and hand back a clean slate. It works in two places so a
+missed browser event cannot defeat it:
+
+* the page fires a `keepalive` submit on `pagehide`, and catches the back
+  button via `popstate`;
+* `start` refuses to resume an attempt that is already open, closing it out
+  with whatever was autosaved.
+
+Answers autosave continuously, so what a student loses by leaving is the
+remaining time, not the work. **The trade-off is real and worth knowing:** a
+browser that reloads on its own — a crash, or an aggressive mobile OS killing
+a backgrounded tab — ends that student's attempt. The `pagehide` handler
+ignores back/forward-cache events precisely so an ordinary app switch does
+not trigger it, but a genuine reload is indistinguishable from a deliberate
+one and is treated as leaving.
 
 ## Registration is open from the moment you share the link
 
