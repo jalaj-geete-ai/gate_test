@@ -846,7 +846,8 @@ function paintPhase(attemptStatus) {
     $('cd-caption').textContent = 'Entry closed. The last start time was 4:30 PM IST.';
   } else if (S.phase === 'closed') {
     ['cd-d', 'cd-h', 'cd-m', 'cd-s'].forEach(function (i) { $(i).textContent = '00'; });
-    $('cd-caption').textContent = 'This scholarship test is now closed. Results will follow by SMS.';
+    $('cd-caption').textContent = 'This scholarship test is now closed. '
+      + 'Results and winners will be announced on Wednesday, 21 October in our WhatsApp community.';
   }
 
   if (done) {
@@ -854,7 +855,12 @@ function paintPhase(attemptStatus) {
     $('reg-done').style.display = 'block';
     $('reg-done-title').textContent = 'You have already taken this test';
     $('reg-done-msg').textContent = 'Our records show an attempt against this number. Only one attempt is allowed.';
-    $('reg-done-sub').textContent = 'Results and scholarship winners will be announced by SMS and email.';
+    // This line predated the move to WhatsApp and still promised SMS and
+    // email, which nothing in this build sends — and it contradicted the
+    // community card sitting directly beneath it.
+    $('reg-done-sub').textContent =
+      'Your score, the answer key and the scholarship winners will all be announced on '
+      + 'Wednesday, 21 October 2026 in our WhatsApp community.';
   }
 }
 
