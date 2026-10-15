@@ -271,13 +271,14 @@ footer.site{background:var(--primary);color:#9DC4CE;text-align:center;padding:26
 .palette .btn{width:100%;margin-top:14px}
 
 @media (max-width:1023px){
-  .exam-grid{grid-template-columns:1fr;padding:14px 13px 132px}
+  .exam-grid{grid-template-columns:1fr;padding:14px 13px 150px}
   .qcard{padding:19px 17px;min-height:0}
   .qtext{font-size:16px}
   .palette{
     position:fixed;left:0;right:0;bottom:0;top:auto;border-radius:0;
     border-left:none;border-right:none;border-bottom:none;padding:10px 12px 12px;
     box-shadow:0 -5px 22px rgba(5,46,58,.14);z-index:45;
+    padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));
   }
   .palette h4,.pal-legend{display:none}
   .pal-grid{
@@ -1123,7 +1124,20 @@ function renderPalette() {
     b.setAttribute('aria-label', 'Question ' + (i + 1) + (isAnswered(i) ? ', answered' : ', not answered'));
   });
   $('cnt-ans').textContent = answered + ' / ' + S.questions.length;
+  fitForPalette();
 }
+// The palette is fixed to the bottom on a phone, so the question card has to
+// reserve exactly its height or the Prev/Review/Clear/Next row ends up
+// underneath it. Its height moves with content, font and safe-area inset, so
+// a hardcoded reserve is wrong on some device every time — measure it.
+function fitForPalette() {
+  var grid = document.querySelector('.exam-grid');
+  var pal = document.querySelector('.palette');
+  if (!grid || !pal) return;
+  if (window.innerWidth >= 1024) { grid.style.paddingBottom = ''; return; }
+  grid.style.paddingBottom = Math.ceil(pal.getBoundingClientRect().height + 22) + 'px';
+}
+
 function scrollPaletteTo(i) {
   var grid = $('pal-grid'), b = grid.children[i];
   if (b && window.innerWidth < 1024) b.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
@@ -1539,7 +1553,12 @@ var PROCTOR = (function () {
     }, AWAY_MS());
   });
   // Rotating the phone crosses the breakpoint, so relabel on resize.
-  window.addEventListener('resize', function () { if (S.running) renderQuestion(); });
+  window.addEventListener('resize', function () {
+    if (S.running) { renderQuestion(); fitForPalette(); }
+  });
+  window.addEventListener('orientationchange', function () {
+    if (S.running) setTimeout(fitForPalette, 250);
+  });
   window.addEventListener('focus', function () {
     clearTimeout(blurTimer);
     $('blur-shield').classList.remove('show');
