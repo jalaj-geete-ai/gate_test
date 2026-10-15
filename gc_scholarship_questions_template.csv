@@ -1,0 +1,4 @@
+code,subject,difficulty,question,option_a,option_b,option_c,option_d,correct_option
+Q001,Quantitative Aptitude,easy,"A train 120 m long passes a pole in 6 seconds. What is its speed in km/h?",60,72,80,90,B
+Q002,Logical Reasoning,medium,"If TUESDAY is coded as UVFTEBZ, how is FRIDAY coded?",GSJEBZ,GSJFBZ,GSIEBZ,FSJEBZ,A
+Q003,General English,easy,"Choose the correctly spelled word.",Accomodation,Accommodation,Acommodation,Accomodatoin,B
