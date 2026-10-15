@@ -60,7 +60,12 @@ sub("""  $('start-zone').style.display = (live && !done) ? 'block' : 'none';""",
     """  $('start-zone').style.display = 'block';          // DEMO: always available
   $('btn-start-test').textContent = 'START TEST (DEMO)';
   $('start-note').innerHTML = 'Demo mode \\u2014 this button ignores the countdown. '
-    + 'On the live page it appears only at 2:00 PM on 18 October.';""",
+    + 'On the live page it appears only at 2:00 PM on 18 October.';
+  // A demo attempt is wiped and re-run server-side, so the same number can
+  // go round again. Showing the live page's "already taken" lock here would
+  // tell a tester the opposite of what will actually happen, so the form
+  // stays put and the lock panel is suppressed.
+  done = false;""",
     'always-on start button')
 
 OUT.write_text(s, encoding='utf-8')

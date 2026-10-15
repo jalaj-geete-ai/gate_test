@@ -13,6 +13,7 @@ Landing page, test engine and anti-cheat for the scholarship test on
 | `gc_scholarship_questions_template.csv` | CSV import format, if you prefer a spreadsheet to JSON. |
 | `gc_scholarship_test_demo.html` | **Dry-run page.** Generated from the live page; delete before go-live. |
 | `gc_scholarship_build_demo.py` | Regenerates the dry-run page from the live one. |
+| `gc_scholarship_api.ts` | Source of the `scholarship-api` Edge Function — the whole server half: scoring, the one-attempt rule, the window. Deployed copy of record. |
 | `gc_logo.png` | Brand logo, white field flood-filled out to transparency. |
 | `gc_bg_desktop.jpg` / `gc_bg_mobile.jpg` | Hero backgrounds, served at ~34% opacity under a white scrim. |
 
@@ -91,6 +92,15 @@ creates is flagged `is_demo` and filtered out of `scholarship_results`,
 never reach the leaderboard or the CRM. Demo attempts are also repeatable: the
 one-attempt rule holds absolutely for real students, but a demo attempt is
 cleared and re-run so the team can go round more than once.
+
+A dry run is also **invisible to the live page**. Both pages sit on one origin
+and share one `localStorage` key, so after a rehearsal the live page boots
+holding the tester's number — and `status`, `register` and `result` would have
+reported that rehearsal as a real attempt, greeting the team with "You have
+already taken this test" on the page they are about to send to students. All
+three now hide an `is_demo` attempt from any caller without the demo key, and
+`start` clears one outright so it can never consume a student's single real
+attempt.
 
 ### Shutting the dry run down before go-live
 
