@@ -12,12 +12,18 @@ What it changes, and nothing else:
   * a standing banner so nobody mistakes this for the live page
   * the Start Test button is always shown, whatever the countdown says
 
-Run:  python3 gc_scholarship_build_demo.py
+Run:  python3 gc_scholarship_build_demo.py [output_path]
+
+The output path is optional. It exists so the layout tests can build the page
+as a throwaway fixture outside the repo: the test screen is only reachable
+without waiting for 18 October by going through the demo start button, and
+the repo must not carry the rehearsal page once the test is live.
 """
 import re, sys, pathlib
 
-SRC = pathlib.Path('gc_scholarship_test.html')
-OUT = pathlib.Path('gc_scholarship_test_demo.html')
+SRC = pathlib.Path(__file__).resolve().parent / 'gc_scholarship_test.html'
+OUT = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 \
+      else SRC.parent / 'gc_scholarship_test_demo.html'
 DEMO_KEY = 'gcb-dryrun-d624e6437556bf1f8db0bc05'
 
 s = SRC.read_text(encoding='utf-8')

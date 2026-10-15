@@ -11,8 +11,7 @@ Landing page, test engine and anti-cheat for the scholarship test on
 | `gc_scholarship_test.html` | The whole student-facing portal: landing, countdown, registration, instructions, test engine, result. Single file, no build step. |
 | `gc_scholarship_questions.json` | **The live question paper** — 30 nursing MCQs with answers and explanations. Source of truth; edit here and re-import. |
 | `gc_scholarship_questions_template.csv` | CSV import format, if you prefer a spreadsheet to JSON. |
-| `gc_scholarship_test_demo.html` | **Dry-run page.** Generated from the live page; delete before go-live. |
-| `gc_scholarship_build_demo.py` | Regenerates the dry-run page from the live one. |
+| `gc_scholarship_build_demo.py` | Regenerates the dry-run page from the live one. Kept for a future rehearsal; the page itself is not in the repo while the test is live. |
 | `gc_scholarship_api.ts` | Source of the `scholarship-api` Edge Function — the whole server half: scoring, the one-attempt rule, the window. Deployed copy of record. |
 | `gc_logo.png` | Brand logo, white field flood-filled out to transparency. |
 | `gc_bg_desktop.jpg` / `gc_bg_mobile.jpg` | Hero backgrounds, served at ~34% opacity under a white scrim. |
@@ -73,6 +72,11 @@ the page shows.
 
 ## The dry run
 
+> **The dry run is shut down.** `demo_enabled` is `'false'` and the rehearsal
+> page has been removed from the repo, so nothing below is active. This section
+> is here for the next time you need one: regenerate the page, set
+> `demo_enabled` back to `'true'`, and reverse both before going live again.
+
 `gc_scholarship_test_demo.html` is the rehearsal page. It is **generated** from
 the live page rather than maintained by hand, so it always exercises exactly
 the code students will get:
@@ -109,9 +113,23 @@ update scholarship_config set value = 'false' where key = 'demo_enabled';
 ```
 
 That one row kills the demo path entirely — the key stops working everywhere,
-immediately, without a redeploy. Do it before sharing the real link, and
-delete `gc_scholarship_test_demo.html` from the repo so the page stops being
-served at all.
+within the 30-second config cache and without a redeploy. Both steps are done:
+the row is set and `gc_scholarship_test_demo.html` is deleted, so the page is
+no longer served at all.
+
+Leads and attempts left over from the rehearsal are all flagged `is_demo`, so
+they are already absent from `scholarship_lead_export`, `scholarship_results`
+and `scholarship_tie_groups`. To remove them outright:
+
+```sql
+delete from scholarship_leads;   -- cascades to attempts and events
+```
+
+One thing to know if you keep them: a number that registered during the
+rehearsal still carries `is_demo = true` on its **lead** row. If that person
+sits the real test, their attempt counts normally and the one-attempt rule
+applies to them as to anyone else, but the lead stays out of the CRM export.
+The `delete` above is the clean fix.
 
 ## Timeline
 
