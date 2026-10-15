@@ -9,7 +9,8 @@ Landing page, test engine and anti-cheat for the scholarship test on
 | File | What it is |
 |---|---|
 | `gc_scholarship_test.html` | The whole student-facing portal: landing, countdown, registration, instructions, test engine, result. Single file, no build step. |
-| `gc_scholarship_questions_template.csv` | Drop the real questions in here, then import (below). |
+| `gc_scholarship_questions.json` | **The live question paper** — 30 nursing MCQs with answers and explanations. Source of truth; edit here and re-import. |
+| `gc_scholarship_questions_template.csv` | CSV import format, if you prefer a spreadsheet to JSON. |
 
 Backend lives in Supabase project `uxdrldreaockdloqvojs`:
 Edge Function **`scholarship-api`** plus the `scholarship_*` tables and views.
@@ -30,30 +31,84 @@ page, View Source would be worth ₹1,00,000+.
 
 ---
 
+## Timeline
+
+| When (IST) | What |
+|---|---|
+| Sun 18 Oct, 2:00 PM | Test opens. Countdown hits zero, Start Test appears. |
+| Sun 18 Oct, 4:30 PM | Last entry. Anyone who has started keeps their full 30 minutes. |
+| Sun 18 Oct, 5:00 PM | Hard close. Any paper still open auto-submits. |
+| Sun 18 Oct, 6:00 PM | **Marks and the answer key unlock.** Students see their score and can download the key with explanations. |
+| Mon 19 Oct, 2:00 PM | **Winners announced.** |
+
+Papers are marked the instant they are submitted — the score exists in
+`scholarship_attempts` immediately. What is withheld is *showing* it. On
+submission the student gets confetti and a congratulations message naming the
+6 PM release, and nothing else. The Edge Function refuses to return a score or
+a key before `results_visible_utc`, so the gate is not a UI trick.
+
+That gap exists for a reason: if scores were shown at 2:30 PM, students still
+inside the window would learn the key from friends who had finished.
+
+### Tie-break: lucky draw
+
+Scholarships are decided on marks alone. Where students finish level, the
+winners among them are drawn by lot — this is stated in the test instructions,
+in the T&C the student ticks before starting, on the result screen and in the
+downloaded answer key.
+
+`scholarship_tie_groups` tells you exactly which draws to run:
+
+```sql
+select * from scholarship_tie_groups;   -- one row per score, with the action needed
+select * from scholarship_results;      -- every student, ranked, ties sharing a rank
+```
+
+A tied group is flagged `DRAW`, with the positions it covers. A group that
+straddles the top-3 cutoff needs a draw for both bands — e.g. four students on
+116 occupying positions 2–5 means one of them misses the 100% band entirely.
+
 ## Loading the real questions
 
-1. Fill in `gc_scholarship_questions_template.csv`. One row per question:
-   `code, subject, difficulty, question, option_a..option_d, correct_option`
-   where `correct_option` is the letter `A`–`D`.
-2. Supabase dashboard → Table Editor → `scholarship_questions` → Import CSV,
-   **or** run the import SQL in the "Operations" section below.
-3. Deactivate the placeholders:
-   ```sql
-   update scholarship_questions set active = false where is_placeholder;
-   ```
-4. Confirm the live pool:
-   ```sql
-   select count(*) from scholarship_questions where active and not is_placeholder;
-   ```
+The live paper is **already loaded**: 30 nursing MCQs, placeholders retired.
+`gc_scholarship_questions.json` is the source of truth — edit it there and
+re-import so the repo and the database never drift apart.
 
-**The pool should be larger than 30.** Each student is served a random 30
-drawn from the active pool with the options shuffled, so a bigger pool is what
-stops the paper leaking on WhatsApp during the three-hour window. 90 is a good
-target; 60 still helps a lot; exactly 30 means everyone sits the same paper.
+```sql
+-- confirm what is live
+select count(*) filter (where not is_placeholder) as real_questions,
+       count(*) filter (where is_placeholder)     as placeholders
+from scholarship_questions where active;           -- expect 30, 0
+```
 
-The 90 rows currently loaded are **placeholders** — real arithmetic, so the
-scoring path is testable end to end, but clearly labelled `[PLACEHOLDER n]`.
-They must be deactivated before go-live.
+### ⚠ Question 4 needs a decision
+
+Q4 asks what to monitor most closely after craniopharyngioma surgery. The key
+says **B) Blood sugar level**, but the explanation printed beneath it says the
+surgery causes **Diabetes Insipidus** — which is monitored by **C) Urine output
+and specific gravity**. The answer and its own explanation disagree.
+
+This matters because the explanation is published to every student at 6 PM, so
+the contradiction becomes public. It was loaded exactly as supplied rather than
+silently corrected. To switch it to C:
+
+```sql
+update scholarship_questions set correct_index = 2 where code = 'SCH-04';
+```
+
+Changing it **after** students have sat the paper is safe — scores are computed
+at submission time, so a late edit would make the published key disagree with
+the marks already awarded. Decide before 2 PM.
+
+### The paper no longer has a pool
+
+With exactly 30 questions and 30 served, every student sits the same paper.
+Question order and option order are still shuffled per student, which stops a
+plain "answer is B, C, A…" list being useful, but it does **not** stop someone
+photographing the questions at 2:30 PM and sending them to a friend who starts
+at 4:00 PM. The only real fix is more questions than the paper needs: adding
+30–60 more to `scholarship_questions` turns the draw back on with no code
+change.
 
 ---
 
@@ -75,6 +130,8 @@ takes effect within 30 seconds — no redeploy.
 | `max_leads_per_device` | `3` | Registrations per device |
 | `max_leads_per_ip_hour` | `30` | Loose on purpose — college labs share one IP |
 | `registration_open` | `true` | Set `false` to close the form |
+| `results_visible_utc` | `2026-10-18T12:30:00Z` | 6:00 PM IST — marks and key unlock |
+| `winners_announce_utc` | `2026-10-19T08:30:00Z` | Mon 19 Oct, 2:00 PM IST |
 
 ```sql
 -- move the window (e.g. postpone by a week)
@@ -92,14 +149,25 @@ from staging_questions;
 ### Test day
 
 ```sql
-select * from scholarship_results order by rank;        -- ranked, with scholarship band
-select * from scholarship_lead_export;                  -- every lead, for the CRM
+select * from scholarship_results order by rank;            -- ranked; ties share a rank
+select * from scholarship_tie_groups;                       -- which lucky draws to run
+select * from scholarship_lead_export;                      -- every lead, for the CRM
 select * from scholarship_integrity order by strikes desc;  -- who to look at twice
 ```
 
-`scholarship_results` ranks on score, breaking ties on time taken, and labels
-the top 3 and ranks 4–10. `scholarship_lead_export` includes people who
-registered and never showed up — still leads worth calling.
+`scholarship_results` ranks on score alone; tied students share a rank and are
+labelled `LUCKY DRAW` with the positions at stake. `scholarship_lead_export`
+includes people who registered and never showed up — still leads worth calling.
+
+### Before go-live
+
+Twelve rows named `ZZTEST …` were inserted to prove the ranking and tie logic,
+then marked `disqualified` so they are already excluded from every view. They
+are harmless but untidy; deleting them needs a confirmed statement:
+
+```sql
+delete from scholarship_leads where name like 'ZZTEST %';   -- cascades to attempts
+```
 
 **Verify the top 10 against `scholarship_integrity` before promising anyone
 money.** Look for high `strikes`, `leads_on_same_device > 1`, a suspiciously
@@ -149,5 +217,8 @@ winners before awarding is worth the half hour.
 * **No admin web page yet.** Reporting is the three SQL views above. A browser
   dashboard needs an `SCHOLARSHIP_ADMIN_KEY` secret set in the Supabase
   dashboard first.
-* **Results show a score, not a rank.** Ranks depend on everyone finishing, so
-  they're announced afterwards by SMS.
+* **Result lookup is by mobile number alone.** Anyone who knows a student's
+  number could view that student's marks. That follows from having no OTP; it
+  is consistent with the rest of the identity model, but worth knowing.
+* **Only 30 questions exist**, so the paper is identical for everyone — see
+  "The paper no longer has a pool" above.
