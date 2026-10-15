@@ -1,0 +1,1257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="robots" content="noindex,nofollow">
+<title>Scholarship Test — Global Careers by Testbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#052E3A; --primary-mid:#0A3D4D; --primary-lo:#104E5F;
+  --accent:#00AFC1; --accent-mute:#0098A8; --accent-pale:#E4F7F9; --accent-wash:#F0FBFC;
+  --cta:#18B968; --cta-hover:#15A35D; --cta-glow:rgba(24,185,104,.25);
+  --bg:#F7F9FB; --bg-warm:#F1F5F9; --surface:#FFFFFF;
+  --text:#0F172A; --text-2:#475569; --text-3:#94A3B8;
+  --border:#E2E8F0; --border-l:#F1F5F9;
+  --danger:#DC2626; --danger-pale:#FEF2F2; --warn:#D97706; --warn-pale:#FFFBEB;
+  --review:#7C3AED; --review-pale:#F5F3FF;
+  --ff-display:'Playfair Display',Georgia,serif; --ff-body:'DM Sans',system-ui,-apple-system,sans-serif;
+  --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:24px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--ff-body); background:var(--bg); color:var(--text);
+  -webkit-font-smoothing:antialiased; line-height:1.55;
+}
+/* During the test nothing is selectable. Inputs opt back in below. */
+body.exam-mode{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+input,textarea{user-select:text;-webkit-user-select:text}
+/* A printed page is just another way to carry the paper out of the room. */
+@media print{body{display:none!important}}
+
+.screen{display:none}
+.screen.active{display:block}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.btn{
+  font-family:inherit;font-size:15px;font-weight:700;border:none;border-radius:var(--r-sm);
+  padding:14px 28px;cursor:pointer;transition:.18s;display:inline-flex;align-items:center;
+  justify-content:center;gap:8px;
+}
+.btn-primary{background:var(--cta);color:#fff;box-shadow:0 4px 14px var(--cta-glow)}
+.btn-primary:hover:not(:disabled){background:var(--cta-hover);transform:translateY(-1px)}
+.btn-ghost{background:var(--surface);color:var(--text-2);border:1.5px solid var(--border)}
+.btn-ghost:hover:not(:disabled){border-color:var(--accent);color:var(--accent-mute)}
+.btn-review{background:var(--review-pale);color:var(--review);border:1.5px solid #DDD6FE}
+.btn-danger{background:var(--danger);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+/* ══ LANDING ══════════════════════════════════════════════════════════ */
+.topbar{background:var(--primary);padding:16px 0}
+.brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;font-size:16px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent)}
+.brand small{display:block;font-size:11px;font-weight:400;color:#9FC6CF;letter-spacing:.04em}
+.hero{
+  background:linear-gradient(160deg,var(--primary) 0%,var(--primary-mid) 55%,var(--primary-lo) 100%);
+  color:#fff;padding:52px 0 64px;text-align:center;
+}
+.pill{
+  display:inline-block;background:rgba(0,175,193,.16);border:1px solid rgba(0,175,193,.42);
+  color:#7FE3EE;font-size:12.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  padding:7px 16px;border-radius:999px;margin-bottom:18px;
+}
+.hero h1{font-family:var(--ff-display);font-size:clamp(30px,5.4vw,50px);line-height:1.12;margin-bottom:14px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p.sub{font-size:clamp(15px,2vw,17.5px);color:#C5DDE3;max-width:620px;margin:0 auto 34px}
+
+.prizes{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:16px;max-width:720px;margin:0 auto 38px}
+.prize{
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);
+  border-radius:var(--r-lg);padding:24px 20px;backdrop-filter:blur(6px);
+}
+.prize.gold{border-color:rgba(0,175,193,.55);background:rgba(0,175,193,.12)}
+.prize .rank{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7FE3EE;margin-bottom:8px}
+.prize .amt{font-family:var(--ff-display);font-size:27px;line-height:1.2;margin-bottom:5px}
+.prize .note{font-size:13px;color:#A9CBD3}
+
+.countdown{margin:0 auto 10px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.cd-box{
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.17);border-radius:var(--r-md);
+  min-width:86px;padding:14px 10px;
+}
+.cd-box .n{font-family:var(--ff-display);font-size:34px;line-height:1;font-variant-numeric:tabular-nums}
+.cd-box .l{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#9FC6CF;margin-top:7px}
+.cd-caption{font-size:13.5px;color:#9FC6CF;margin-top:14px}
+.countdown.live .cd-box{border-color:var(--cta);background:rgba(24,185,104,.14)}
+
+/* the big test-day button */
+.start-zone{margin-top:28px}
+#btn-start-test{
+  font-size:clamp(18px,3vw,23px);padding:22px 56px;border-radius:var(--r-md);
+  letter-spacing:.02em;animation:pulse 2.2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:0 4px 14px var(--cta-glow)}50%{box-shadow:0 8px 30px rgba(24,185,104,.5)}}
+@media (prefers-reduced-motion:reduce){#btn-start-test{animation:none}}
+
+/* registration card */
+.reg-card{
+  background:var(--surface);border-radius:var(--r-xl);box-shadow:0 18px 44px rgba(5,46,58,.14);
+  max-width:460px;margin:-42px auto 0;padding:30px 28px;position:relative;z-index:3;
+}
+.reg-card h2{font-family:var(--ff-display);font-size:23px;margin-bottom:6px}
+.reg-card .lede{font-size:13.5px;color:var(--text-2);margin-bottom:22px}
+.field{margin-bottom:16px;text-align:left}
+.field label{display:block;font-size:12.5px;font-weight:700;color:var(--text-2);margin-bottom:6px;letter-spacing:.02em}
+.field input{
+  width:100%;font-family:inherit;font-size:16px;padding:13px 14px;border:1.5px solid var(--border);
+  border-radius:var(--r-sm);background:var(--surface);color:var(--text);transition:.15s;
+}
+.field input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-pale)}
+.field input.bad{border-color:var(--danger);background:var(--danger-pale)}
+.phone-wrap{display:flex;align-items:stretch}
+.phone-wrap .cc{
+  display:flex;align-items:center;padding:0 13px;background:var(--bg-warm);border:1.5px solid var(--border);
+  border-right:none;border-radius:var(--r-sm) 0 0 var(--r-sm);font-size:15px;font-weight:700;color:var(--text-2);
+}
+.phone-wrap input{border-radius:0 var(--r-sm) var(--r-sm) 0;letter-spacing:.09em}
+.err{color:var(--danger);font-size:12.5px;margin-top:6px;display:none}
+.err.show{display:block}
+.reg-card .btn{width:100%;margin-top:6px}
+.fineprint{font-size:11.5px;color:var(--text-3);margin-top:14px;line-height:1.6}
+.reg-ok{text-align:center;padding:8px 0}
+.reg-ok .tick{width:54px;height:54px;border-radius:50%;background:var(--accent-pale);color:var(--accent-mute);
+  display:flex;align-items:center;justify-content:center;font-size:27px;margin:0 auto 14px}
+.reg-ok h3{font-family:var(--ff-display);font-size:21px;margin-bottom:8px}
+.reg-ok p{font-size:14px;color:var(--text-2)}
+
+/* info strip + rules */
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--border);
+  border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin:46px 0}
+.fact{background:var(--surface);padding:20px 16px;text-align:center}
+.fact .v{font-family:var(--ff-display);font-size:23px;color:var(--primary)}
+.fact .k{font-size:11.5px;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;margin-top:5px}
+.sec-title{font-family:var(--ff-display);font-size:25px;margin-bottom:16px;text-align:center}
+.rules{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:26px 28px;margin-bottom:46px}
+.rules ul{list-style:none}
+.rules li{padding:9px 0 9px 28px;position:relative;font-size:14.5px;color:var(--text-2);border-bottom:1px solid var(--border-l)}
+.rules li:last-child{border-bottom:none}
+.rules li::before{content:"";position:absolute;left:4px;top:17px;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.rules li b{color:var(--text)}
+.rules li.warn::before{background:var(--danger)}
+footer.site{background:var(--primary);color:#9FC6CF;text-align:center;padding:26px 20px;font-size:12.5px}
+
+/* ══ INSTRUCTIONS ════════════════════════════════════════════════════ */
+.sheet{max-width:780px;margin:30px auto;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-xl);padding:34px 32px}
+.sheet h2{font-family:var(--ff-display);font-size:27px;margin-bottom:5px}
+.sheet .who{font-size:13.5px;color:var(--text-2);margin-bottom:24px}
+.marks{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0}
+.mark{border:1px solid var(--border);border-radius:var(--r-md);padding:16px 12px;text-align:center}
+.mark .m{font-family:var(--ff-display);font-size:25px}
+.mark.pos .m{color:var(--cta-hover)} .mark.neg .m{color:var(--danger)} .mark.zero .m{color:var(--text-3)}
+.mark .t{font-size:12px;color:var(--text-2);margin-top:4px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin:18px 0}
+.legend span{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-2)}
+.legend i{width:17px;height:17px;border-radius:5px;display:inline-block;border:1.5px solid var(--border)}
+.agree{display:flex;gap:11px;align-items:flex-start;background:var(--accent-wash);border:1px solid var(--accent-pale);
+  border-radius:var(--r-md);padding:15px;margin:22px 0}
+.agree input{width:19px;height:19px;margin-top:2px;flex-shrink:0;accent-color:var(--accent-mute)}
+.agree label{font-size:13.5px;color:var(--text-2)}
+.danger-note{background:var(--danger-pale);border:1px solid #FECACA;border-radius:var(--r-md);padding:15px 17px;margin:18px 0}
+.danger-note h4{color:#991B1B;font-size:14px;margin-bottom:7px}
+.danger-note ul{margin-left:17px;font-size:13.5px;color:#7F1D1D;line-height:1.75}
+
+/* ══ TEST ════════════════════════════════════════════════════════════ */
+.exam-bar{
+  position:sticky;top:0;z-index:40;background:var(--primary);color:#fff;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 18px;
+}
+.exam-bar .who{font-size:13.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.exam-bar .who small{display:block;font-size:11px;color:#9FC6CF}
+.timer{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  border-radius:999px;padding:7px 17px;font-variant-numeric:tabular-nums;font-weight:700;font-size:18px}
+.timer.warn{background:rgba(217,119,6,.28);border-color:#F59E0B;color:#FDE68A}
+.timer.crit{background:rgba(220,38,38,.3);border-color:#EF4444;color:#FECACA;animation:blink 1s step-end infinite}
+@keyframes blink{50%{opacity:.55}}
+.strike-chip{font-size:11.5px;background:rgba(220,38,38,.22);border:1px solid rgba(248,113,113,.5);
+  color:#FECACA;padding:5px 11px;border-radius:999px;white-space:nowrap}
+
+.exam-grid{display:grid;grid-template-columns:1fr 286px;gap:22px;max-width:1240px;margin:0 auto;padding:22px 20px 24px}
+.qcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:26px 28px;min-height:330px}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;
+  padding-bottom:13px;border-bottom:1px solid var(--border-l)}
+.qnum{font-size:13px;font-weight:700;color:var(--accent-mute);letter-spacing:.07em;text-transform:uppercase}
+.qsub{font-size:11.5px;color:var(--text-3);background:var(--bg-warm);padding:4px 10px;border-radius:999px}
+.qtext{font-size:17px;line-height:1.65;margin-bottom:22px;white-space:pre-wrap}
+.opts{display:flex;flex-direction:column;gap:11px}
+.opt{display:flex;gap:13px;align-items:flex-start;padding:14px 16px;border:1.5px solid var(--border);
+  border-radius:var(--r-md);cursor:pointer;transition:.14s;background:var(--surface)}
+.opt:hover{border-color:var(--accent);background:var(--accent-wash)}
+.opt.sel{border-color:var(--accent-mute);background:var(--accent-pale);box-shadow:0 0 0 2px var(--accent-pale)}
+.opt .k{width:27px;height:27px;flex-shrink:0;border-radius:50%;border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--text-2);background:var(--surface)}
+.opt.sel .k{background:var(--accent-mute);border-color:var(--accent-mute);color:#fff}
+.opt .txt{font-size:15.5px;line-height:1.5;padding-top:2px}
+.qnav{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;padding-top:20px;border-top:1px solid var(--border-l)}
+.qnav .spacer{flex:1}
+
+/* palette — right rail on laptop, bottom scroller on phone */
+.palette{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;
+  position:sticky;top:78px;align-self:start}
+.palette h4{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:13px}
+.pal-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.pal-btn{
+  aspect-ratio:1;border:1.5px solid var(--border);border-radius:9px;background:var(--surface);
+  font-family:inherit;font-size:13.5px;font-weight:700;color:var(--text-2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;position:relative;transition:.12s;
+}
+.pal-btn:hover{transform:scale(1.07)}
+.pal-btn.cur{box-shadow:0 0 0 3px var(--accent);border-color:var(--accent)}
+.pal-btn.answered{background:var(--cta);border-color:var(--cta);color:#fff}
+.pal-btn.seen{background:var(--danger-pale);border-color:#FCA5A5;color:#B91C1C}
+.pal-btn.review{background:var(--review);border-color:var(--review);color:#fff}
+.pal-btn.review.answered::after{
+  content:"";position:absolute;right:3px;bottom:3px;width:8px;height:8px;border-radius:50%;
+  background:var(--cta);border:1.5px solid #fff;
+}
+.pal-legend{margin-top:15px;display:flex;flex-direction:column;gap:7px}
+.pal-legend span{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--text-2)}
+.pal-legend i{width:15px;height:15px;border-radius:4px;border:1.5px solid var(--border);flex-shrink:0}
+.pal-count{display:flex;justify-content:space-between;font-size:12px;color:var(--text-2);
+  margin-top:14px;padding-top:12px;border-top:1px solid var(--border-l)}
+.palette .btn{width:100%;margin-top:14px}
+
+@media (max-width:1023px){
+  .exam-grid{grid-template-columns:1fr;padding:14px 13px 132px}
+  .qcard{padding:19px 17px;min-height:0}
+  .qtext{font-size:16px}
+  .palette{
+    position:fixed;left:0;right:0;bottom:0;top:auto;border-radius:0;
+    border-left:none;border-right:none;border-bottom:none;padding:10px 12px 12px;
+    box-shadow:0 -5px 22px rgba(5,46,58,.14);z-index:45;
+  }
+  .palette h4,.pal-legend{display:none}
+  .pal-grid{
+    display:flex;gap:8px;overflow-x:auto;padding-bottom:5px;
+    scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
+  }
+  .pal-grid::-webkit-scrollbar{height:4px}
+  .pal-grid::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+  .pal-btn{flex:0 0 42px;width:42px;height:42px;aspect-ratio:auto;scroll-snap-align:center}
+  .pal-count{margin-top:9px;padding-top:9px;font-size:11.5px}
+  .palette .btn{margin-top:9px;padding:12px}
+  .exam-bar{padding:9px 13px}
+  .timer{font-size:16px;padding:6px 13px}
+  .qnav .btn{flex:1;min-width:0;padding:12px 10px;font-size:13.5px}
+}
+
+/* ══ MODALS ══════════════════════════════════════════════════════════ */
+.ov{position:fixed;inset:0;background:rgba(5,46,58,.68);backdrop-filter:blur(3px);z-index:90;
+  display:none;align-items:center;justify-content:center;padding:20px}
+.ov.show{display:flex}
+.modal{background:var(--surface);border-radius:var(--r-xl);max-width:470px;width:100%;
+  padding:30px 28px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+.modal .icon{font-size:40px;margin-bottom:12px}
+.modal h3{font-family:var(--ff-display);font-size:22px;margin-bottom:10px}
+.modal p{font-size:14.5px;color:var(--text-2);line-height:1.65}
+.modal .actions{display:flex;gap:11px;margin-top:24px}
+.modal .actions .btn{flex:1}
+.tally{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:20px 0 4px}
+.tally div{background:var(--bg-warm);border-radius:var(--r-sm);padding:13px 8px}
+.tally .n{font-family:var(--ff-display);font-size:25px}
+.tally .l{font-size:11px;color:var(--text-3);letter-spacing:.05em;text-transform:uppercase;margin-top:3px}
+.tally .un .n{color:var(--danger)}
+.tally .an .n{color:var(--cta-hover)}
+.tally .rv .n{color:var(--review)}
+.modal.strike{border-top:5px solid var(--danger)}
+#blur-shield{position:fixed;inset:0;background:var(--primary);z-index:80;display:none;
+  align-items:center;justify-content:center;color:#9FC6CF;font-size:15px;text-align:center;padding:30px}
+#blur-shield.show{display:flex}
+
+/* ══ RESULT ══════════════════════════════════════════════════════════ */
+.result{max-width:560px;margin:46px auto;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-xl);padding:40px 32px;text-align:center}
+.result .big{font-family:var(--ff-display);font-size:62px;line-height:1;color:var(--primary)}
+.result .of{font-size:14px;color:var(--text-3);margin-top:5px}
+.result h2{font-family:var(--ff-display);font-size:26px;margin-bottom:9px}
+.breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:26px 0}
+.breakdown div{background:var(--bg-warm);border-radius:var(--r-md);padding:15px 9px}
+.breakdown .n{font-family:var(--ff-display);font-size:24px}
+.breakdown .l{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
+.next-steps{background:var(--accent-wash);border:1px solid var(--accent-pale);border-radius:var(--r-md);
+  padding:18px;margin-top:22px;font-size:14px;color:var(--text-2);text-align:left;line-height:1.7}
+.spinner{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--accent);
+  border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading{text-align:center;padding:70px 20px;color:var(--text-2)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:auto;top:16px;z-index:95;
+  background:var(--text);color:#fff;padding:12px 20px;border-radius:999px;font-size:13.5px;
+  box-shadow:0 8px 24px rgba(0,0,0,.26);opacity:0;transition:.25s;pointer-events:none}
+.toast.show{opacity:1}
+.toast.bad{background:var(--danger)}
+</style>
+</head>
+<body>
+
+<!-- ══════════ SCREEN: LANDING ══════════ -->
+<div class="screen active" id="s-landing">
+  <div class="topbar"><div class="wrap">
+    <div class="brand"><span class="dot"></span><div>Global Careers<small>BY TESTBOOK</small></div></div>
+  </div></div>
+
+  <div class="hero">
+    <div class="wrap">
+      <span class="pill">Scholarship Test · Sunday 18 October 2026</span>
+      <h1>Win a <em>100% scholarship</em><br>on your Global Careers programme</h1>
+      <p class="sub">One 30-minute test. Ten scholarships. Top performers get their entire programme fee waived — the rest of the top ten get ₹50,000 off.</p>
+
+      <div class="prizes">
+        <div class="prize gold">
+          <div class="rank">Rank 1 – 3</div>
+          <div class="amt">100% Scholarship</div>
+          <div class="note">Complete programme fee waived. Join free.</div>
+        </div>
+        <div class="prize">
+          <div class="rank">Rank 4 – 10</div>
+          <div class="amt">₹50,000 Off</div>
+          <div class="note">Flat ₹50,000 scholarship on your programme fee.</div>
+        </div>
+      </div>
+
+      <div class="countdown" id="countdown">
+        <div class="cd-box"><div class="n" id="cd-d">--</div><div class="l">Days</div></div>
+        <div class="cd-box"><div class="n" id="cd-h">--</div><div class="l">Hours</div></div>
+        <div class="cd-box"><div class="n" id="cd-m">--</div><div class="l">Minutes</div></div>
+        <div class="cd-box"><div class="n" id="cd-s">--</div><div class="l">Seconds</div></div>
+      </div>
+      <div class="cd-caption" id="cd-caption">Test opens Sunday, 18 October 2026 at 2:00 PM IST</div>
+
+      <div class="start-zone" id="start-zone" style="display:none">
+        <button class="btn btn-primary" id="btn-start-test">START TEST</button>
+        <div class="cd-caption" id="start-note" style="margin-top:12px">The test is live now. Last entry 4:30 PM IST.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <!-- registration -->
+    <div class="reg-card" id="reg-card">
+      <div id="reg-form-box">
+        <h2>Register for the test</h2>
+        <p class="lede">Takes 20 seconds. No email, no password.</p>
+        <div class="field">
+          <label for="in-name">Full name</label>
+          <input id="in-name" type="text" autocomplete="name" placeholder="Your full name" maxlength="60" spellcheck="false">
+          <div class="err" id="err-name"></div>
+        </div>
+        <div class="field">
+          <label for="in-phone">Mobile number</label>
+          <div class="phone-wrap">
+            <span class="cc">+91</span>
+            <input id="in-phone" type="tel" inputmode="numeric" autocomplete="tel-national"
+                   placeholder="10-digit number" maxlength="18">
+          </div>
+          <div class="err" id="err-phone"></div>
+        </div>
+        <button class="btn btn-primary" id="btn-register">Register for the test</button>
+        <p class="fineprint">By registering you agree to be contacted by Global Careers by Testbook about this test and our programmes. One attempt per student — your number is your identity for this test.</p>
+      </div>
+
+      <div class="reg-ok" id="reg-done" style="display:none">
+        <div class="tick">&#10003;</div>
+        <h3 id="reg-done-title">You're registered</h3>
+        <p id="reg-done-msg"></p>
+        <p class="fineprint" id="reg-done-sub" style="margin-top:14px"></p>
+      </div>
+    </div>
+
+    <div class="facts">
+      <div class="fact"><div class="v">30</div><div class="k">Questions</div></div>
+      <div class="fact"><div class="v">30 min</div><div class="k">Duration</div></div>
+      <div class="fact"><div class="v">+4 / −1</div><div class="k">Marking</div></div>
+      <div class="fact"><div class="v">1</div><div class="k">Attempt only</div></div>
+    </div>
+
+    <h2 class="sec-title">Before you sit down</h2>
+    <div class="rules">
+      <ul>
+        <li><b>Window:</b> Sunday, 18 October 2026, <b>2:00 PM – 5:00 PM IST</b>. You may begin any time up to <b>4:30 PM</b>; your 30 minutes start the moment you press Start.</li>
+        <li><b>Format:</b> 30 multiple-choice questions, one correct answer each. <b>+4</b> for correct, <b>−1</b> for wrong, <b>0</b> if left blank.</li>
+        <li><b>Navigation:</b> jump to any question from the number grid, mark questions for review, and change answers freely until you submit.</li>
+        <li class="warn"><b>One attempt.</b> Your mobile number gets exactly one attempt. There is no reset and no second chance.</li>
+        <li class="warn"><b>Stay on the test tab.</b> Leaving the tab for more than 10 seconds is a strike. <b>Three strikes and your paper is submitted automatically.</b></li>
+        <li class="warn"><b>Copy, paste and right-click are disabled</b> for the duration, and the session is monitored and logged.</li>
+        <li><b>Use a stable connection.</b> Your answers save to our servers continuously, so a refresh will not lose your work — but the clock keeps running.</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer class="site">Global Careers by Testbook · © 2026 Testbook Edu Solutions Pvt. Ltd.</footer>
+</div>
+
+<!-- ══════════ SCREEN: INSTRUCTIONS ══════════ -->
+<div class="screen" id="s-instructions">
+  <div class="topbar"><div class="wrap">
+    <div class="brand"><span class="dot"></span><div>Global Careers<small>BY TESTBOOK</small></div></div>
+  </div></div>
+  <div class="sheet">
+    <h2>Test instructions</h2>
+    <p class="who" id="instr-who"></p>
+
+    <div class="marks">
+      <div class="mark pos"><div class="m">+4</div><div class="t">Correct answer</div></div>
+      <div class="mark neg"><div class="m">−1</div><div class="t">Wrong answer</div></div>
+      <div class="mark zero"><div class="m">0</div><div class="t">Not answered</div></div>
+    </div>
+
+    <div class="rules" style="margin:0 0 4px;border:none;padding:0">
+      <ul>
+        <li><b>30 questions, 30 minutes.</b> The timer starts the second you begin and runs on our server — closing the tab does not pause it.</li>
+        <li><b>Question grid:</b> on a laptop it sits to the right of the question; on a phone it is the strip along the bottom. Tap any number to jump straight there.</li>
+        <li><b>Mark for review</b> to flag a question you want to come back to. Marked questions can still be answered.</li>
+        <li><b>Your answers save automatically</b> as you go.</li>
+        <li><b>Submitting</b> asks you to confirm, and tells you how many questions you left unanswered.</li>
+        <li>When the 30 minutes run out the paper <b>submits itself</b> with whatever you have answered.</li>
+      </ul>
+    </div>
+
+    <div class="legend">
+      <span><i style="background:var(--cta);border-color:var(--cta)"></i> Answered</span>
+      <span><i style="background:var(--danger-pale);border-color:#FCA5A5"></i> Seen, not answered</span>
+      <span><i style="background:var(--review);border-color:var(--review)"></i> Marked for review</span>
+      <span><i></i> Not visited</span>
+    </div>
+
+    <div class="danger-note">
+      <h4>&#9888;&#65039; This test is monitored</h4>
+      <ul>
+        <li>Leaving the test tab for more than <b>10 seconds</b> counts as a strike. <b>Three strikes and your paper is submitted automatically.</b></li>
+        <li>Copying, pasting, right-click and the developer-tools shortcuts are disabled.</li>
+        <li>Opening the test in a second tab or window will lock the older one.</li>
+        <li>Every switch away, every strike and your full answer history is logged against your attempt.</li>
+        <li>Your mobile number gets <b>one attempt only</b>. If you leave now, you cannot start again later.</li>
+      </ul>
+    </div>
+
+    <div class="agree">
+      <input type="checkbox" id="chk-agree">
+      <label for="chk-agree">I have read the instructions. I understand this is my only attempt, that my session is monitored, and that three strikes will submit my paper automatically.</label>
+    </div>
+
+    <div style="display:flex;gap:11px">
+      <button class="btn btn-ghost" id="btn-instr-back" style="flex:0 0 auto">Back</button>
+      <button class="btn btn-primary" id="btn-begin" style="flex:1" disabled>Begin test &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SCREEN: TEST ══════════ -->
+<div class="screen" id="s-test">
+  <div class="exam-bar">
+    <div class="who" id="exam-who"></div>
+    <div class="timer" id="timer">--:--</div>
+    <div class="strike-chip" id="strike-chip" style="display:none"></div>
+  </div>
+  <div class="exam-grid">
+    <div class="qcard" id="qcard">
+      <div class="qhead">
+        <span class="qnum" id="q-num">Question 1 of 30</span>
+        <span class="qsub" id="q-sub"></span>
+      </div>
+      <div class="qtext" id="q-text"></div>
+      <div class="opts" id="q-opts"></div>
+      <div class="qnav">
+        <button class="btn btn-ghost" id="btn-prev">&larr; Previous</button>
+        <button class="btn btn-review" id="btn-review">Mark for review</button>
+        <button class="btn btn-ghost" id="btn-clear">Clear</button>
+        <span class="spacer"></span>
+        <button class="btn btn-primary" id="btn-next">Next &rarr;</button>
+      </div>
+    </div>
+
+    <aside class="palette">
+      <h4>Question palette</h4>
+      <div class="pal-grid" id="pal-grid"></div>
+      <div class="pal-legend">
+        <span><i style="background:var(--cta);border-color:var(--cta)"></i> Answered</span>
+        <span><i style="background:var(--danger-pale);border-color:#FCA5A5"></i> Seen, not answered</span>
+        <span><i style="background:var(--review);border-color:var(--review)"></i> Marked for review</span>
+        <span><i></i> Not visited</span>
+      </div>
+      <div class="pal-count"><span>Answered</span><b id="cnt-ans">0 / 30</b></div>
+      <button class="btn btn-primary" id="btn-submit">Submit test</button>
+    </aside>
+  </div>
+</div>
+
+<!-- ══════════ SCREEN: RESULT ══════════ -->
+<div class="screen" id="s-result">
+  <div class="topbar"><div class="wrap">
+    <div class="brand"><span class="dot"></span><div>Global Careers<small>BY TESTBOOK</small></div></div>
+  </div></div>
+  <div class="result">
+    <h2 id="res-title">Test submitted</h2>
+    <p style="font-size:14.5px;color:var(--text-2)" id="res-sub"></p>
+    <div style="margin:28px 0 4px">
+      <div class="big" id="res-score">—</div>
+      <div class="of" id="res-of"></div>
+    </div>
+    <div class="breakdown">
+      <div><div class="n" style="color:var(--cta-hover)" id="res-c">0</div><div class="l">Correct</div></div>
+      <div><div class="n" style="color:var(--danger)" id="res-w">0</div><div class="l">Wrong</div></div>
+      <div><div class="n" style="color:var(--text-3)" id="res-u">0</div><div class="l">Skipped</div></div>
+    </div>
+    <div class="next-steps" id="res-next"></div>
+  </div>
+  <footer class="site">Global Careers by Testbook · © 2026 Testbook Edu Solutions Pvt. Ltd.</footer>
+</div>
+
+<!-- ══════════ MODALS ══════════ -->
+<div class="ov" id="ov-submit"><div class="modal">
+  <div class="icon">&#128221;</div>
+  <h3>Submit your test?</h3>
+  <p id="sub-msg"></p>
+  <div class="tally">
+    <div class="an"><div class="n" id="t-ans">0</div><div class="l">Answered</div></div>
+    <div class="un"><div class="n" id="t-un">0</div><div class="l">Unanswered</div></div>
+    <div class="rv"><div class="n" id="t-rv">0</div><div class="l">For review</div></div>
+  </div>
+  <p style="font-size:13px;color:var(--text-3);margin-top:14px">Once submitted you cannot return to this paper.</p>
+  <div class="actions">
+    <button class="btn btn-ghost" id="btn-cancel-sub">Keep working</button>
+    <button class="btn btn-primary" id="btn-confirm-sub">Yes, submit</button>
+  </div>
+</div></div>
+
+<div class="ov" id="ov-strike"><div class="modal strike">
+  <div class="icon">&#9888;&#65039;</div>
+  <h3 id="strike-title">Warning</h3>
+  <p id="strike-msg"></p>
+  <div class="actions"><button class="btn btn-danger" id="btn-strike-ok" style="flex:1">Back to the test</button></div>
+</div></div>
+
+<div class="ov" id="ov-note"><div class="modal">
+  <div class="icon" id="note-icon">&#8505;&#65039;</div>
+  <h3 id="note-title"></h3>
+  <p id="note-msg"></p>
+  <div class="actions"><button class="btn btn-primary" id="btn-note-ok" style="flex:1">OK</button></div>
+</div></div>
+
+<div class="ov" id="ov-busy"><div class="modal">
+  <div class="spinner"></div>
+  <p style="margin-top:18px" id="busy-msg">Working…</p>
+</div></div>
+
+<div id="blur-shield">Your test is hidden while this window is not in focus.<br>Click here to return to the test.</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===========================================================================
+   Global Careers by Testbook — Scholarship Test portal
+   ---------------------------------------------------------------------------
+   The browser here is a presentation layer and nothing more. It never holds
+   the answer key, it never decides the score, and it does not own the clock:
+   the countdown, the 30-minute timer and the test window all run off server
+   time, so moving the device clock achieves nothing.
+
+   What the proctoring below *can* do is make casual cheating inconvenient and
+   leave an audit trail. What it cannot do is stop a determined student with a
+   second device, and no browser-side code can. It is a deterrent plus
+   evidence, not a guarantee — which is exactly why the scoring lives on the
+   server and the top ten should still be verified before any money moves.
+   ======================================================================== */
+(function () {
+'use strict';
+
+var SUPABASE_URL = 'https://uxdrldreaockdloqvojs.supabase.co';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4ZHJsZHJlYW9ja2Rsb3F2b2pzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzE2MjIsImV4cCI6MjA4OTQwNzYyMn0.swqYBfGzHP5qSDPnZ_AivFE0zljyK33Kq-_ephz4Ybc';
+var API = SUPABASE_URL + '/functions/v1/scholarship-api';
+var LS = 'gcb_schol_v1';
+var TAB_ID = Math.random().toString(36).slice(2) + Date.now().toString(36);
+
+/* --- tiny helpers ------------------------------------------------------- */
+function $(id) { return document.getElementById(id); }
+function show(screen) {
+  ['s-landing', 's-instructions', 's-test', 's-result'].forEach(function (s) {
+    $(s).classList.toggle('active', s === screen);
+  });
+  window.scrollTo(0, 0);
+}
+function overlay(id, on) { $(id).classList.toggle('show', !!on); }
+function busy(on, msg) { if (msg) $('busy-msg').textContent = msg; overlay('ov-busy', on); }
+var toastTimer = null;
+function toast(msg, bad) {
+  var t = $('toast');
+  t.textContent = msg; t.classList.toggle('bad', !!bad); t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2600);
+}
+function note(title, msg, icon) {
+  $('note-title').textContent = title; $('note-msg').innerHTML = msg;
+  $('note-icon').innerHTML = icon || '&#8505;&#65039;'; overlay('ov-note', true);
+}
+function store(obj) { try { localStorage.setItem(LS, JSON.stringify(obj)); } catch (e) {} }
+function recall() { try { return JSON.parse(localStorage.getItem(LS) || '{}'); } catch (e) { return {}; } }
+
+function api(action, body) {
+  return fetch(API, {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'apikey': SUPABASE_KEY,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(Object.assign({ action: action }, body || {}))
+  }).then(function (r) { return r.json().catch(function () { return { ok: false, code: 'bad_response' }; }); });
+}
+
+/* A device id that survives a reload, plus a passive fingerprint that
+   survives clearing site data. Neither is strong alone; together they make
+   running ten numbers off one phone more trouble than it is worth. */
+function deviceId() {
+  var s = recall();
+  if (!s.device_id) {
+    s.device_id = 'd-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    store(s);
+  }
+  return s.device_id;
+}
+function fingerprint() {
+  var bits = [];
+  try {
+    bits.push(navigator.userAgent, navigator.language, (navigator.languages || []).join(','),
+      screen.width + 'x' + screen.height + 'x' + screen.colorDepth,
+      new Date().getTimezoneOffset(), navigator.hardwareConcurrency || 0,
+      navigator.maxTouchPoints || 0, navigator.platform || '');
+    var c = document.createElement('canvas'); c.width = 200; c.height = 40;
+    var g = c.getContext('2d');
+    g.textBaseline = 'top'; g.font = "14px 'Arial'";
+    g.fillStyle = '#f60'; g.fillRect(0, 0, 100, 20);
+    g.fillStyle = '#069'; g.fillText('gcb-scholarship', 2, 15);
+    bits.push(c.toDataURL().slice(-80));
+  } catch (e) { bits.push('fp-error'); }
+  var str = bits.join('|'), h1 = 0x811c9dc5, h2 = 0x1000193;
+  for (var i = 0; i < str.length; i++) {
+    h1 ^= str.charCodeAt(i); h1 = (h1 * 0x01000193) >>> 0;
+    h2 = ((h2 << 5) - h2 + str.charCodeAt(i)) >>> 0;
+  }
+  return (h1.toString(16) + h2.toString(16)).slice(0, 32);
+}
+
+/* --- state -------------------------------------------------------------- */
+var S = {
+  offset: 0,            // serverNow - clientNow, in ms
+  phase: 'before',
+  windowOpen: null, entryClose: null, windowClose: null,
+  leadId: null, name: null, phone: null,
+  token: null, questions: [], answers: {}, marked: [], visited: {},
+  idx: 0, expiresAt: null,
+  strikes: 0, maxStrikes: 3, tabAway: 10,
+  running: false, submitted: false, locked: false
+};
+function serverNow() { return Date.now() + S.offset; }
+
+/* ========================================================================
+   LANDING — countdown and registration
+   ===================================================================== */
+var countdownTimer = null;
+
+function applyStatus(st) {
+  if (!st || !st.ok) return;
+  S.offset = new Date(st.server_now).getTime() - Date.now();
+  S.windowOpen = new Date(st.window_open).getTime();
+  S.entryClose = new Date(st.window_entry_close).getTime();
+  S.windowClose = new Date(st.window_close).getTime();
+  S.phase = st.phase;
+  S.maxStrikes = st.max_strikes || 3;
+  S.tabAway = st.tab_away_seconds || 10;
+  if (st.lead_id) { S.leadId = st.lead_id; S.name = st.name; }
+  paintPhase(st.attempt_status);
+}
+
+function paintPhase(attemptStatus) {
+  var done = attemptStatus && attemptStatus !== 'in_progress';
+  var live = S.phase === 'open';
+
+  $('start-zone').style.display = (live && !done) ? 'block' : 'none';
+  $('countdown').classList.toggle('live', live);
+
+  if (live) {
+    ['cd-d', 'cd-h', 'cd-m', 'cd-s'].forEach(function (i) { $(i).textContent = '00'; });
+    $('cd-caption').textContent = 'The test is LIVE now — 2:00 PM to 5:00 PM IST';
+  } else if (S.phase === 'entry_closed') {
+    ['cd-d', 'cd-h', 'cd-m', 'cd-s'].forEach(function (i) { $(i).textContent = '00'; });
+    $('cd-caption').textContent = 'Entry closed. The last start time was 4:30 PM IST.';
+  } else if (S.phase === 'closed') {
+    ['cd-d', 'cd-h', 'cd-m', 'cd-s'].forEach(function (i) { $(i).textContent = '00'; });
+    $('cd-caption').textContent = 'This scholarship test is now closed. Results will follow by SMS.';
+  }
+
+  if (done) {
+    $('reg-form-box').style.display = 'none';
+    $('reg-done').style.display = 'block';
+    $('reg-done-title').textContent = 'You have already taken this test';
+    $('reg-done-msg').textContent = 'Our records show an attempt against this number. Only one attempt is allowed.';
+    $('reg-done-sub').textContent = 'Results and scholarship winners will be announced by SMS and email.';
+  }
+}
+
+function tickCountdown() {
+  if (S.phase !== 'before' || !S.windowOpen) return;
+  var ms = S.windowOpen - serverNow();
+  if (ms <= 0) { refreshStatus(); return; }
+  var s = Math.floor(ms / 1000);
+  var d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600),
+      m = Math.floor(s % 3600 / 60), sec = s % 60;
+  var p = function (n) { return String(n).padStart(2, '0'); };
+  $('cd-d').textContent = p(d); $('cd-h').textContent = p(h);
+  $('cd-m').textContent = p(m); $('cd-s').textContent = p(sec);
+}
+
+function refreshStatus() {
+  var saved = recall();
+  return api('status', { phone: saved.phone || '' }).then(applyStatus).catch(function () {});
+}
+
+/* --- registration ------------------------------------------------------- */
+function fieldError(which, msg) {
+  var e = $('err-' + which), inp = $('in-' + which);
+  if (msg) { e.textContent = msg; e.classList.add('show'); inp.classList.add('bad'); }
+  else { e.classList.remove('show'); inp.classList.remove('bad'); }
+}
+
+$('in-phone').addEventListener('input', function () {
+  // Strictly ten numeric digits. Anything that is not a digit is stripped as
+  // it is typed, and the two shapes people actually paste are normalised
+  // first: "+91 98765 43210" and a landline-style leading zero. Without this
+  // a pasted number silently becomes the wrong ten digits.
+  var v = this.value.replace(/\D/g, '');
+  if (v.length > 10 && v.slice(0, 2) === '91') v = v.slice(2);
+  else if (v.length > 10 && v.charAt(0) === '0') v = v.slice(1);
+  this.value = v.slice(0, 10);
+  fieldError('phone', '');
+});
+$('in-name').addEventListener('input', function () { fieldError('name', ''); });
+
+function doRegister() {
+  var name = $('in-name').value.trim();
+  var phone = $('in-phone').value.trim();
+  var ok = true;
+  if (name.length < 2) { fieldError('name', 'Please enter your full name.'); ok = false; }
+  if (!/^\d{10}$/.test(phone)) { fieldError('phone', 'Enter exactly 10 digits.'); ok = false; }
+  else if (!/^[6-9]/.test(phone)) { fieldError('phone', 'An Indian mobile number starts with 6, 7, 8 or 9.'); ok = false; }
+  if (!ok) return Promise.resolve(false);
+
+  busy(true, 'Registering you…');
+  return api('register', {
+    name: name, phone: phone, device_id: deviceId(), fp_hash: fingerprint(),
+    utm: utmParams()
+  }).then(function (r) {
+    busy(false);
+    if (!r.ok) {
+      if (r.code === 'bad_phone') fieldError('phone', r.message);
+      else if (r.code === 'bad_name') fieldError('name', r.message);
+      else note('Could not register', r.message || 'Please try again in a moment.', '&#9888;&#65039;');
+      return false;
+    }
+    S.leadId = r.lead_id; S.name = r.name; S.phone = phone;
+    var saved = recall(); saved.phone = phone; saved.name = r.name; saved.lead_id = r.lead_id; store(saved);
+
+    if (r.attempted) {
+      paintPhase('submitted');
+      return false;
+    }
+    $('reg-form-box').style.display = 'none';
+    $('reg-done').style.display = 'block';
+    $('reg-done-title').textContent = r.returning ? 'You are already registered' : "You're registered";
+    $('reg-done-msg').textContent = 'See you on Sunday, 18 October at 2:00 PM IST, ' + r.name.split(' ')[0] + '.';
+    $('reg-done-sub').textContent = 'Keep this page bookmarked — come back here on test day and press Start Test. We will also send you a reminder by SMS.';
+    return true;
+  }).catch(function () {
+    busy(false);
+    note('Network problem', 'We could not reach our servers. Check your connection and try again.', '&#128246;');
+    return false;
+  });
+}
+function utmParams() {
+  var o = {}, q = new URLSearchParams(location.search);
+  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(function (k) {
+    if (q.get(k)) o[k] = q.get(k).slice(0, 80);
+  });
+  return o;
+}
+$('btn-register').addEventListener('click', doRegister);
+$('in-phone').addEventListener('keydown', function (e) { if (e.key === 'Enter') doRegister(); });
+
+/* --- start test --------------------------------------------------------- */
+$('btn-start-test').addEventListener('click', function () {
+  var saved = recall();
+  if (!S.leadId && !saved.phone) {
+    note('Register first', 'Please fill in your name and mobile number just below, then press Start Test.', '&#9757;&#65039;');
+    $('reg-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    $('in-name').focus();
+    return;
+  }
+  $('instr-who').textContent = (S.name || saved.name || '') + '  ·  +91 ' + (S.phone || saved.phone || '');
+  $('chk-agree').checked = false;
+  $('btn-begin').disabled = true;
+  show('s-instructions');
+});
+$('chk-agree').addEventListener('change', function () { $('btn-begin').disabled = !this.checked; });
+$('btn-instr-back').addEventListener('click', function () { show('s-landing'); });
+$('btn-begin').addEventListener('click', beginTest);
+
+function beginTest() {
+  var saved = recall();
+  busy(true, 'Preparing your paper…');
+  api('start', {
+    lead_id: S.leadId || saved.lead_id || '', phone: S.phone || saved.phone || '',
+    device_id: deviceId()
+  }).then(function (r) {
+    busy(false);
+    if (!r.ok) {
+      var titles = {
+        already_attempted: 'You have already taken this test',
+        not_open: 'The test has not opened yet',
+        entry_closed: 'Entry has closed',
+        closed: 'The test is closed',
+        time_over: 'Your time is over',
+        not_registered: 'Please register first',
+        no_questions: 'Paper not ready'
+      };
+      note(titles[r.code] || 'Cannot start', r.message || 'Please try again.', '&#9888;&#65039;');
+      show('s-landing'); refreshStatus();
+      return;
+    }
+    S.token = r.token; S.name = r.name;
+    S.questions = r.questions || [];
+    S.answers = r.answers || {};
+    S.marked = r.marked_review || [];
+    S.strikes = r.strikes || 0;
+    S.maxStrikes = r.max_strikes || 3;
+    S.tabAway = r.tab_away_seconds || 10;
+    S.offset = new Date(r.server_now).getTime() - Date.now();
+    S.expiresAt = new Date(r.expires_at).getTime();
+    S.idx = 0; S.visited = {}; S.submitted = false; S.running = true;
+
+    document.body.classList.add('exam-mode');
+    $('exam-who').innerHTML = (S.name || '') + '<small>+91 ' + (S.phone || recall().phone || '') + '</small>';
+    show('s-test');
+    claimTab();
+    requestFullscreen();
+    renderPalette(); renderQuestion(); startTimer(); PROCTOR.arm();
+    if (r.resumed) toast('Welcome back — your answers were saved.');
+  }).catch(function () {
+    busy(false);
+    note('Network problem', 'We could not start your test. Check your connection and press Begin again.', '&#128246;');
+  });
+}
+
+/* ========================================================================
+   TEST ENGINE
+   ===================================================================== */
+var LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+function qid(i) { return String(S.questions[i].id); }
+function isAnswered(i) { var v = S.answers[qid(i)]; return v !== undefined && v !== null && v >= 0; }
+function isMarked(i) { return S.marked.indexOf(S.questions[i].id) > -1; }
+
+function renderQuestion() {
+  var q = S.questions[S.idx];
+  if (!q) return;
+  S.visited[qid(S.idx)] = true;
+
+  $('q-num').textContent = 'Question ' + (S.idx + 1) + ' of ' + S.questions.length;
+  $('q-sub').textContent = q.subject || '';
+  $('q-text').textContent = q.question;
+
+  var box = $('q-opts');
+  box.innerHTML = '';
+  (q.options || []).forEach(function (text, pos) {
+    var sel = S.answers[qid(S.idx)] === pos;
+    var el = document.createElement('div');
+    el.className = 'opt' + (sel ? ' sel' : '');
+    el.setAttribute('role', 'radio');
+    el.setAttribute('aria-checked', sel ? 'true' : 'false');
+    el.tabIndex = 0;
+    el.innerHTML = '<span class="k">' + LETTERS[pos] + '</span><span class="txt"></span>';
+    el.querySelector('.txt').textContent = text;
+    el.addEventListener('click', function () { choose(pos); });
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(pos); }
+    });
+    box.appendChild(el);
+  });
+
+  $('btn-prev').disabled = S.idx === 0;
+  $('btn-next').textContent = (S.idx === S.questions.length - 1) ? 'Last question' : 'Next →';
+  $('btn-next').disabled = S.idx === S.questions.length - 1;
+  $('btn-review').textContent = isMarked(S.idx) ? 'Unmark review' : 'Mark for review';
+  renderPalette();
+}
+
+function choose(pos) {
+  S.answers[qid(S.idx)] = pos;
+  renderQuestion();
+  queueSync();
+}
+$('btn-clear').addEventListener('click', function () {
+  delete S.answers[qid(S.idx)];
+  renderQuestion(); queueSync();
+});
+$('btn-review').addEventListener('click', function () {
+  var id = S.questions[S.idx].id, at = S.marked.indexOf(id);
+  if (at > -1) S.marked.splice(at, 1); else S.marked.push(id);
+  renderQuestion(); queueSync();
+});
+$('btn-prev').addEventListener('click', function () { if (S.idx > 0) { S.idx--; renderQuestion(); } });
+$('btn-next').addEventListener('click', function () {
+  if (S.idx < S.questions.length - 1) { S.idx++; renderQuestion(); }
+});
+
+function renderPalette() {
+  var grid = $('pal-grid');
+  if (grid.childElementCount !== S.questions.length) {
+    grid.innerHTML = '';
+    S.questions.forEach(function (q, i) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'pal-btn'; b.textContent = i + 1;
+      b.addEventListener('click', function () { S.idx = i; renderQuestion(); scrollPaletteTo(i); });
+      grid.appendChild(b);
+    });
+  }
+  var answered = 0;
+  S.questions.forEach(function (q, i) {
+    var b = grid.children[i];
+    var cls = 'pal-btn';
+    if (isMarked(i)) cls += ' review';
+    if (isAnswered(i)) { cls += ' answered'; answered++; }
+    else if (S.visited[String(q.id)] && !isMarked(i)) cls += ' seen';
+    if (i === S.idx) cls += ' cur';
+    b.className = cls;
+    b.setAttribute('aria-label', 'Question ' + (i + 1) + (isAnswered(i) ? ', answered' : ', not answered'));
+  });
+  $('cnt-ans').textContent = answered + ' / ' + S.questions.length;
+}
+function scrollPaletteTo(i) {
+  var grid = $('pal-grid'), b = grid.children[i];
+  if (b && window.innerWidth < 1024) b.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+}
+
+/* --- timer -------------------------------------------------------------- */
+var timerInt = null;
+function startTimer() {
+  clearInterval(timerInt);
+  tickTimer();
+  timerInt = setInterval(tickTimer, 1000);
+}
+function tickTimer() {
+  if (!S.running) return;
+  var left = Math.max(0, Math.floor((S.expiresAt - serverNow()) / 1000));
+  var m = Math.floor(left / 60), s = left % 60;
+  var el = $('timer');
+  el.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  el.classList.toggle('warn', left <= 300 && left > 60);
+  el.classList.toggle('crit', left <= 60);
+  if (left === 300) toast('5 minutes remaining');
+  if (left === 60) toast('1 minute remaining', true);
+  if (left <= 0) {
+    clearInterval(timerInt);
+    finishTest('timer', 'Time over', 'Your 30 minutes are up. The paper has been submitted with the answers you had completed.');
+  }
+}
+
+/* --- autosave ----------------------------------------------------------- */
+var syncTimer = null, syncing = false;
+function queueSync() {
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(doSync, 1200);
+}
+function doSync(event) {
+  if (!S.token || S.submitted || syncing) return Promise.resolve();
+  syncing = true;
+  return api('sync', {
+    token: S.token, answers: S.answers, marked_review: S.marked,
+    strikes: S.strikes, event: event || null
+  }).then(function (r) {
+    syncing = false;
+    if (r && r.ok && r.server_now) {
+      // Re-anchor to server time on every save so a long session cannot drift.
+      S.offset = new Date(r.server_now).getTime() - Date.now();
+    }
+  }).catch(function () { syncing = false; });
+}
+setInterval(function () { if (S.running && !S.submitted) doSync(); }, 20000);
+
+/* ========================================================================
+   SUBMIT
+   ===================================================================== */
+$('btn-submit').addEventListener('click', function () {
+  if (!S.running) return;
+  var answered = 0, marked = S.marked.length;
+  S.questions.forEach(function (q, i) { if (isAnswered(i)) answered++; });
+  var un = S.questions.length - answered;
+
+  $('t-ans').textContent = answered;
+  $('t-un').textContent = un;
+  $('t-rv').textContent = marked;
+  // The confirmation appears whether or not anything is left blank — a full
+  // paper still gets the "are you sure", because submitting is irreversible.
+  $('sub-msg').innerHTML = un === 0
+    ? 'You have answered <b>all ' + S.questions.length + ' questions</b>. Are you sure you want to submit your test?'
+    : 'You have <b>' + un + ' unanswered question' + (un === 1 ? '' : 's') + '</b>. '
+      + 'Unanswered questions score 0 — they do not lose you marks. Are you sure you want to submit?';
+  PROCTOR.quiet(true);
+  overlay('ov-submit', true);
+});
+$('btn-cancel-sub').addEventListener('click', function () {
+  overlay('ov-submit', false); PROCTOR.quiet(false);
+});
+$('btn-confirm-sub').addEventListener('click', function () {
+  overlay('ov-submit', false);
+  finishTest('manual');
+});
+
+function finishTest(reason, title, msg) {
+  if (S.submitted) return;
+  S.submitted = true; S.running = false;
+  clearInterval(timerInt);
+  PROCTOR.disarm();
+  document.body.classList.remove('exam-mode');
+  exitFullscreen();
+  busy(true, 'Submitting your test…');
+
+  var attempt = function (tries) {
+    return api('submit', { token: S.token, answers: S.answers, reason: reason })
+      .then(function (r) {
+        busy(false);
+        if (!r || !r.ok) throw new Error('submit failed');
+        showResult(r, reason, title, msg);
+      })
+      .catch(function (e) {
+        if (tries > 0) {
+          return new Promise(function (res) { setTimeout(res, 1500); }).then(function () { return attempt(tries - 1); });
+        }
+        busy(false);
+        note('Submission failed',
+          'We could not reach our servers to submit your paper. Your answers were saved as you worked, so nothing is lost. '
+          + 'Press OK to try again.', '&#128246;');
+        $('btn-note-ok').onclick = function () {
+          overlay('ov-note', false); $('btn-note-ok').onclick = null;
+          busy(true, 'Retrying…'); attempt(2);
+        };
+      });
+  };
+  attempt(3);
+}
+
+function showResult(r, reason, title, msg) {
+  var total = (r.total || S.questions.length);
+  $('res-title').textContent = title || (reason === 'manual' ? 'Test submitted' : 'Test submitted automatically');
+  $('res-sub').textContent = msg || (reason === 'strikes'
+    ? 'Your paper was submitted automatically after ' + S.maxStrikes + ' strikes.'
+    : 'Thank you, ' + (S.name || '').split(' ')[0] + '. Your responses have been recorded.');
+  $('res-score').textContent = (r.score === null || r.score === undefined) ? '—' : r.score;
+  $('res-of').textContent = 'out of ' + (total * 4) + '  ·  ' + total + ' questions';
+  $('res-c').textContent = r.correct || 0;
+  $('res-w').textContent = r.wrong || 0;
+  $('res-u').textContent = r.unanswered || 0;
+  $('res-next').innerHTML =
+    '<b>What happens next</b><br>'
+    + 'Scholarship winners are decided on score, with time taken as the tie-breaker. '
+    + 'The <b>top 3 receive a 100% scholarship</b> and <b>ranks 4–10 receive ₹50,000</b> off their programme fee.<br><br>'
+    + 'Results will be announced by SMS and email on the number you registered with. '
+    + 'A Global Careers counsellor will also call you to walk through your result and your programme options.';
+  show('s-result');
+}
+
+/* ========================================================================
+   PROCTOR — deterrent and audit trail
+   ===================================================================== */
+var PROCTOR = (function () {
+  var armed = false, quiet = false, hiddenAt = 0, blurTimer = null, lastAt = 0;
+  var AWAY_MS = function () { return S.tabAway * 1000; };
+  var DEDUPE_MS = 2500;   // one switch can fire blur AND visibilitychange
+
+  function log(kind, detail, counted) {
+    doSync({ kind: kind, detail: detail || {}, counted: counted !== false });
+  }
+
+  function strike(what, secs) {
+    if (!armed || quiet || S.submitted) return;
+    var now = Date.now();
+    if (now - lastAt < DEDUPE_MS) return;
+    lastAt = now;
+    S.strikes++;
+    log('strike', { what: what, seconds: secs || null, strike_no: S.strikes });
+
+    var chip = $('strike-chip');
+    chip.style.display = 'inline-block';
+    chip.textContent = 'Strike ' + S.strikes + ' of ' + S.maxStrikes;
+
+    if (S.strikes >= S.maxStrikes) {
+      finishTest('strikes', 'Test submitted automatically',
+        'You left the test ' + S.maxStrikes + ' times after being warned, so your paper was submitted '
+        + 'with the answers you had completed.');
+      return;
+    }
+    var left = S.maxStrikes - S.strikes;
+    $('strike-title').textContent = 'Strike ' + S.strikes + ' of ' + S.maxStrikes;
+    $('strike-msg').innerHTML = 'You ' + what + '.<br><br>'
+      + 'This test must stay in front of you. <b>' + left + ' more '
+      + (left === 1 ? 'strike' : 'strikes') + '</b> and your paper will be submitted automatically '
+      + 'with whatever you have answered so far.';
+    overlay('ov-strike', true);
+  }
+  $('btn-strike-ok').addEventListener('click', function () {
+    overlay('ov-strike', false); requestFullscreen();
+  });
+
+  document.addEventListener('visibilitychange', function () {
+    if (!armed) return;
+    if (document.hidden) { hiddenAt = Date.now(); return; }
+    if (!hiddenAt) return;
+    var away = Date.now() - hiddenAt; hiddenAt = 0;
+    $('blur-shield').classList.remove('show');
+    var secs = Math.round(away / 1000);
+    if (away > AWAY_MS()) strike('left the test tab for ' + secs + ' seconds', secs);
+    else log('brief_switch', { seconds: secs }, false);   // logged, costs nothing
+  });
+
+  window.addEventListener('blur', function () {
+    if (!armed || quiet) return;
+    // Hide the paper the moment focus leaves, so a screen-share or a
+    // screenshot taken while switching away captures nothing useful.
+    $('blur-shield').classList.add('show');
+    clearTimeout(blurTimer);
+    blurTimer = setTimeout(function () {
+      if (!document.hidden && armed) strike('switched to another window', S.tabAway);
+    }, AWAY_MS());
+  });
+  window.addEventListener('focus', function () {
+    clearTimeout(blurTimer);
+    $('blur-shield').classList.remove('show');
+  });
+  $('blur-shield').addEventListener('click', function () { this.classList.remove('show'); window.focus(); });
+
+  ['copy', 'cut', 'paste'].forEach(function (ev) {
+    document.addEventListener(ev, function (e) {
+      if (!armed) return;
+      e.preventDefault();
+      log('clipboard', { action: ev });
+      toast(ev === 'paste' ? 'Pasting is disabled during this test.' : 'Copying is disabled during this test.', true);
+    });
+  });
+  document.addEventListener('dragstart', function (e) { if (armed) e.preventDefault(); });
+
+  // Right-click is blocked for a mouse only. On a phone the same event is a
+  // long-press, which is how a student scrolls and selects, so it is left be.
+  var hasMouse = !window.matchMedia || window.matchMedia('(any-pointer: fine)').matches;
+  var lastPointer = '';
+  document.addEventListener('pointerdown', function (e) { lastPointer = e.pointerType || ''; }, true);
+  document.addEventListener('contextmenu', function (e) {
+    if (!armed || !hasMouse) return;
+    if (lastPointer === 'touch' || lastPointer === 'pen') return;
+    e.preventDefault(); log('contextmenu', {});
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (!armed || !e.key) return;
+    var k = String(e.key).toUpperCase();
+    // Shortcuts into developer tools, view-source, save and print. This raises
+    // the bar; it does not close the menu route, and nothing in a browser can.
+    if (k === 'F12'
+      || (e.ctrlKey && e.shiftKey && ['I', 'J', 'C', 'K'].indexOf(k) > -1)
+      || (e.metaKey && e.altKey && ['I', 'J', 'C'].indexOf(k) > -1)
+      || (e.ctrlKey && ['U', 'S', 'P'].indexOf(k) > -1)
+      || (e.metaKey && ['S', 'P'].indexOf(k) > -1)) {
+      e.preventDefault(); log('devtools_shortcut', { key: k });
+      toast('That shortcut is disabled during this test.', true);
+      return;
+    }
+    if (k === 'PRINTSCREEN') log('printscreen', {});
+    // Keyboard navigation through the paper.
+    if (['1', '2', '3', '4'].indexOf(k) > -1 && !e.ctrlKey && !e.metaKey) {
+      var pos = parseInt(k, 10) - 1;
+      if (S.questions[S.idx] && pos < (S.questions[S.idx].options || []).length) choose(pos);
+    }
+    if (k === 'ARROWRIGHT' && S.idx < S.questions.length - 1) { S.idx++; renderQuestion(); }
+    if (k === 'ARROWLEFT' && S.idx > 0) { S.idx--; renderQuestion(); }
+  });
+
+  document.addEventListener('fullscreenchange', function () {
+    if (!armed || quiet) return;
+    if (!document.fullscreenElement) log('exited_fullscreen', {});
+  });
+
+  window.addEventListener('beforeunload', function (e) {
+    if (!armed || S.submitted) return;
+    doSync();
+    e.preventDefault(); e.returnValue = '';
+    return '';
+  });
+
+  return {
+    arm: function () { armed = true; },
+    disarm: function () { armed = false; clearTimeout(blurTimer); $('blur-shield').classList.remove('show'); },
+    quiet: function (q) { quiet = q; }
+  };
+})();
+
+/* --- fullscreen + second-tab lock --------------------------------------- */
+function requestFullscreen() {
+  var el = document.documentElement;
+  if (window.innerWidth < 1024) return;            // unreliable and jarring on phones
+  if (document.fullscreenElement) return;
+  if (el.requestFullscreen) el.requestFullscreen().catch(function () {});
+}
+function exitFullscreen() {
+  if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {});
+}
+
+/* Two windows side by side is the cheapest way to work a paper with help.
+   The newest tab wins; the older one is locked out of answering. */
+var chan = null;
+function claimTab() {
+  if (!('BroadcastChannel' in window)) return;
+  try { chan = new BroadcastChannel('gcb-scholarship'); } catch (e) { return; }
+  chan.onmessage = function (ev) {
+    var d = ev.data || {};
+    if (d.type === 'claim' && d.tab !== TAB_ID && !S.submitted) {
+      S.running = false;
+      PROCTOR.disarm();
+      clearInterval(timerInt);
+      doSync({ kind: 'second_tab', detail: {} });
+      note('Opened in another tab',
+        'This test has been opened in a newer tab or window. To keep the attempt fair, this one is now locked.<br><br>'
+        + 'Continue in the other tab — your answers are safe.', '&#128274;');
+      $('btn-note-ok').onclick = function () { overlay('ov-note', false); };
+    }
+  };
+  chan.postMessage({ type: 'claim', tab: TAB_ID });
+}
+
+/* ========================================================================
+   BOOT
+   ===================================================================== */
+(function boot() {
+  var saved = recall();
+  if (saved.name) $('in-name').value = saved.name;
+  if (saved.phone) $('in-phone').value = saved.phone;
+
+  refreshStatus().then(function () {
+    tickCountdown();
+    clearInterval(countdownTimer);
+    countdownTimer = setInterval(tickCountdown, 1000);
+  });
+  // Re-check with the server periodically so the page flips to live on its
+  // own, without the student having to refresh at 2 o'clock.
+  setInterval(function () { if (!S.running) refreshStatus(); }, 30000);
+})();
+
+})();
+</script>
+</body>
+</html>
