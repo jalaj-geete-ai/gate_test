@@ -4,7 +4,7 @@ Landing page, test engine and anti-cheat for the scholarship test on
 **Sunday 18 October 2026, 2:00–5:00 PM IST**.
 
 * Top 3 → 100% scholarship (free programme)
-* Ranks 4–10 → ₹50,000 off
+* Ranks 4–10 → ₹60,000 off
 
 | File | What it is |
 |---|---|
@@ -38,8 +38,11 @@ page, View Source would be worth ₹1,00,000+.
 | Sun 18 Oct, 2:00 PM | Test opens. Countdown hits zero, Start Test appears. |
 | Sun 18 Oct, 4:30 PM | Last entry. Anyone who has started keeps their full 30 minutes. |
 | Sun 18 Oct, 5:00 PM | Hard close. Any paper still open auto-submits. |
-| Sun 18 Oct, 6:00 PM | **Marks and the answer key unlock.** Students see their score and can download the key with explanations. |
-| Mon 19 Oct, 2:00 PM | **Winners announced.** |
+| Wed 21 Oct, 2:00 PM | **Everything lands together:** marks unlock on the result page, the answer key with explanations becomes downloadable, and the **winners are announced in the WhatsApp community**. |
+
+The time of day on Wednesday was not specified, so 2:00 PM IST is assumed.
+Change `results_visible_utc` and `winners_announce_utc` if the WhatsApp
+announcement goes out at a different hour — both are config rows, no redeploy.
 
 Papers are marked the instant they are submitted — the score exists in
 `scholarship_attempts` immediately. What is withheld is *showing* it. On
@@ -49,6 +52,24 @@ a key before `results_visible_utc`, so the gate is not a UI trick.
 
 That gap exists for a reason: if scores were shown at 2:30 PM, students still
 inside the window would learn the key from friends who had finished.
+
+### The WhatsApp community
+
+Winners are announced in the community, so joining it is how a student finds
+out. The invite is offered in three places: on the registration confirmation,
+in a popup after submitting (2.4 seconds in, once the confetti has landed so
+the ask arrives on a clean screen), and as a standing card on the result page
+for anyone who dismissed the popup.
+
+The link lives in `scholarship_config.whatsapp_community_url` and is served
+through `status`, so it can be rotated with one SQL update if the invite is
+ever revoked. The page carries the same URL as a hard-coded fallback for the
+case where the status call has not landed yet:
+
+```sql
+update scholarship_config set value = '<new invite link>'
+ where key = 'whatsapp_community_url';
+```
 
 ### Tie-break: lucky draw
 
@@ -138,8 +159,9 @@ takes effect within 30 seconds — no redeploy.
 | `max_leads_per_device` | `3` | Registrations per device |
 | `max_leads_per_ip_hour` | `30` | Loose on purpose — college labs share one IP |
 | `registration_open` | `true` | Set `false` to close the form |
-| `results_visible_utc` | `2026-10-18T12:30:00Z` | 6:00 PM IST — marks and key unlock |
-| `winners_announce_utc` | `2026-10-19T08:30:00Z` | Mon 19 Oct, 2:00 PM IST |
+| `results_visible_utc` | `2026-10-21T08:30:00Z` | Wed 21 Oct, 2:00 PM IST — marks and key unlock |
+| `winners_announce_utc` | `2026-10-21T08:30:00Z` | Wed 21 Oct, 2:00 PM IST — winners on WhatsApp |
+| `whatsapp_community_url` | the invite link | Served to the page; rotate here if revoked |
 
 ```sql
 -- move the window (e.g. postpone by a week)

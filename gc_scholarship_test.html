@@ -287,6 +287,15 @@ footer.site{background:var(--primary);color:#9FC6CF;text-align:center;padding:26
 .next-steps{background:var(--accent-wash);border:1px solid var(--accent-pale);border-radius:var(--r-md);
   padding:18px;margin-top:22px;font-size:14px;color:var(--text-2);text-align:left;line-height:1.7}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:120;display:none}
+.btn-wa{background:#25D366;color:#fff;text-decoration:none}
+.btn-wa:hover{background:#1DA851;color:#fff}
+.wa-ring{width:84px;height:84px;border-radius:50%;background:#E7FBEF;border:2px solid #25D366;
+  display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 16px}
+.wa-card{background:#E7FBEF;border:1px solid #9FE9BD;border-radius:var(--r-lg);
+  padding:20px 18px;margin:22px 0;text-align:center}
+.wa-card h4{font-family:var(--ff-display);font-size:18px;margin-bottom:6px;color:#0B5C34}
+.wa-card p{font-size:13.5px;color:#14532D;line-height:1.6;margin-bottom:14px}
+.wa-card .btn{width:100%}
 .celebrate{width:92px;height:92px;border-radius:50%;background:linear-gradient(145deg,var(--accent-pale),#fff);
   border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;
   font-size:46px;margin:0 auto 18px;box-shadow:0 10px 30px rgba(0,175,193,.25)}
@@ -329,7 +338,7 @@ footer.site{background:var(--primary);color:#9FC6CF;text-align:center;padding:26
     <div class="wrap">
       <span class="pill">Scholarship Test · Sunday 18 October 2026</span>
       <h1>Win a <em>100% scholarship</em><br>on your Global Careers programme</h1>
-      <p class="sub">One 30-minute test. Ten scholarships. Top performers get their entire programme fee waived — the rest of the top ten get ₹50,000 off.</p>
+      <p class="sub">One 30-minute test. Ten scholarships. Top performers get their entire programme fee waived — the rest of the top ten get ₹60,000 off. Winners announced Wednesday, 21 October.</p>
 
       <div class="prizes">
         <div class="prize gold">
@@ -339,8 +348,8 @@ footer.site{background:var(--primary);color:#9FC6CF;text-align:center;padding:26
         </div>
         <div class="prize">
           <div class="rank">Rank 4 – 10</div>
-          <div class="amt">₹50,000 Off</div>
-          <div class="note">Flat ₹50,000 scholarship on your programme fee.</div>
+          <div class="amt">₹60,000 Off</div>
+          <div class="note">Flat ₹60,000 scholarship on your programme fee.</div>
         </div>
       </div>
 
@@ -388,6 +397,11 @@ footer.site{background:var(--primary);color:#9FC6CF;text-align:center;padding:26
         <h3 id="reg-done-title">You're registered</h3>
         <p id="reg-done-msg"></p>
         <p class="fineprint" id="reg-done-sub" style="margin-top:14px"></p>
+        <div class="wa-card" style="margin-bottom:4px">
+          <h4>Join our WhatsApp community</h4>
+          <p>Your result and the scholarship winners will be announced there on Wednesday, 21 October.</p>
+          <a class="btn btn-wa wa-link" target="_blank" rel="noopener noreferrer">Join the community</a>
+        </div>
       </div>
     </div>
 
@@ -408,8 +422,8 @@ footer.site{background:var(--primary);color:#9FC6CF;text-align:center;padding:26
         <li class="warn"><b>Stay on the test tab.</b> Leaving the tab for more than 10 seconds is a strike. <b>Three strikes and your paper is submitted automatically.</b></li>
         <li class="warn"><b>Copy, paste and right-click are disabled</b> for the duration, and the session is monitored and logged.</li>
         <li><b>Use a stable connection.</b> Your answers save to our servers continuously, so a refresh will not lose your work — but the clock keeps running.</li>
-        <li><b>Results:</b> your marks and the full answer key with explanations unlock on this page at <b>6:00 PM</b> on test day. Nothing is shown the moment you submit.</li>
-        <li><b>Winners are announced on Monday, 19 October 2026 at 2:00 PM IST.</b></li>
+        <li><b>Results:</b> your marks and the full answer key with explanations are released on <b>Wednesday, 21 October 2026</b>. Nothing is shown the moment you submit.</li>
+        <li><b>Winners are announced on Wednesday, 21 October 2026 in our WhatsApp community.</b> Join the community so you do not miss the announcement.</li>
         <li><b>Ties are settled by lucky draw.</b> Where students finish on exactly the same marks, the scholarship is allocated among them by a lucky draw.</li>
       </ul>
     </div>
@@ -469,10 +483,10 @@ footer.site{background:var(--primary);color:#9FC6CF;text-align:center;padding:26
     <div class="tc">
       <h4>Terms &amp; conditions</h4>
       <ul>
-        <li>Your marks and the answer key with explanations are released at <b>6:00 PM IST on Sunday, 18 October 2026</b>. No score is shown when you submit.</li>
-        <li><b>Winners are announced on Monday, 19 October 2026 at 2:00 PM IST.</b></li>
+        <li>Your marks and the answer key with explanations are released on <b>Wednesday, 21 October 2026</b>. No score is shown when you submit.</li>
+        <li><b>Winners are announced on Wednesday, 21 October 2026 in the Global Careers WhatsApp community.</b> Joining the community is how you receive the announcement.</li>
         <li>Scholarships are awarded on marks alone. <b>Where two or more students finish on exactly the same marks, the winners among them are selected by a lucky draw.</b></li>
-        <li>The top 3 receive a 100% scholarship and ranks 4&ndash;10 receive ₹50,000 off the programme fee.</li>
+        <li>The top 3 receive a 100% scholarship and ranks 4&ndash;10 receive ₹60,000 off the programme fee.</li>
         <li>One attempt per mobile number. Attempts found to breach the integrity rules may be disqualified.</li>
         <li>The decision of Global Careers by Testbook on results, the lucky draw and scholarship allocation is final.</li>
       </ul>
@@ -542,10 +556,16 @@ footer.site{background:var(--primary);color:#9FC6CF;text-align:center;padding:26
     <!-- before 6 PM: no marks, just the unlock countdown -->
     <div id="res-pending">
       <div class="keybox">
-        <div class="keybox-l">Answer key &amp; your marks unlock in</div>
+        <div class="keybox-l">Score &amp; answer key release in</div>
         <div class="keybox-cd" id="res-cd">--:--:--</div>
-        <div class="keybox-t" id="res-cd-at">Today at 6:00 PM IST</div>
+        <div class="keybox-t" id="res-cd-at">Wednesday, 21 October 2026</div>
       </div>
+    </div>
+
+    <div class="wa-card" id="res-wa">
+      <h4>Winners are announced on WhatsApp</h4>
+      <p>Your score, the answer key and the scholarship winners all go out on <b>Wednesday, 21 October</b> in our WhatsApp community.</p>
+      <a class="btn btn-wa wa-link" target="_blank" rel="noopener noreferrer">Join the community</a>
     </div>
 
     <!-- after 6 PM: marks and the downloadable key -->
@@ -620,6 +640,18 @@ footer.site{background:var(--primary);color:#9FC6CF;text-align:center;padding:26
   </div>
 </div></div>
 
+<div class="ov" id="ov-whatsapp"><div class="modal">
+  <div class="wa-ring">&#128172;</div>
+  <h3>Join our WhatsApp community</h3>
+  <p>Your score, the answer key and the <b>scholarship winners</b> will all be announced on
+     <b>Wednesday, 21 October 2026</b> in the Global Careers WhatsApp community.<br><br>
+     Join now so you do not miss it.</p>
+  <div class="actions">
+    <button class="btn btn-ghost" id="btn-wa-later">Maybe later</button>
+    <a class="btn btn-wa wa-link" id="btn-wa-join" target="_blank" rel="noopener noreferrer">Join the community</a>
+  </div>
+</div></div>
+
 <canvas id="confetti"></canvas>
 <div id="blur-shield">Your test is hidden while this window is not in focus.<br>Click here to return to the test.</div>
 <div class="toast" id="toast"></div>
@@ -646,6 +678,9 @@ var SUPABASE_URL = 'https://uxdrldreaockdloqvojs.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4ZHJsZHJlYW9ja2Rsb3F2b2pzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzE2MjIsImV4cCI6MjA4OTQwNzYyMn0.swqYBfGzHP5qSDPnZ_AivFE0zljyK33Kq-_ephz4Ybc';
 var API = SUPABASE_URL + '/functions/v1/scholarship-api';
 var LS = 'gcb_schol_v1';
+// Kept in scholarship_config so the link can be rotated without a redeploy;
+// this literal is the fallback if the status call has not landed yet.
+var WA_URL = 'https://chat.whatsapp.com/Ho92fbDgoMA7fCVTBNpgh0';
 var TAB_ID = Math.random().toString(36).slice(2) + Date.now().toString(36);
 
 /* --- tiny helpers ------------------------------------------------------- */
@@ -667,6 +702,11 @@ function toast(msg, bad) {
 function note(title, msg, icon) {
   $('note-title').textContent = title; $('note-msg').innerHTML = msg;
   $('note-icon').innerHTML = icon || '&#8505;&#65039;'; overlay('ov-note', true);
+}
+// Every "Join the community" button on the page points at the same link.
+function applyWaLinks() {
+  var nodes = document.querySelectorAll('.wa-link');
+  for (var i = 0; i < nodes.length; i++) nodes[i].href = WA_URL;
 }
 function store(obj) { try { localStorage.setItem(LS, JSON.stringify(obj)); } catch (e) {} }
 function recall() { try { return JSON.parse(localStorage.getItem(LS) || '{}'); } catch (e) { return {}; } }
@@ -746,6 +786,7 @@ function applyStatus(st) {
   S.tabAway = st.tab_away_seconds || 10;
   if (st.results_visible_at)  S.resultsAt = new Date(st.results_visible_at).getTime();
   if (st.winners_announce_at) S.winnersAt = new Date(st.winners_announce_at).getTime();
+  if (st.whatsapp_url) { WA_URL = st.whatsapp_url; applyWaLinks(); }
   if (st.lead_id) { S.leadId = st.lead_id; S.name = st.name; }
   paintPhase(st.attempt_status);
 }
@@ -1155,11 +1196,16 @@ function showSubmitted(r, reason, title, msg) {
     || (reason === 'manual' ? 'Congratulations' + (first ? ', ' + first : '') + '!'
                             : 'Your test has been submitted');
   $('res-sub').textContent = msg
-    || 'Your test has been submitted successfully. The answer key will be shared at 6:00 PM.';
+    || 'Your test has been submitted successfully. Your score and the answer key will be released on Wednesday, 21 October.';
 
   show('s-result');
   renderResultState(r.results_ready === true);
   if (reason === 'manual') CONFETTI.fire();          // two bombs
+  // Let the confetti finish before asking them to join. At 1.1s the pieces
+  // were still falling across the modal and sitting on top of the button
+  // text; by 2.4s they have landed, so the celebration gets its moment and
+  // the ask arrives on a clean screen.
+  if (!r.results_ready) setTimeout(function () { overlay('ov-whatsapp', true); }, 2400);
   if (r.results_ready) fetchResult({ token: S.token });
 }
 
@@ -1169,8 +1215,9 @@ function renderResultState(ready) {
   $('res-marks').style.display   = ready ? 'block' : 'none';
   $('res-next').innerHTML =
     '<b>What happens next</b><br>'
-    + 'Winners are announced on <b>Monday, 19 October 2026 at 2:00 PM IST</b>. '
-    + 'The <b>top 3 receive a 100% scholarship</b> and <b>ranks 4&ndash;10 receive ₹50,000</b> off their programme fee.<br><br>'
+    + 'Your score, the answer key and the winners are all announced on '
+    + '<b>Wednesday, 21 October 2026</b> in our WhatsApp community. '
+    + 'The <b>top 3 receive a 100% scholarship</b> and <b>ranks 4&ndash;10 receive ₹60,000</b> off their programme fee.<br><br>'
     + 'Scholarships are decided on marks alone. Where students finish on <b>exactly the same marks</b>, '
     + 'the winners among them are selected by a <b>lucky draw</b>.<br><br>'
     + 'We will also contact you on your registered number.';
@@ -1181,7 +1228,7 @@ var unlockTimer = null;
 function startUnlockCountdown() {
   clearInterval(unlockTimer);
   var at = S.resultsAt;
-  if (!at) { $('res-cd').textContent = '6:00 PM'; return; }
+  if (!at) { $('res-cd').textContent = '21 Oct'; return; }
   var tick = function () {
     var left = Math.floor((at - serverNow()) / 1000);
     if (left <= 0) {
@@ -1190,9 +1237,11 @@ function startUnlockCountdown() {
       fetchResult({ token: S.token, phone: recall().phone });
       return;
     }
-    var h = Math.floor(left / 3600), m = Math.floor(left % 3600 / 60), sec = left % 60;
+    // The release is days away now, not hours, so show days when there are any.
+    var d = Math.floor(left / 86400), h = Math.floor(left % 86400 / 3600),
+        m = Math.floor(left % 3600 / 60), sec = left % 60;
     var p = function (n) { return String(n).padStart(2, '0'); };
-    $('res-cd').textContent = p(h) + ':' + p(m) + ':' + p(sec);
+    $('res-cd').textContent = (d > 0 ? d + 'd ' : '') + p(h) + ':' + p(m) + ':' + p(sec);
   };
   tick();
   unlockTimer = setInterval(tick, 1000);
@@ -1229,7 +1278,7 @@ function fetchResult(opts) {
       : 'Congratulations' + (first ? ', ' + first : '') + '!';
     $('res-sub').textContent = r.results_ready
       ? 'Here is how you scored. Download the full answer key with explanations below.'
-      : 'Your test has been submitted successfully. The answer key will be shared at 6:00 PM.';
+      : 'Your test has been submitted successfully. Your score and the answer key will be released on Wednesday, 21 October.';
     show('s-result');
     renderResultState(r.results_ready === true);
 
@@ -1308,7 +1357,7 @@ function downloadAnswerKey() {
     + '<br>' + c + ' correct · ' + w + ' wrong · ' + u + ' not answered'
     + '<br><span style="font-size:13px;color:#475569">Marking: +4 correct, −1 wrong, 0 unanswered</span></div>'
     + body
-    + '<footer>Winners are announced on Monday, 19 October 2026 at 2:00 PM IST. '
+    + '<footer>Winners are announced on Wednesday, 21 October 2026 in the Global Careers WhatsApp community. '
     + 'Where students finish on exactly the same marks, the winners among them are selected by a lucky draw.'
     + '</footer></body></html>';
 
@@ -1511,6 +1560,9 @@ var PROCTOR = (function () {
 })();
 
 $('btn-download-key').addEventListener('click', downloadAnswerKey);
+$('btn-wa-later').addEventListener('click', function () { overlay('ov-whatsapp', false); });
+$('btn-wa-join').addEventListener('click', function () { overlay('ov-whatsapp', false); });
+applyWaLinks();
 
 $('btn-open-check').addEventListener('click', function () {
   $('in-check-phone').value = recall().phone || '';
