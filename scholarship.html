@@ -1168,25 +1168,70 @@ function tickTimer() {
 
 /* --- autosave ----------------------------------------------------------- */
 var syncTimer = null, syncing = false;
+// Set the moment anything worth saving changes, cleared once the server has
+// it. A student spends most of a paper reading rather than answering, and
+// without this the heartbeat below re-sent an identical row every 20 seconds
+// for every one of them -- by far the largest source of load on test day, and
+// all of it writes that changed nothing.
+var dirty = false, syncFails = 0;
+// A save that did not land leaves the work pending and comes round again.
+// The backoff matters: on test day a server wobble hits every student at
+// once, and a fixed retry would have the whole cohort hammering in lockstep.
+function unsaved(code) {
+  // The attempt is over -- retrying cannot help and the paper is already
+  // marked server-side.
+  if (code === 'already_submitted' || code === 'bad_token') { dirty = false; return; }
+  dirty = true;
+  syncFails++;
+  var wait = Math.min(3000 * Math.pow(2, syncFails - 1), 30000);
+  wait = Math.round(wait * (0.75 + Math.random() * 0.5));   // spread the herd
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(doSync, wait);
+}
 function queueSync() {
+  dirty = true;
   clearTimeout(syncTimer);
   syncTimer = setTimeout(doSync, 1200);
 }
 function doSync(event) {
-  if (!S.token || S.submitted || syncing) return Promise.resolve();
+  if (!S.token || S.submitted) return Promise.resolve();
+  // A sync is already in flight: come back shortly rather than dropping this
+  // one, so a change made mid-request is not left waiting for the heartbeat.
+  if (syncing) {
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(doSync, 1500);
+    return Promise.resolve();
+  }
+  // A proctoring event is itself the payload, so it always goes. Otherwise
+  // there is nothing to say unless something changed.
+  if (!event && !dirty) return Promise.resolve();
   syncing = true;
+  // Cleared before the request, never after: anything the student changes
+  // while it is in flight sets the flag again and rides the next one, instead
+  // of being marked saved by a response that did not carry it.
+  dirty = false;
   return api('sync', {
     token: S.token, answers: S.answers, marked_review: S.marked,
     strikes: S.strikes, event: event || null
   }).then(function (r) {
     syncing = false;
-    if (r && r.ok && r.server_now) {
+    // api() resolves whatever the status code was, so a 500 arrives here as a
+    // body with ok false rather than as a rejection. Only ok true means the
+    // server has the answers; anything else leaves them unsaved.
+    if (!r || r.ok !== true) return unsaved(r && r.code);
+    syncFails = 0;
+    if (r.server_now) {
       // Re-anchor to server time on every save so a long session cannot drift.
       S.offset = new Date(r.server_now).getTime() - Date.now();
     }
-  }).catch(function () { syncing = false; });
+  }).catch(function () {
+    syncing = false; unsaved(null);
+  });
 }
-setInterval(function () { if (S.running && !S.submitted) doSync(); }, 20000);
+// Heartbeat only. Every answer, clear and review toggle already saves ~1.2s
+// after the student makes it, so this exists to catch a change that was in
+// flight when something failed -- it sends nothing when nothing is pending.
+setInterval(function () { if (S.running && !S.submitted) doSync(); }, 45000);
 
 /* ========================================================================
    SUBMIT
@@ -1739,7 +1784,11 @@ function claimTab() {
   });
   // Re-check with the server periodically so the page flips to live on its
   // own, without the student having to refresh at 2 o'clock.
-  setInterval(function () { if (!S.running) refreshStatus(); }, 30000);
+  // The countdown ticks locally off the server offset and calls refreshStatus
+  // itself the moment it reaches zero, so this poll is only a safety net for a
+  // window that moves under us. At one request per waiting student per 30s it
+  // was the heaviest thing happening in the minutes before 2:00 PM.
+  setInterval(function () { if (!S.running) refreshStatus(); }, 60000);
 })();
 
 })();
