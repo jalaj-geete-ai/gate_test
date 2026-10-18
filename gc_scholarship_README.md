@@ -11,7 +11,6 @@ Landing page, test engine and anti-cheat for the scholarship test on
 | `scholarship.html` | The whole student-facing portal: landing, countdown, registration, instructions, test engine, result. Single file, no build step. |
 | `gc_scholarship_questions.json` | **The live question paper** — 30 nursing MCQs with answers and explanations. Source of truth; edit here and re-import. |
 | `gc_scholarship_questions_template.csv` | CSV import format, if you prefer a spreadsheet to JSON. |
-| `seminar-edom.html` | **Dry-run page**, served at `/seminar-edom`. Generated from the live page. Delete it and set `demo_enabled` to `'false'` before 18 October. |
 | `gc_scholarship_build_demo.py` | Regenerates the dry-run page from the live one. |
 | `gc_scholarship_api.ts` | Source of the `scholarship-api` Edge Function — the whole server half: scoring, the one-attempt rule, the window. Deployed copy of record. |
 | `gc_logo.png` | Brand logo, white field flood-filled out to transparency. |
@@ -73,11 +72,12 @@ the page shows.
 
 ## The dry run
 
-> **The dry run is ON.** `demo_enabled` is `'true'` and the rehearsal page is
-> live at `/seminar-edom` on the production domain. **Both must be reversed
-> before 18 October** — see "Shutting the dry run down" below.
+> **The dry run is shut down.** `demo_enabled` is `'false'` and the rehearsal
+> page is deleted, so nothing in this section is active. It is kept for the
+> next time you need one — and read the note on rotating `demo_key` before you
+> re-enable anything.
 
-`seminar-edom.html` is the rehearsal page. It is **generated** from
+`seminar-edom.html` was the rehearsal page. It is **generated** from
 the live page rather than maintained by hand, so it always exercises exactly
 the code students will get:
 
@@ -119,10 +119,8 @@ update scholarship_config set value = 'false' where key = 'demo_enabled';
 ```
 
 That one row kills the demo path entirely — the key stops working everywhere,
-within the 30-second config cache and without a redeploy. **This has not been
-done yet: the dry run is currently ON.** Before 18 October, run that statement
-and delete `seminar-edom.html` from the repo in the same change, so the page
-stops being served at all.
+within the 30-second config cache and without a redeploy. Both steps are done
+for 18 October: the row is set and `seminar-edom.html` is deleted.
 
 Rotate `demo_key` to a fresh value every time you re-enable a dry run.
 Cloudflare Pages keeps every past deployment alive at its own permanent URL, so
@@ -143,6 +141,41 @@ rehearsal still carries `is_demo = true` on its **lead** row. If that person
 sits the real test, their attempt counts normally and the one-attempt rule
 applies to them as to anyone else, but the lead stays out of the CRM export.
 The `delete` above is the clean fix.
+
+## Load
+
+Sized for roughly 1,250 concurrent students. What each one costs:
+
+| Request | When | Per student |
+|---|---|---|
+| `status` | landing page, every 60s while waiting | ~15 |
+| `start` | once, at 2:00 PM | 1 |
+| `sync` | ~1.2s after each answer, clear or review toggle | ~40 |
+| `sync` | 45s heartbeat — **only if something is unsaved** | ~0 |
+| `submit` | once | 1 |
+
+The heartbeat used to fire every 20 seconds whether or not anything had
+changed, so a student reading one question for three minutes wrote the same
+row nine times. Every change already saves itself ~1.2s later, so the
+heartbeat is now purely a safety net for a save that failed, and sends nothing
+when nothing is pending.
+
+That matters because each `sync` rewrites a wide row — `question_ids`,
+`option_order` and `answers`, around 3 KB — and Postgres MVCC rewrites the
+whole row every time. At 1,250 students this takes the test window from
+roughly 160,000 row rewrites to 56,000, and the sustained request rate from
+about 90/s to about 31/s. The pre-test polling burst halves to ~21/s.
+
+`api()` resolves whatever the HTTP status was, so a 500 arrives as a body with
+`ok` false rather than as a rejection. `doSync` therefore checks `ok === true`
+before considering the work saved; anything else leaves it pending and retries
+with exponential backoff and jitter, so a server wobble does not put the whole
+cohort into lockstep retries.
+
+If you ever expect appreciably more than 1,250, the lever is compute: the
+project runs on a Micro instance (256 MB shared buffers), and autovacuum is
+what falls behind first. Upgrade it in the Supabase dashboard **well before**
+the window opens, not during.
 
 ## Timeline
 
