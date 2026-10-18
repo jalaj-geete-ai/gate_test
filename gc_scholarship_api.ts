@@ -122,6 +122,76 @@ async function isDemo(body: Record<string, unknown>): Promise<boolean> {
 }
 
 // ===========================================================================
+// admin — the internal leaderboard. Everything it returns is personal data
+// (names, numbers, scores), so it is gated on a key held in config and never
+// shipped in the page: the page asks the operator for it and forwards it.
+// Reads come from the three reporting views, which already exclude demo rows
+// and carry rank, tie groups and the prize band.
+// ===========================================================================
+async function isAdmin(body: Record<string, unknown>): Promise<boolean> {
+  const c = await config();
+  const k = clean(body.admin_key, 80);
+  if (!k || !c.admin_key) return false;
+  // Length-independent compare, so a wrong key cannot be narrowed down by
+  // timing the response.
+  const a = new TextEncoder().encode(k);
+  const b = new TextEncoder().encode(c.admin_key);
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
+  return diff === 0;
+}
+
+async function admin(body: Record<string, unknown>) {
+  if (!(await isAdmin(body))) {
+    return fail("unauthorized", "That admin key is not valid.", 401);
+  }
+  const w = await windowState();
+  const g = await resultGate();
+
+  const [lead, att, results, ties, leads] = await Promise.all([
+    db.from("scholarship_leads").select("id,is_demo"),
+    db.from("scholarship_attempts").select("status,submit_reason,score,is_demo"),
+    db.from("scholarship_results").select("*").order("rank", { ascending: true }),
+    db.from("scholarship_tie_groups").select("*").order("rank", { ascending: true }),
+    db.from("scholarship_lead_export").select("*").order("registered_at", { ascending: false }),
+  ]);
+
+  const realLeads = (lead.data ?? []).filter((r) => r.is_demo !== true);
+  const realAtt = (att.data ?? []).filter((r) => r.is_demo !== true);
+  const done = realAtt.filter((a) => a.status !== "in_progress");
+  const scores = done.map((a) => a.score ?? 0);
+  const by = (reason: string) => done.filter((a) => a.submit_reason === reason).length;
+
+  return json({
+    ok: true,
+    server_now: w.now.toISOString(),
+    phase: w.phase,
+    results_visible_at: g.at.toISOString(),
+    results_published: g.ready,
+    summary: {
+      registered: realLeads.length,
+      started: realAtt.length,
+      in_progress: realAtt.length - done.length,
+      submitted: done.length,
+      not_started: realLeads.length - realAtt.length,
+      submitted_manually: by("manual"),
+      auto_timer: by("timer"),
+      auto_navigation: by("navigation"),
+      auto_strikes: by("strikes"),
+      highest: scores.length ? Math.max(...scores) : null,
+      lowest: scores.length ? Math.min(...scores) : null,
+      average: scores.length
+        ? Math.round((scores.reduce((x, y) => x + y, 0) / scores.length) * 10) / 10
+        : null,
+    },
+    leaderboard: results.data ?? [],
+    tie_groups: ties.data ?? [],
+    registrations: leads.data ?? [],
+  });
+}
+
+// ===========================================================================
 // register — create the lead. This is the lead-gen moment, so it stays as
 // forgiving as it can be while still throttling the obvious abuse.
 // ===========================================================================
@@ -609,6 +679,7 @@ Deno.serve(async (req: Request) => {
       case "sync":     return await sync(body);
       case "submit":   return await submit(body);
       case "result":   return await result(body);
+      case "admin":    return await admin(body);
       default:         return fail("bad_action", "Unknown action.");
     }
   } catch (e) {
