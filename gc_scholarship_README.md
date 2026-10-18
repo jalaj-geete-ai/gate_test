@@ -13,6 +13,7 @@ Landing page, test engine and anti-cheat for the scholarship test on
 | `gc_scholarship_questions_template.csv` | CSV import format, if you prefer a spreadsheet to JSON. |
 | `gc_scholarship_build_demo.py` | Regenerates the dry-run page from the live one. |
 | `gc_scholarship_api.ts` | Source of the `scholarship-api` Edge Function — the whole server half: scoring, the one-attempt rule, the window. Deployed copy of record. |
+| `gc-admin.html` | **Admin dashboard**, served at `/gc-admin`. Leaderboard, every registration, tie groups, CSV and Excel export. Key-gated. |
 | `gc_logo.png` | Brand logo, white field flood-filled out to transparency. |
 | `gc_bg_desktop.jpg` / `gc_bg_mobile.jpg` | Hero backgrounds, served at ~34% opacity under a white scrim. |
 
@@ -141,6 +142,34 @@ rehearsal still carries `is_demo = true` on its **lead** row. If that person
 sits the real test, their attempt counts normally and the one-attempt rule
 applies to them as to anyone else, but the lead stays out of the CRM export.
 The `delete` above is the clean fix.
+
+## The admin dashboard
+
+`/gc-admin` on the same domain. Three tabs — leaderboard, every registration,
+and the tie groups that need a lucky draw — each sortable, searchable and
+exportable to CSV or Excel.
+
+It is gated on `scholarship_config.admin_key`, checked **server-side** in the
+`admin` action with a constant-time compare. The page never contains the key:
+it asks whoever opens it and holds the answer in `sessionStorage`, so closing
+the tab forgets it. Rotate the key by updating that one config row; every open
+session is locked out at its next refresh.
+
+Everything the endpoint returns comes from the three reporting views, so demo
+rows are excluded there as everywhere else.
+
+### Attempts that were never finished
+
+An attempt closes itself from the browser — the student submits, the timer
+fires, or the page is left and the exit handler submits it. **A browser killed
+outright does none of those**, so the row stays `in_progress` with its answers
+saved but never marked, and a never-marked attempt has no score and does not
+appear in `scholarship_results`.
+
+The dashboard flags these in red once the window is closed, because at that
+point they are abandoned papers rather than people still writing. They need
+finalising before results go out, or those students simply vanish from the
+rankings.
 
 ## Load
 
