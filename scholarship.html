@@ -475,7 +475,7 @@ footer.site{background:var(--primary);color:#9DC4CE;text-align:center;padding:26
         <li><b>Use a stable connection.</b> Your answers save to our servers continuously, so a refresh will not lose your work — but the clock keeps running.</li>
         <li><b>Results:</b> your marks and the full answer key with explanations <b>will be released on Wednesday, 21 October 2026</b>.</li>
         <li><b>Winners will be announced on Wednesday, 21 October 2026 in our WhatsApp community.</b> Join the community so you do not miss the announcement.</li>
-        <li><b>Ties are settled by lucky draw.</b> Where students finish on exactly the same marks, the scholarship is allocated among them by a lucky draw.</li>
+        <li><b>Ties are settled by time taken.</b> Where students finish on exactly the same marks, the one who completed the test in less time takes the higher rank.</li>
       </ul>
     </div>
 
@@ -535,16 +535,16 @@ footer.site{background:var(--primary);color:#9DC4CE;text-align:center;padding:26
       <ul>
         <li>Your marks and the answer key with explanations <b>will be released on Wednesday, 21 October 2026</b>.</li>
         <li><b>Winners will be announced on Wednesday, 21 October 2026 in the Global Careers WhatsApp community.</b> Joining the community is how you receive the announcement.</li>
-        <li>Scholarships are awarded on marks alone. <b>Where two or more students finish on exactly the same marks, the winners among them are selected by a lucky draw.</b></li>
+        <li>Scholarships are awarded on marks first. <b>Where two or more students finish on exactly the same marks, the student who completed the test in less time takes the higher rank.</b> If they also finish in exactly the same time, the winners among them are selected by a lucky draw.</li>
         <li>The top 3 receive a 100% scholarship and ranks 4&ndash;10 receive ₹60,000 off the programme fee.</li>
         <li>One attempt per mobile number. Attempts found to breach the integrity rules may be disqualified.</li>
-        <li>The decision of Global Careers by Testbook on results, the lucky draw and scholarship allocation is final.</li>
+        <li>The decision of Global Careers by Testbook on results, tie&#8209;breaks and scholarship allocation is final.</li>
       </ul>
     </div>
 
     <div class="agree">
       <input type="checkbox" id="chk-agree">
-      <label for="chk-agree">I have read and accept the instructions and the terms &amp; conditions above. I understand this is my only attempt, that my session is monitored, that three strikes will submit my paper automatically, and that ties on equal marks are settled by a lucky draw.</label>
+      <label for="chk-agree">I have read and accept the instructions and the terms &amp; conditions above. I understand this is my only attempt, that my session is monitored, that three strikes will submit my paper automatically, and that ties on equal marks are settled by the time taken to complete the test.</label>
     </div>
 
     <div style="display:flex;gap:11px">
@@ -1328,8 +1328,8 @@ function renderResultState(ready) {
     + 'Your score, the answer key and the winners <b>will all be announced on '
     + 'Wednesday, 21 October 2026</b> in our WhatsApp community. '
     + 'The <b>top 3 receive a 100% scholarship</b> and <b>ranks 4&ndash;10 receive ₹60,000</b> off their programme fee.<br><br>'
-    + 'Scholarships are decided on marks alone. Where students finish on <b>exactly the same marks</b>, '
-    + 'the winners among them are selected by a <b>lucky draw</b>.<br><br>'
+    + 'Scholarships are decided on marks first. Where students finish on <b>exactly the same marks</b>, '
+    + 'the one who completed the test in <b>less time</b> takes the higher rank.<br><br>'
     + 'We will also contact you on your registered number.';
   if (!ready) startUnlockCountdown();
 }
@@ -1468,7 +1468,7 @@ function downloadAnswerKey() {
     + '<br><span style="font-size:13px;color:#475569">Marking: +4 correct, −1 wrong, 0 unanswered</span></div>'
     + body
     + '<footer>Winners will be announced on Wednesday, 21 October 2026 in the Global Careers WhatsApp community. '
-    + 'Where students finish on exactly the same marks, the winners among them are selected by a lucky draw.'
+    + 'Where students finish on exactly the same marks, the one who completed the test in less time takes the higher rank.'
     + '</footer></body></html>';
 
   try {

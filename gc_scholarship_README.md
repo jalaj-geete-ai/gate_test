@@ -246,23 +246,30 @@ update scholarship_config set value = '<new invite link>'
  where key = 'whatsapp_community_url';
 ```
 
-### Tie-break: lucky draw
+### Tie-break: time taken
 
-Scholarships are decided on marks alone. Where students finish level, the
-winners among them are drawn by lot — this is stated in the test instructions,
-in the T&C the student ticks before starting, on the result screen and in the
-downloaded answer key.
+Scholarships are decided on marks first. Where students finish level on marks,
+the one who completed the test in less time takes the higher rank — this is
+stated in the test instructions, in the T&C the student ticks before starting,
+on the result screen and in the downloaded answer key.
 
-`scholarship_tie_groups` tells you exactly which draws to run:
+A draw is only reached when two papers match on marks **and** on duration to
+the second. `scholarship_tie_groups` lists only those groups:
 
 ```sql
-select * from scholarship_tie_groups;   -- one row per score, with the action needed
-select * from scholarship_results;      -- every student, ranked, ties sharing a rank
+select * from scholarship_tie_groups;   -- only groups still needing a draw
+select * from scholarship_results;      -- every student, ranked
 ```
 
-A tied group is flagged `DRAW`, with the positions it covers. A group that
-straddles the top-3 cutoff needs a draw for both bands — e.g. four students on
-116 occupying positions 2–5 means one of them misses the 100% band entirely.
+A group that straddles the top-3 cutoff needs a draw for both bands — e.g.
+four students on 116 at identical times occupying positions 2–5 means one of
+them misses the 100% band entirely.
+
+The rule changed on 19 Oct 2026, after the 18 Oct sitting. It did not move
+the 100% band (the three students on 110 held positions 1–3 either way); it
+replaced the 15-way draw on 105 for positions 5–19 with the six fastest
+taking the remaining ₹60,000 places. Students had accepted a T&C naming a
+lucky draw, so the wording above was updated in the same change.
 
 ## Loading the real questions
 
@@ -366,13 +373,14 @@ from staging_questions;
 
 ```sql
 select * from scholarship_results order by rank;            -- ranked; ties share a rank
-select * from scholarship_tie_groups;                       -- which lucky draws to run
+select * from scholarship_tie_groups;                       -- draws still needed, if any
 select * from scholarship_lead_export;                      -- every lead, for the CRM
 select * from scholarship_integrity order by strikes desc;  -- who to look at twice
 ```
 
-`scholarship_results` ranks on score alone; tied students share a rank and are
-labelled `LUCKY DRAW` with the positions at stake. `scholarship_lead_export`
+`scholarship_results` ranks on score, then on `duration_seconds` ascending.
+Students level on both share a rank and are labelled `LUCKY DRAW` with the
+positions at stake; everyone else is separated. `scholarship_lead_export`
 includes people who registered and never showed up — still leads worth calling.
 
 ### Before go-live

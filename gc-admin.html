@@ -187,7 +187,7 @@ var COLS = {
     { k: 'wrong', t: 'Wrong', cls: 'num' },
     { k: 'unanswered', t: 'Skipped', cls: 'num' },
     { k: 'started_at', t: 'Started', fmt: 'time' },
-    { k: 'minutes_taken', t: 'Minutes', cls: 'num' },
+    { k: 'duration_seconds', t: 'Time taken', cls: 'num', fmt: 'dur' },
     { k: 'scholarship', t: 'Band', fmt: 'band' },
     { k: 'submit_reason', t: 'Finished by', fmt: 'reason' },
     { k: 'strikes', t: 'Strikes', cls: 'num', fmt: 'strikes' },
@@ -235,10 +235,21 @@ function ist(v) {
   return d.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short',
     hour: '2-digit', minute: '2-digit', hour12: true });
 }
+// Rank now turns on time taken, so show it to the second: rounded minutes
+// would put 9.7 above 9.7 and read like the order was arbitrary.
+function dur(v) {
+  if (v === null || v === undefined || v === '') return '';
+  var n = Number(v);
+  if (!isFinite(n) || n < 0) return '';
+  var m = Math.floor(n / 60), sec = Math.round(n % 60);
+  if (sec === 60) { m++; sec = 0; }
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
+}
 // Plain text for the export — the pills are presentation only.
 function plain(row, c) {
   var v = row[c.k];
   if (c.fmt === 'time') return ist(v);
+  if (c.fmt === 'dur') return dur(v);
   if (c.fmt === 'flag') return v ? 'YES' : '';
   if (v === null || v === undefined) return '';
   return String(v);
@@ -246,6 +257,7 @@ function plain(row, c) {
 function cell(row, c) {
   var v = row[c.k];
   if (c.fmt === 'time') return esc(ist(v));
+  if (c.fmt === 'dur') return esc(dur(v));
   if (c.fmt === 'band') {
     if (!v) return '';
     var g = /100%/.test(v);
