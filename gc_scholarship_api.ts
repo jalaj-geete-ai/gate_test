@@ -600,14 +600,13 @@ async function result(body: Record<string, unknown>) {
     const ord: number[] = att!.option_order?.[String(id)] ?? [...Array(opts.length).keys()];
     const shown = ord.map((o) => opts[o]);
     const correctPos = ord.indexOf(q.correct_index);
-    const raw = (att!.answers ?? {})[String(id)];
-    const yourPos = (raw === undefined || raw === null || raw < 0) ? null : Number(raw);
+    // The key carries the paper and the right answers, nothing more. A
+    // student's own choices are deliberately not returned: they get their
+    // score, not a question-by-question replay of what they picked.
     return {
       n: i + 1, subject: q.subject, question: q.question, options: shown,
-      your_choice: yourPos, correct_choice: correctPos,
-      is_correct: yourPos !== null && yourPos === correctPos,
+      correct_choice: correctPos,
       explanation: q.explanation,
-      marks: yourPos === null ? 0 : (yourPos === correctPos ? 4 : -1),
     };
   }).filter(Boolean);
 
