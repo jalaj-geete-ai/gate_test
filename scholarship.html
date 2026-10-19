@@ -1394,6 +1394,10 @@ function fetchResult(opts) {
 
     if (r.results_ready) {
       S.answerKey = r.answer_key || [];
+      // The key no longer carries per-question choices, so the downloaded
+      // file takes the tally from the server rather than counting it back.
+      S.result = { score: r.score, correct: r.correct, wrong: r.wrong,
+                   unanswered: r.unanswered };
       var total = r.total || S.answerKey.length || 30;
       $('res-score').textContent = (r.score === null || r.score === undefined) ? '—' : r.score;
       $('res-of').textContent = 'out of ' + (total * 4) + '  ·  ' + total + ' questions';
@@ -1420,21 +1424,13 @@ function downloadAnswerKey() {
   var k = S.answerKey || [];
   if (!k.length) { toast('Answer key is not loaded yet.', true); return; }
   var body = k.map(function (q) {
-    var blank = (q.your_choice === null || q.your_choice === undefined);
-    var yours = blank ? '<span class="skip">Not answered</span>'
-                      : esc(q.options[q.your_choice]);
-    var corr = esc(q.options[q.correct_choice]);
-    var tag = blank ? '<span class="t skip">Skipped · 0</span>'
-      : (q.is_correct ? '<span class="t ok">Correct · +4</span>'
-                      : '<span class="t bad">Wrong · −1</span>');
     var opts = q.options.map(function (o, i) {
-      var cls = i === q.correct_choice ? ' class="c"' : (i === q.your_choice ? ' class="y"' : '');
-      return '<li' + cls + '>' + esc(o) + '</li>';
+      return '<li' + (i === q.correct_choice ? ' class="c"' : '') + '>' + esc(o) + '</li>';
     }).join('');
-    return '<article><h3>Q' + q.n + '. ' + esc(q.question) + ' ' + tag + '</h3>'
+    return '<article><h3>Q' + q.n + '. ' + esc(q.question) + '</h3>'
       + '<div class="sub">' + esc(q.subject || '') + '</div>'
       + '<ul>' + opts + '</ul>'
-      + '<p><b>Your answer:</b> ' + yours + '<br><b>Correct answer:</b> ' + corr + '</p>'
+      + '<p><b>Correct answer:</b> ' + esc(q.options[q.correct_choice]) + '</p>'
       + '<p class="exp"><b>Explanation.</b> ' + esc(q.explanation) + '</p></article>';
   }).join('');
 
@@ -1448,23 +1444,18 @@ function downloadAnswerKey() {
     + '.score b{font-size:27px}article{border-top:1px solid #E2E8F0;padding:18px 0}'
     + 'h3{font-size:16px;margin:0 0 4px;font-weight:600}.sub{font-size:12px;color:#94A3B8;margin-bottom:9px}'
     + 'ul{margin:0 0 10px 18px;padding:0}li{margin:3px 0}'
-    + 'li.c{color:#15803D;font-weight:600}li.y{color:#B91C1C}'
+    + 'li.c{color:#15803D;font-weight:600}'
     + '.exp{background:#F7F9FB;border-left:3px solid #00AFC1;padding:10px 13px;font-size:14px;margin:8px 0 0}'
-    + '.t{font-size:11px;padding:2px 8px;border-radius:999px;font-weight:700;white-space:nowrap}'
-    + '.t.ok{background:#DCFCE7;color:#15803D}.t.bad{background:#FEE2E2;color:#B91C1C}'
-    + '.t.skip{background:#F1F5F9;color:#64748B}.skip{color:#94A3B8}'
     + 'footer{margin-top:30px;border-top:1px solid #E2E8F0;padding-top:14px;font-size:12px;color:#94A3B8}'
     + '</style></head><body>';
 
   var total = k.length;
-  var c = k.filter(function (q) { return q.is_correct; }).length;
-  var u = k.filter(function (q) { return q.your_choice === null || q.your_choice === undefined; }).length;
-  var w = total - c - u;
+  var m = S.result || {};
   var html = head
     + '<h1>Scholarship Test — Answer Key &amp; Explanations</h1>'
     + '<div class="meta">Global Careers by Testbook · ' + esc(S.name || '') + ' · 18 October 2026</div>'
-    + '<div class="score"><b>' + (c * 4 - w) + '</b> out of ' + (total * 4)
-    + '<br>' + c + ' correct · ' + w + ' wrong · ' + u + ' not answered'
+    + '<div class="score"><b>' + (m.score === null || m.score === undefined ? '—' : m.score) + '</b> out of ' + (total * 4)
+    + '<br>' + (m.correct || 0) + ' correct · ' + (m.wrong || 0) + ' wrong · ' + (m.unanswered || 0) + ' not answered'
     + '<br><span style="font-size:13px;color:#475569">Marking: +4 correct, −1 wrong, 0 unanswered</span></div>'
     + body
     + '<footer>Winners will be announced on Wednesday, 21 October 2026 in the Global Careers WhatsApp community. '
