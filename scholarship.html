@@ -363,6 +363,28 @@ footer.site{background:var(--primary);color:#9DC4CE;text-align:center;padding:26
 .tc li{padding-left:16px;position:relative;margin-bottom:6px}
 .tc li::before{content:"\2022";position:absolute;left:3px;color:var(--accent)}
 .tc li b{color:var(--text)}
+/* Full terms at the foot of the landing page. Collapsed by default: it runs
+   long, and the short summary a student needs before starting already sits on
+   the instructions screen. */
+.legal{max-width:860px;margin:0 auto 48px;border:1px solid var(--border);
+  border-radius:var(--r-md);background:var(--bg-warm);text-align:left}
+.legal>summary{cursor:pointer;list-style:none;padding:15px 20px;font-size:12.5px;
+  font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}
+.legal>summary::-webkit-details-marker{display:none}
+.legal>summary::after{content:"\25BC";float:right;font-size:9px;opacity:.55}
+.legal[open]>summary::after{content:"\25B2"}
+.legal-body{padding:0 20px 22px;font-size:13px;color:var(--text-2);line-height:1.7}
+.legal-body .eff{font-size:11.5px;color:var(--text-3);margin-bottom:14px}
+.legal-body h5{font-size:13.5px;color:var(--text);margin:20px 0 7px;font-weight:700}
+.legal-body p{margin-bottom:9px}
+.legal-body b{color:var(--text)}
+.legal-body ul{list-style:none;margin:0 0 11px}
+.legal-body li{padding-left:16px;position:relative;margin-bottom:5px}
+.legal-body li::before{content:"\2022";position:absolute;left:3px;color:var(--accent)}
+.legal-body table{border-collapse:collapse;margin:8px 0 12px;width:100%;font-size:12.5px}
+.legal-body th,.legal-body td{border:1px solid var(--border);padding:6px 10px;text-align:left}
+.legal-body th{background:var(--surface);color:var(--text);font-weight:700}
+.legal-body a{color:var(--accent-mute);text-decoration:underline}
 .link-sm{display:inline-block;margin-top:16px;font-size:13.5px;color:var(--accent-mute);
   text-decoration:underline;cursor:pointer;background:none;border:none;font-family:inherit}
 .link-sm:hover{color:var(--primary)}
@@ -482,6 +504,144 @@ footer.site{background:var(--primary);color:#9DC4CE;text-align:center;padding:26
     <div style="text-align:center;margin:-26px 0 44px">
       <button class="link-sm" id="btn-open-check">Already taken the test? Check your result &rarr;</button>
     </div>
+
+      <details class="legal" id="legal-tc">
+        <summary>Terms &amp; conditions</summary>
+        <div class="legal-body">
+          <p class="eff">All India Nurse Scholarship Test by Testbook &middot; effective 20 October 2026</p>
+
+          <p>Ten scholarships are awarded on the result of one 30-minute online test: ranks 1&ndash;3 receive a 100% discount on the listed Programme fee, and ranks 4&ndash;10 receive a &#8377;60,000 discount on it. These terms set out who may enter, how papers are marked, how winners are decided, and how a scholarship is claimed.</p>
+
+          <h5>1. What this is</h5>
+          <p>The All India Nurse Scholarship Test by Testbook (&ldquo;the Test&rdquo;) is run by Testbook Edu Solutions Pvt. Ltd., trading as Global Careers by Testbook (&ldquo;we&rdquo;, &ldquo;us&rdquo;). It offers ten scholarships against the fee of the Nurses to Germany Programme (&ldquo;the Programme&rdquo;).</p>
+          <p>By registering for the Test you accept these terms. If you do not accept them, do not register.</p>
+          <p>These terms, together with the instructions shown on the Test page before you begin, are the whole of what is agreed between us about the Test. Nothing said by any employee, agent, counsellor or partner adds to them or changes them.</p>
+          <p><b>Entry is free.</b> No fee is charged to register for or to sit the Test, no purchase is necessary, and no payment of any kind is taken from an entrant at any stage of the Test.</p>
+          <p>Ranks are determined by the marks scored on the Test under the method in section 5. That method measures knowledge and skill. Chance plays no part in it, except to separate two entrants who finish on exactly the same marks in exactly the same time, as section 5 describes.</p>
+
+          <h5>2. Who can enter</h5>
+          <p><b>This scholarship is strictly for nurses.</b> It is offered only to qualified nurses and nursing students who intend to pursue a nursing career abroad through the Programme. An entrant who is not a nurse or a nursing student cannot win a scholarship, whatever their score and whatever their rank on the published results.</p>
+          <p>You may enter if, on the date you register, you:</p>
+          <ul>
+            <li>are 18 years or older;</li>
+            <li>hold, or are currently studying in final year for, a nursing qualification &mdash; GNM, B.Sc Nursing, Post Basic B.Sc Nursing or M.Sc Nursing;</li>
+            <li>are resident in India; and</li>
+            <li>are genuinely interested in enrolling on the Programme.</li>
+          </ul>
+          <p>Employees of Testbook Edu Solutions Pvt. Ltd. and their immediate families may take the Test but cannot win a scholarship. A student already enrolled on the Programme may take the Test for practice but cannot win a scholarship on it.</p>
+          <p>We may ask a winner to prove eligibility before a scholarship is confirmed, for example with a qualification certificate, a nursing council registration number or a government identity document. If the proof is not provided within 3 days of our request, or if information given at registration turns out to be untrue, the scholarship is void and passes to the next eligible rank.</p>
+
+          <h5>3. Registering and your one attempt</h5>
+          <p>Registration asks for your full name and a ten-digit Indian mobile number. That number is your identity for the Test: your result and any winner contact go to it, so enter it carefully.</p>
+          <p><b>You get one attempt.</b> The attempt is used the moment the paper opens, whether or not you answer a single question.</p>
+          <ul>
+            <li>Leaving the test page, closing the tab, or switching away from it ends the attempt. Whatever your paper had saved at that moment is what is marked.</li>
+            <li>Running out of time ends the attempt and submits the paper as it stands.</li>
+            <li>Registering again on a different mobile number does not give you a second attempt. Where we find that one person has entered more than once, every one of those entries is void.</li>
+          </ul>
+
+          <h5>4. The test</h5>
+          <table>
+            <tr><th>Item</th><th>Detail</th></tr>
+            <tr><td>Date</td><td>Sunday, 18 October 2026</td></tr>
+            <tr><td>Test window</td><td>2:00 PM to 5:00 PM IST</td></tr>
+            <tr><td>Latest start time</td><td>4:30 PM IST</td></tr>
+            <tr><td>Time allowed</td><td>30 minutes from the moment you start</td></tr>
+            <tr><td>Questions</td><td>30 multiple choice, four options each, exactly one correct</td></tr>
+            <tr><td>Maximum marks</td><td>120</td></tr>
+          </table>
+          <p>The clock runs on our server, not on your device, so changing your device&rsquo;s time does not change how long you have.</p>
+          <p>Each paper is drawn individually. Students receive their questions in a different order with the options shuffled, so two students sitting side by side do not see the same paper in the same sequence.</p>
+          <p>You take the Test unsupervised, on your own device and your own internet connection. We are not responsible for an attempt lost to your device, your connection, a power cut, or anything else outside our reasonable control.</p>
+
+          <h5>5. How your paper is marked and ranked</h5>
+          <p>Every paper is marked the same way:</p>
+          <table>
+            <tr><th>Your answer</th><th>Marks</th></tr>
+            <tr><td>Correct</td><td>+4</td></tr>
+            <tr><td>Wrong</td><td>&minus;1</td></tr>
+            <tr><td>Not answered</td><td>0</td></tr>
+          </table>
+          <p>Your score is the total across all 30 questions. The highest possible score is 120. A question you skip costs you nothing; a question you guess wrong costs you one mark.</p>
+          <p>Rank is then decided in this order:</p>
+          <ul>
+            <li><b>The higher score ranks higher.</b></li>
+            <li><b>If two students have the same score, the one who finished in less time ranks higher.</b> Time is counted in seconds, from when you start to when your paper is submitted.</li>
+            <li><b>If two students have the same score and the same time to the second, the tie is settled by a draw</b> conducted by us. The outcome of the draw is final.</li>
+          </ul>
+          <p>That is the whole of the method. Nothing else affects your rank &mdash; not the order you answered in, not which particular questions you got right, and not when during the window you sat the Test.</p>
+
+          <h5>6. What you win</h5>
+          <table>
+            <tr><th>Rank</th><th>Scholarship</th></tr>
+            <tr><td>1, 2 and 3</td><td>100% of the listed Programme fee</td></tr>
+            <tr><td>4 to 10</td><td>&#8377;60,000 off the listed Programme fee</td></tr>
+          </table>
+          <p>A scholarship is given out as a discount applicable on the Programme fee. <b>It is not a cash prize, a payment, a stipend or a transfer of money.</b></p>
+          <p>&ldquo;Listed Programme fee&rdquo; means the fee for the Programme as published by us on the date the winner enrols, before taxes and before any other discount, offer, scheme or individually negotiated price.</p>
+          <ul>
+            <li>A <b>100% scholarship</b> reduces that fee to nil.</li>
+            <li>A <b>&#8377;60,000 scholarship</b> deducts &#8377;60,000 from that fee.</li>
+          </ul>
+
+          <h5>7. Claiming your scholarship</h5>
+          <p>To claim, you must enrol on the Programme within <b>3 days</b> of the results being announced. A scholarship not claimed within that period lapses and is not reinstated.</p>
+          <ul>
+            <li>It applies to one enrolment, by the winner personally.</li>
+            <li>It cannot be transferred, sold, shared, split or assigned to anyone else.</li>
+            <li>It cannot be exchanged for cash, credit, or anything other than a reduction in the Programme fee.</li>
+            <li>It cannot be combined with any other scholarship, discount, referral benefit, coupon or offer. Where you qualify for more than one, the single most favourable applies.</li>
+            <li>One scholarship per person, however many ways you might otherwise qualify.</li>
+          </ul>
+          <p>If you enrol and later withdraw, the scholarship has no refund value.</p>
+          <p><b>The scholarship is conditional on document verification.</b> Enrolment on the Programme requires verification of your documents and of your eligibility to travel to Germany and work there as a nurse. That includes your qualification and its recognition, your language attainment, medical fitness, police clearance, and the requirements of the German authorities, the recognition bodies and the employer &mdash; all of which are set by third parties and not by us.</p>
+          <p><b>If verification shows that you are not eligible to proceed to Germany, the scholarship is cancelled.</b> Where it is cancelled before you enrol, it passes to the next eligible rank. Where it is cancelled after you enrol, your enrolment is dealt with under the Programme&rsquo;s own terms, and the scholarship has no cash value and no refund value.</p>
+          <p>We are not liable for a cancellation on this ground. Eligibility to go to Germany depends on your own circumstances and on decisions taken by authorities, recognition bodies and employers who are not us and whom we do not control.</p>
+
+          <h5>8. What the scholarship does not cover</h5>
+          <p>Winning a scholarship is not a promise of placement, a visa, recognition of your qualification, or employment in India or abroad in itself. Those depend on your own eligibility and on authorities and employers.</p>
+          <p><b>Winning is not admission.</b> A scholarship entitles you to the fee reduction described in section 6 and to nothing else. It is not an offer of admission. Admission to the Programme remains subject to the Programme&rsquo;s own entry requirements, verification, capacity and terms, and to section 7.</p>
+
+          <h5>9. Fair conduct and disqualification</h5>
+          <p>The Test is monitored. While your paper is open we record when the test page loses focus, attempts to copy or paste, attempts to open developer tools, and whether a second tab of the Test is opened.</p>
+          <p>Leaving the test page for more than 10 seconds counts as a strike. <b>Three strikes submit your paper automatically</b>, with whatever you have answered at that point. You are warned on screen after each strike.</p>
+          <p>We may void an entry where we reasonably believe the entrant:</p>
+          <ul>
+            <li>received help from another person, or gave help to another entrant;</li>
+            <li>used notes, a second device, or any other external source during the Test;</li>
+            <li>entered more than once, or sat the Test in place of someone else;</li>
+            <li>gave false information at registration; or</li>
+            <li>interfered with the Test, or attempted to.</li>
+          </ul>
+          <p><b>We also examine answer patterns after the Test.</b> Where the pattern of a paper indicates that the answers were not the entrant&rsquo;s own independent work, we may void the entry on that ground alone. Examples include answer sequences that match another entrant&rsquo;s too closely to have arisen independently, a run of correct answers completed faster than the questions could reasonably be read, and answers that follow the order of a paper the entrant was not served.</p>
+          <p>A decision taken on this ground is based on our analysis of the Test data. We are not required to disclose the methods by which unfair means are detected.</p>
+          <p>Where an entry is voided, the scholarship passes to the next eligible rank. We tell the entrant the ground on which the decision was made.</p>
+
+          <h5>10. Answer key and final results</h5>
+          <p>Papers are marked automatically on submission. Before results are declared final, the question paper and the answer key are reviewed by a subject expert.</p>
+          <p>The reviewed key, and the ranks calculated from it, are final. Once results are declared we do not re-mark papers on request.</p>
+          <p>After results are published you can see your own score and download the answer key with explanations. We do not publish, share or disclose any entrant&rsquo;s individual answers, to that entrant or to anyone else.</p>
+          <p><b>The decision of Global Careers by Testbook on marks, grading and ranks is final and is not subject to change.</b> We do not re-check, re-total, re-grade or re-evaluate a paper at an entrant&rsquo;s request, there is no appeal or revaluation process, and we do not enter into correspondence about an individual result.</p>
+
+          <h5>11. Your information, changes and governing law</h5>
+          <p><b>Your information.</b> By registering you agree that we may contact you about the Test and about our programmes by phone, SMS, WhatsApp and email, including through our WhatsApp community. We handle your information under our privacy policy at <a href="https://global-careers-gate-tests.pages.dev/scholarship">https://global-careers-gate-tests.pages.dev/scholarship</a>. You can ask us to stop contacting you at <a href="mailto:support.gc@testbook.com">support.gc@testbook.com</a> at any time.</p>
+          <p><b>Winners&rsquo; names.</b> If you win, we may publish your name, testimonial photo or video and your rank when announcing the results.</p>
+          <p><b>Changes.</b> We may change the date, timing, format or these terms before the Test opens, and will publish any change on the Test page. We may postpone or cancel the Test where something outside our reasonable control prevents it from running fairly. If the Test is cancelled before it runs, no scholarships are awarded and no entrant is owed anything.</p>
+          <p><b>Our decisions.</b> Our decision on eligibility, marking, ranking, disqualification and the award of scholarships is final, and we do not enter into correspondence about it.</p>
+          <p><b>Liability.</b> Entry is free and no purchase or payment is required to take part. To the extent the law allows, our total liability to any entrant in connection with the Test is limited to the value of the scholarship that entrant would otherwise have received.</p>
+          <p><b>Your statutory rights.</b> Nothing in these terms limits any right you have under the Consumer Protection Act, 2019 or any other law that cannot be excluded by agreement.</p>
+          <p><b>Law.</b> These terms are governed by the laws of India. The courts at [city] have exclusive jurisdiction over any dispute arising from them.</p>
+
+          <h5>12. General</h5>
+          <p><b>Severability.</b> If any part of these terms is found to be unenforceable, that part is severed and the remainder continues to apply.</p>
+          <p><b>No waiver.</b> If we do not enforce a term on one occasion, that does not prevent us from enforcing it later.</p>
+          <p><b>Assignment.</b> We may transfer our rights and obligations under these terms to another company in our group. You may not transfer yours.</p>
+          <p><b>Your undertaking.</b> You confirm that the information you give at registration is true and that you are eligible under section 2. If it is not true, or you breach section 9, you are responsible for any loss or cost we reasonably incur as a result.</p>
+          <p><b>Time limit.</b> Any claim relating to the Test must be raised with us in writing within 10 days of the results being announced.</p>
+          <p><b>Grievances.</b> Any complaint about the Test may be sent to our Grievance Officer, Himanshu Singhal, at <a href="mailto:himanshu.gc@testbook.com">himanshu.gc@testbook.com</a>. We will respond within 3 days.</p>
+          <p><b>Tax.</b> The scholarship is a reduction in the Programme fee. No money is paid to any winner, so no tax is deducted at source by us and we make no payment on any winner&rsquo;s behalf. You are responsible for your own tax position and should take your own advice.</p>
+        </div>
+      </details>
   </div>
 
   <footer class="site">Global Careers by Testbook · © 2026 Testbook Edu Solutions Pvt. Ltd.</footer>
