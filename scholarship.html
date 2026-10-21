@@ -333,6 +333,34 @@ footer.site{background:var(--primary);color:#9DC4CE;text-align:center;padding:26
 .next-steps{background:var(--accent-wash);border:1px solid var(--accent-pale);border-radius:var(--r-md);
   padding:18px;margin-top:22px;font-size:14px;color:var(--text-2);text-align:left;line-height:1.7}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:120;display:none}
+/* result popup */
+.modal.result-pop{max-width:430px;padding:24px 22px;text-align:center;position:relative;max-height:92vh;overflow-y:auto}
+.modal.result-pop .mclose{position:absolute;top:8px;right:12px;background:none;border:none;font-size:26px;
+  line-height:1;color:var(--text-3);cursor:pointer;padding:4px}
+.rp-eyebrow{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);margin:2px 0 4px}
+.rp-name{font-family:var(--ff-display);font-size:23px;margin:0 0 14px}
+.rp-banner{width:100%;max-width:100%;border-radius:14px;border:1px solid #EBD9A8;display:block;margin:0 0 15px}
+.rp-scores{display:flex;gap:10px;margin:0 0 12px}
+.rp-scores>div{flex:1;background:var(--bg-warm);border:1px solid var(--border);border-radius:13px;padding:12px 8px}
+.rp-scores .v{font-family:var(--ff-display);font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
+.rp-scores .v.r{color:var(--accent-mute)}
+.rp-scores .l{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);margin-top:4px;font-weight:700}
+.rp-breakup{font-size:12.5px;color:var(--text-3);margin:0 0 15px}
+.rp-prize{border-radius:14px;padding:16px;margin:0 0 14px;text-align:left}
+.rp-prize h4{font-family:var(--ff-display);margin:0 0 6px;font-size:17px}
+.rp-prize p{font-size:13px;line-height:1.55;margin:0;color:var(--text-2)}
+.rp-prize p b{color:var(--text-1,#0A3D4D)}
+.rp-prize.win{background:#FFF7E2;border:1.5px solid #EBD9A8}
+.rp-prize.win h4{color:#9A6B0E}
+.rp-prize.gift{background:#F1EDFB;border:1.5px solid #D8CDF2}
+.rp-prize.gift h4{color:#5B3FA8}
+.rp-prize .shot{display:block;margin-top:11px;font-size:13.5px;color:#7A1020;font-weight:800}
+.rp-prize .validity{font-size:12px;color:var(--text-3);margin-top:10px}
+.btn-gift{background:#5B3FA8;color:#fff;width:100%;margin-top:12px}
+.btn-gift:hover{background:#4A2F93;color:#fff}
+.rp-claimed{background:var(--bg-warm);border:1.5px solid var(--cta);border-radius:11px;padding:12px 14px;
+  font-size:13px;color:var(--text-2);margin-top:4px;text-align:center}
+.rp-actions .btn{width:100%}
 .btn-wa{background:#25D366;color:#fff;text-decoration:none}
 .btn-wa:hover{background:#1DA851;color:#fff}
 .wa-ring{width:84px;height:84px;border-radius:50%;background:#E7FBEF;border:2px solid #25D366;
@@ -853,6 +881,20 @@ footer.site{background:var(--primary);color:#9DC4CE;text-align:center;padding:26
     <button class="btn btn-ghost" id="btn-check-cancel">Cancel</button>
     <button class="btn btn-primary" id="btn-check-go">Check result</button>
   </div>
+</div></div>
+
+<div class="ov" id="ov-result"><div class="modal result-pop">
+  <button class="mclose" id="rp-close" aria-label="Close">&times;</button>
+  <img class="rp-banner" id="rp-banner" alt="Congratulations" style="display:none">
+  <p class="rp-eyebrow" id="rp-eyebrow"></p>
+  <h3 class="rp-name" id="rp-name"></h3>
+  <div class="rp-scores">
+    <div><div class="v" id="rp-score">&mdash;</div><div class="l">Marks / 120</div></div>
+    <div><div class="v r" id="rp-rank">&mdash;</div><div class="l">All India Rank</div></div>
+  </div>
+  <p class="rp-breakup" id="rp-breakup"></p>
+  <div id="rp-prize"></div>
+  <div class="rp-actions"><button class="btn btn-primary" id="rp-key">Download answer key with explanations</button></div>
 </div></div>
 
 <canvas id="confetti"></canvas>
@@ -1527,6 +1569,7 @@ function fetchResult(opts) {
   if (opts.token) payload.token = opts.token;
   else if (opts.phone) payload.phone = opts.phone;
   else return Promise.resolve(false);
+  S.resultAuth = payload;   // identity the gift-claim button reuses
 
   busy(true, 'Fetching your result…');
   return api('result', payload).then(function (r) {
@@ -1566,6 +1609,14 @@ function fetchResult(opts) {
       $('res-c').textContent = r.correct || 0;
       $('res-w').textContent = r.wrong || 0;
       $('res-u').textContent = r.unanswered || 0;
+      S.lastResult = r;
+      openResultPopup(r, true);
+      $('res-next').innerHTML =
+        '<div style="text-align:center"><button class="btn btn-primary" id="res-reopen" style="width:100%">'
+        + 'View my result &amp; scholarship</button>'
+        + '<p style="margin-top:14px">Winners are also announced in the Global Careers WhatsApp community.</p></div>';
+      var ro = $('res-reopen');
+      if (ro) ro.addEventListener('click', function () { openResultPopup(S.lastResult, false); });
     }
     return true;
   }).catch(function () {
@@ -1634,6 +1685,85 @@ function downloadAnswerKey() {
   } catch (e) {
     note('Download failed', 'Your browser blocked the download. Please try again from a laptop.', '&#9888;&#65039;');
   }
+}
+
+// The result popup: each student sees only their own marks, rank and offer.
+function openResultPopup(r, fire) {
+  if (!r) return;
+  var prize = r.prize || {};
+  var kind = prize.kind;
+  var first = (r.name || '').split(' ')[0];
+  var winner = (kind === 'full' || kind === 'win60' || kind === 'offer60');
+
+  var bimg = $('rp-banner');
+  if (kind === 'full' && prize.banner) {
+    bimg.onerror = function () { bimg.style.display = 'none'; };
+    bimg.src = prize.banner; bimg.style.display = 'block';
+  } else {
+    bimg.style.display = 'none'; bimg.removeAttribute('src');
+  }
+
+  $('rp-eyebrow').textContent = winner
+    ? 'Congratulations' + (first ? ', ' + first : '') + '!'
+    : 'Your result' + (first ? ', ' + first : '');
+  $('rp-name').textContent = r.name || '';
+  $('rp-score').textContent = (r.score === null || r.score === undefined) ? '—' : r.score;
+  $('rp-rank').textContent = (r.rank === null || r.rank === undefined) ? '—' : ('#' + r.rank);
+  $('rp-breakup').textContent =
+    (r.correct || 0) + ' correct · ' + (r.wrong || 0) + ' wrong · ' + (r.unanswered || 0) + ' not answered';
+
+  var pr = $('rp-prize');
+  if (kind === 'full') {
+    pr.innerHTML = '<div class="rp-prize win"><h4>100% Scholarship &#127942;</h4>'
+      + '<p>Your entire Nurses to Germany Programme fee is waived. <b>Enrol within 3 days</b> of the announcement to claim it. '
+      + 'Our team will reach out on your registered number.</p></div>';
+  } else if (kind === 'win60') {
+    pr.innerHTML = '<div class="rp-prize win"><h4>You have won a &#8377;60,000 scholarship &#127942;</h4>'
+      + '<p>Your rank places you in <b>ranks 4&ndash;10</b>. &#8377;60,000 is taken off your listed Programme fee. '
+      + '<b>Enrol within 3 days</b> of the announcement to claim it.</p></div>';
+  } else if (kind === 'offer60') {
+    pr.innerHTML = '<div class="rp-prize win"><h4>Selected: &#8377;60,000 scholarship</h4>'
+      + '<p>Our counselling team has <b>selected you for a &#8377;60,000 scholarship</b> on the Nurses to Germany Programme. '
+      + 'We will call you on your registered number to confirm it.</p></div>';
+  } else if (kind === 'gift30') {
+    pr.innerHTML = prize.claimed ? giftClaimedHtml() : giftOfferHtml();
+  } else {
+    pr.innerHTML = '';
+  }
+
+  overlay('ov-result', true);
+  if (winner && fire) { try { CONFETTI.fire(); } catch (e) {} }
+  var gb = $('rp-gift');
+  if (gb) gb.addEventListener('click', claimGift);
+}
+
+function giftOfferHtml() {
+  return '<div class="rp-prize gift"><h4>Surprise gift: &#8377;30,000 scholarship &#127873;</h4>'
+    + '<p>You are not among the top 10 ranks, but every participant gets a <b>&#8377;30,000 scholarship</b> on the Nurses to Germany Programme.</p>'
+    + '<b class="shot">&#128248; Take a screenshot of this result now.</b>'
+    + '<button class="btn btn-gift" id="rp-gift">I want Rs. 30,000 Scholarship</button>'
+    + '<p class="validity">Offer valid only till <b>Saturday, 24 October 2026</b>.</p></div>';
+}
+function giftClaimedHtml() {
+  return '<div class="rp-prize gift"><h4>&#8377;30,000 scholarship &#127873;</h4>'
+    + '<p>Your interest is recorded. <b>Our team will connect with you within 24 hours</b> on your registered number.</p>'
+    + '<p class="validity">Offer valid only till <b>Saturday, 24 October 2026</b>.</p></div>';
+}
+function claimGift() {
+  var btn = $('rp-gift');
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+  var saved = recall();
+  var payload = S.resultAuth || (S.token ? { token: S.token } : (saved.phone ? { phone: saved.phone } : {}));
+  api('gift_claim', payload).then(function (res) {
+    if (res && res.ok) {
+      if (S.lastResult && S.lastResult.prize) S.lastResult.prize.claimed = true;
+      $('rp-prize').innerHTML = giftClaimedHtml();
+      try { CONFETTI.fire(); } catch (e) {}
+    } else if (btn) { btn.disabled = false; btn.textContent = 'I want Rs. 30,000 Scholarship'; toast('Could not save. Please try again.', true); }
+  }).catch(function () {
+    if (btn) { btn.disabled = false; btn.textContent = 'I want Rs. 30,000 Scholarship'; }
+    toast('Could not save. Please try again.', true);
+  });
 }
 
 // ── CONFETTI ──────────────────────────────────────────────────────────────
@@ -1859,6 +1989,9 @@ var PROCTOR = (function () {
 })();
 
 $('btn-download-key').addEventListener('click', downloadAnswerKey);
+$('rp-key').addEventListener('click', downloadAnswerKey);
+$('rp-close').addEventListener('click', function () { overlay('ov-result', false); });
+$('ov-result').addEventListener('click', function (e) { if (e.target === this) overlay('ov-result', false); });
 applyWaLinks();
 
 $('btn-open-check').addEventListener('click', function () {
