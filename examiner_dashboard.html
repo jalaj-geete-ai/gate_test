@@ -460,7 +460,7 @@ async function isExaminer(){
 function showDashboard(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('dashboard').style.display='block';
-  loadMarks();loadData();
+  loadData();
 }
 function showLogin(msg){
   document.getElementById('dashboard').style.display='none';
@@ -497,8 +497,48 @@ async function logout(){
   document.getElementById('login-pass').value='';
 }
 
-// ── MARKS STORAGE ──
-function loadMarks(){try{marksStore=JSON.parse(localStorage.getItem('gcb_exam_marks')||'{}')}catch(e){marksStore={}}}
+// ── MARKS STORAGE (server-side, in public.exam_marks) ──
+// Marks live in the database now, read and written with the examiner's token,
+// so every examiner on every device/browser sees the same grades. marksStore
+// is just an in-memory cache of what the database holds, keyed by submission id.
+const MARKS_TABLE='exam_marks';
+async function fetchMarks(){
+  const r=await fetch(`${SUPABASE_URL}/rest/v1/${MARKS_TABLE}?select=submission_id,marks`,{headers:await authHeaders()});
+  if(!r.ok)throw new Error('Failed to fetch marks');
+  const rows=await r.json();
+  const store={};
+  (rows||[]).forEach(x=>{if(x&&x.submission_id&&x.marks)store[x.submission_id]=x.marks});
+  return store;
+}
+function markRow(id,m){
+  return {submission_id:id, level:(m&&m.level)||null, marks:m,
+          total:(m&&typeof m.total==='number')?m.total:null,
+          scale:(m&&typeof m.scale==='number')?m.scale:null,
+          updated_at:new Date().toISOString()};
+}
+async function upsertMarks(rowsOrOne){
+  const body=Array.isArray(rowsOrOne)?rowsOrOne:[rowsOrOne];
+  if(!body.length)return;
+  const r=await fetch(`${SUPABASE_URL}/rest/v1/${MARKS_TABLE}?on_conflict=submission_id`,{
+    method:'POST',
+    headers:Object.assign({'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=minimal'},await authHeaders()),
+    body:JSON.stringify(body)
+  });
+  if(!r.ok){const t=await r.text().catch(()=>'');throw new Error(t||('HTTP '+r.status));}
+}
+// One-time rescue: if this browser still holds marks in the old localStorage
+// store (from before marks moved to the database), push any the database does
+// not yet have up into it. Never deletes anything; the database wins for ids
+// it already has, so re-opening an old browser can only add, never clobber.
+async function migrateLocalMarks(){
+  let local={};
+  try{local=JSON.parse(localStorage.getItem('gcb_exam_marks')||'{}')}catch(e){return 0}
+  const pending=Object.keys(local).filter(id=>local[id]&&local[id].saved&&!marksStore[id]).map(id=>markRow(id,local[id]));
+  if(!pending.length)return 0;
+  await upsertMarks(pending);
+  pending.forEach(row=>{marksStore[row.submission_id]=row.marks});
+  return pending.length;
+}
 
 // ── SESSION PERSISTENCE ──
 async function checkSession(){
@@ -508,9 +548,13 @@ async function checkSession(){
   try{if(await isExaminer())showDashboard();else saveAuth(null)}catch(e){}
 }
 window.addEventListener('DOMContentLoaded',checkSession);
-function saveMarks(){localStorage.setItem('gcb_exam_marks',JSON.stringify(marksStore))}
 function getM(id){return marksStore[id]||null}
-function setM(id,m){marksStore[id]=m;saveMarks()}
+// Persist to the database first; only update the cache once the write lands,
+// so a mark that shows as saved is guaranteed to be in the database.
+async function setM(id,m){
+  await upsertMarks(markRow(id,m));
+  marksStore[id]=m;
+}
 
 // ── FETCH ──
 async function fetchTable(t){
@@ -525,8 +569,10 @@ async function loadData(){
   try{
     const schemeErr=assertMaxes();
     if(schemeErr)showToast('Mark scheme error: '+schemeErr,'error');
-    const [a2,a1,a1r,a1r2]=await Promise.all([fetchTable('german_exam_responses'),fetchTable('a1_german_exam_responses'),fetchTable('a1_retest_german_exam_responses'),fetchTable('a1_retest2_german_exam_responses')]);
-    allData={a2,a1,a1r,a1r2};updateStats();renderTable();renderLeaderboard();renderRescaleNote();
+    const [a2,a1,a1r,a1r2,marks]=await Promise.all([fetchTable('german_exam_responses'),fetchTable('a1_german_exam_responses'),fetchTable('a1_retest_german_exam_responses'),fetchTable('a1_retest2_german_exam_responses'),fetchMarks()]);
+    allData={a2,a1,a1r,a1r2};marksStore=marks;
+    try{const n=await migrateLocalMarks();if(n)showToast(`Imported ${n} mark${n===1?'':'s'} from this browser into the database.`,'success');}catch(e){console.warn('local marks migration failed',e);}
+    updateStats();renderTable();renderLeaderboard();renderRescaleNote();
   }catch(e){showToast('Error: '+e.message,'error');}
   finally{document.getElementById('loading-msg').style.display='none';}
 }
@@ -771,23 +817,23 @@ function closeRescale(){
   if(o)o.remove();
   window.__rescalePlans=null;
 }
-function applyRescale(){
+async function applyRescale(){
   const plans=window.__rescalePlans||[];
   if(!plans.length){closeRescale();return;}
-  plans.forEach(p=>setM(p.row.id, p.after));
+  try{await upsertMarks(plans.map(p=>markRow(p.row.id,p.after)));}
+  catch(e){showToast('⚠ Rescale could not be saved to the database: '+e.message,'error');return;}
+  plans.forEach(p=>{marksStore[p.row.id]=p.after});
   closeRescale();
   updateStats();renderTable();renderLeaderboard();renderRescaleNote();
   showToast(`✅ ${plans.length} record${plans.length===1?'':'s'} rescaled to /${MARK_SCALE}`,'success');
 }
-function undoRescale(){
+async function undoRescale(){
   const rows=rescaledRows();
   if(!rows.length){showToast('Nothing to undo.','error');return;}
-  rows.forEach(r=>{
-    const m=getM(r.id);
-    const pre=Object.assign({}, m._pre);
-    delete pre._pre;
-    setM(r.id, pre);
-  });
+  const payload=rows.map(r=>{const m=getM(r.id);const pre=Object.assign({},m._pre);delete pre._pre;return {id:r.id,pre};});
+  try{await upsertMarks(payload.map(x=>markRow(x.id,x.pre)));}
+  catch(e){showToast('⚠ Undo could not be saved to the database: '+e.message,'error');return;}
+  payload.forEach(x=>{marksStore[x.id]=x.pre});
   updateStats();renderTable();renderLeaderboard();renderRescaleNote();
   showToast(`↩ ${rows.length} record${rows.length===1?'':'s'} restored to the original marks`,'success');
 }
@@ -1303,7 +1349,7 @@ function updateModalPill(){
   }else{pill.textContent='Not saved';pill.className='score-pill score-badge score-none';}
 }
 
-function saveCurrentMarks(){
+async function saveCurrentMarks(){
   if(!modalStudentId)return;
   const isA2=modalLevel==='A2';
   const isA1R=modalLevel==='A1R';
@@ -1328,7 +1374,12 @@ function saveCurrentMarks(){
   M.grammar_sections.forEach(f=>{m[f]=gv(f)});
   m.grammar=M.grammar_sections.reduce((s,f)=>s+gv(f),0);
   m.total=m.reading_tf+m.reading_open+m.grammar+m.writing_form+m.writing_email+m.listen_tf+m.listen_open+m.listen_fill+m.speaking;
-  setM(modalStudentId,m);
+  const btn=document.querySelector('.btn-save');
+  if(btn){btn.disabled=true;btn.textContent='Saving…';}
+  try{await setM(modalStudentId,m);}
+  catch(e){showToast('⚠ Could not save to the database: '+e.message+' — the mark is NOT stored. Check your connection and try again.','error');
+    if(btn){btn.disabled=false;btn.textContent='💾 Save All Marks';}return;}
+  if(btn){btn.disabled=false;btn.textContent='💾 Save All Marks';}
   updateStats();renderTable();renderLeaderboard();updateModalPill();
   showToast(`✅ Marks saved for ${r?.student_name||'student'} — ${m.total}/${m.scale}`,'success');
 }
