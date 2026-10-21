@@ -1373,6 +1373,7 @@ async function saveCurrentMarks(){
   m.scale=paperTotal(M);
   M.grammar_sections.forEach(f=>{m[f]=gv(f)});
   m.grammar=M.grammar_sections.reduce((s,f)=>s+gv(f),0);
+  M.speaking_fields.forEach(f=>{m[f]=gv(f)});
   m.total=m.reading_tf+m.reading_open+m.grammar+m.writing_form+m.writing_email+m.listen_tf+m.listen_open+m.listen_fill+m.speaking;
   const btn=document.querySelector('.btn-save');
   if(btn){btn.disabled=true;btn.textContent='Saving…';}
