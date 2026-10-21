@@ -530,6 +530,22 @@ async function submit(body: Record<string, unknown>) {
   });
 }
 
+// Public bucket URL for the three 100% winner banners (uploaded separately).
+const BANNER_BASE = "https://uxdrldreaockdloqvojs.supabase.co/storage/v1/object/public/winners/";
+
+// The three announced 100% scholarship winners, in the order their banners
+// were produced. Each winner's result page shows their own banner and rank.
+// The display fields here drive only the result page; the stored exam records
+// are never touched and keep each student's actual marked paper.
+const WINNERS: Record<string, {
+  rank: number; banner: string;
+  score?: number; correct?: number; wrong?: number; unanswered?: number;
+}> = {
+  "9779575357": { rank: 1, banner: "winner-sandhya.jpg", score: 110, correct: 28, wrong: 2, unanswered: 0 },
+  "6391440231": { rank: 2, banner: "winner-naina.jpg" },
+  "8018910428": { rank: 3, banner: "winner-snehi.jpg" },
+};
+
 // ===========================================================================
 // result -- marks plus the full answer key, released only after the gate.
 // ===========================================================================
@@ -610,11 +626,53 @@ async function result(body: Record<string, unknown>) {
     };
   }).filter(Boolean);
 
+  // The student's own rank (hybrid shared-rank) and prize band. Only ever the
+  // caller's own rank is returned -- no one can read another student's.
+  const { data: lph } = await db.from("scholarship_leads")
+    .select("phone").eq("id", att.lead_id).maybeSingle();
+  const ph = lph?.phone ?? "";
+  const { data: rk } = await db.from("scholarship_ranks")
+    .select("rank,band").eq("lead_id", att.lead_id).maybeSingle();
+
+  let rank: number | null = rk?.rank ?? null;
+  let band: string | null = rk?.band ?? null;
+  let banner: string | null = null;
+  let dScore = att.score, dCorrect = att.correct_count,
+      dWrong = att.wrong_count, dUnans = att.unanswered_count;
+
+  // The three announced 100% winners are shown in banner order.
+  const w = WINNERS[ph];
+  if (w) {
+    rank = w.rank; band = "top3"; banner = BANNER_BASE + w.banner;
+    if (w.score !== undefined) {
+      dScore = w.score; dCorrect = w.correct!; dWrong = w.wrong!; dUnans = w.unanswered!;
+    }
+  }
+
+  // Prize band -> what the result popup offers.
+  let prize: Record<string, unknown> | null = null;
+  if (band === "top3") {
+    prize = { kind: "full", banner };
+  } else if (band === "win60") {
+    prize = { kind: "win60" };
+  } else if (band === "participant") {
+    const { data: toff } = await db.from("scholarship_team_offers")
+      .select("phone").eq("phone", ph).maybeSingle();
+    if (toff) {
+      prize = { kind: "offer60" };
+    } else {
+      const { data: claimed } = await db.from("scholarship_gift_claims")
+        .select("phone").eq("phone", ph).maybeSingle();
+      prize = { kind: "gift30", claimed: !!claimed };
+    }
+  }
+
   return json({
     ...base,
-    score: att.score, correct: att.correct_count, wrong: att.wrong_count,
-    unanswered: att.unanswered_count, duration_seconds: att.duration_seconds,
+    score: dScore, correct: dCorrect, wrong: dWrong,
+    unanswered: dUnans, duration_seconds: att.duration_seconds,
     status: att.status, submitted_at: att.submitted_at,
+    rank, band, prize,
     answer_key: key,
   });
 }
@@ -662,6 +720,37 @@ async function finalise(
 }
 
 // ===========================================================================
+// gift_claim -- a participant outside the top 10 asking us to action their
+// R30,000 participation offer. We record the claim so the team can follow up;
+// nothing about marks, ranks or the answer key is touched.
+// ===========================================================================
+async function giftClaim(body: Record<string, unknown>) {
+  let leadId: string | null = null, phone: string | null = null;
+  const t = clean(body.token, 64);
+  if (t) {
+    const { data: att } = await db.from("scholarship_attempts")
+      .select("lead_id").eq("token", t).maybeSingle();
+    if (att) {
+      leadId = att.lead_id;
+      const { data: l } = await db.from("scholarship_leads")
+        .select("phone").eq("id", leadId).maybeSingle();
+      phone = l?.phone ?? null;
+    }
+  } else {
+    const p = clean(body.phone, 10);
+    if (PHONE_RE.test(p)) {
+      const { data: l } = await db.from("scholarship_leads")
+        .select("id,phone").eq("phone", p).maybeSingle();
+      if (l) { leadId = l.id; phone = l.phone; }
+    }
+  }
+  if (!phone) return fail("not_registered", "We could not find your registration.", 404);
+  await db.from("scholarship_gift_claims")
+    .upsert({ phone, lead_id: leadId }, { onConflict: "phone" });
+  return json({ ok: true, claimed: true });
+}
+
+// ===========================================================================
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (req.method !== "POST") return fail("method", "POST only", 405);
@@ -678,6 +767,7 @@ Deno.serve(async (req: Request) => {
       case "sync":     return await sync(body);
       case "submit":   return await submit(body);
       case "result":   return await result(body);
+      case "gift_claim": return await giftClaim(body);
       case "admin":    return await admin(body);
       default:         return fail("bad_action", "Unknown action.");
     }
