@@ -120,6 +120,10 @@ input,textarea{user-select:text;-webkit-user-select:text}
 .cd-box .l{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);
   margin-top:7px;font-weight:700}
 .cd-caption{font-size:13.5px;color:var(--text-2);margin-top:14px;font-weight:600}
+.hero-check{margin-top:20px;display:flex;justify-content:center}
+.hero-check .btn{background:rgba(255,255,255,.96);color:var(--primary);border:none;
+  box-shadow:0 8px 22px rgba(0,0,0,.16);font-weight:700}
+.hero-check .btn:hover{background:#fff;color:var(--primary);transform:translateY(-1px)}
 /* Four boxes at 86px min-width overflow a 390px phone and wrap SECONDS onto
    its own line, which reads as a layout fault rather than a countdown. */
 @media (max-width:600px){
@@ -462,6 +466,10 @@ footer.site{background:var(--primary);color:#9DC4CE;text-align:center;padding:26
       </div>
       <div class="cd-caption" id="cd-caption">Test opens Sunday, 18 October 2026 at 2:00 PM IST</div>
 
+      <div class="hero-check">
+        <button class="btn btn-ghost" id="btn-open-check">Already taken the test? Check your result &rarr;</button>
+      </div>
+
       <div class="start-zone" id="start-zone" style="display:none">
         <button class="btn btn-primary" id="btn-start-test">START TEST</button>
         <div class="cd-caption" id="start-note" style="margin-top:12px">The test is live now. Last entry 4:30 PM IST.</div>
@@ -527,10 +535,6 @@ footer.site{background:var(--primary);color:#9DC4CE;text-align:center;padding:26
         <li><b>Winners will be announced on Wednesday, 21 October 2026 at 7:00 PM in our WhatsApp community.</b> Join the community so you do not miss the announcement.</li>
         <li><b>How ranks are decided.</b> The higher score ranks higher. The top three positions are split by time &mdash; if students tie on the top scores, whoever finished faster ranks higher. From rank 4 down, everyone on the same marks shares the same rank and time plays no part.</li>
       </ul>
-    </div>
-
-    <div style="text-align:center;margin:4px 0 44px">
-      <button class="btn btn-ghost" id="btn-open-check">Already taken the test? Check your result &rarr;</button>
     </div>
 
       <details class="legal" id="legal-tc">
