@@ -740,7 +740,7 @@ function collectRows(tab){
 }
 function levelBadge(code){
   const cls=code==='A2'?'badge-a2':code==='A1R'?'badge-a1r':code==='A1R2'?'badge-a1r2':code==='A2R'?'badge-a2r':code==='B1'?'badge-b1':code==='B1R'?'badge-b1r':'badge-a1';
-  const txt=code==='A1R'?'A1 Retest 01':code==='A1R2'?'A1 Retest 02':code==='A2R'?'A2 Retest':code==='B1R'?'B1 Retest 01':code;
+  const txt=code==='A1R'?'A1 Retest 01':code==='A1R2'?'A1 Retest 02':code==='A2R'?'A2 Retest':code==='B1R'?'B1 Retest':code;
   return `<span class="badge-pill ${cls}">${txt}</span>`;
 }
 function grammarMax(code){return maxesFor(code).grammar}
@@ -1021,7 +1021,7 @@ function openModal(id,level){
   const ag=isA2?autoGradeA2(r):isA1R?autoGradeA1R(r):isA1R2?autoGradeA1R2(r):isA2R?autoGradeA2R(r):isB1?autoGradeB1(r):isB1R?autoGradeB1R(r):autoGradeA1(r);
   const saved=getM(id)||{};
 
-  document.getElementById('modal-title').textContent=`${r.student_name||'Student'} — ${isA1R?'A1 Retest 01':isA1R2?'A1 Retest 02':isA2R?'A2 Retest':isB1?'B1 Test 1':isB1R?'B1 Retest 01':level} Exam`;
+  document.getElementById('modal-title').textContent=`${r.student_name||'Student'} — ${isA1R?'A1 Retest 01':isA1R2?'A1 Retest 02':isA2R?'A2 Retest':isB1R?'B1 Retest':level} Exam`;
 
   // Helpers
   const studentVal=(v)=>v?`<span>${v}</span>`:`<em style="color:#d1d5db">not answered</em>`;
