@@ -12,14 +12,12 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      /* gc-connect.testbook.com palette: orange brand on a light slate base */
       --bg: #f8fafc;
       --bg-accent: #fff7ed;
       --surface: #ffffff;
       --border: #e2e8f0;
       --text: #0f172a;
       --muted: #64748b;
-      --brand: #f97316;
     }
 
     body {
@@ -32,139 +30,94 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 24px;
+      padding: 48px 24px 60px;
     }
 
-    .container {
-      width: 100%;
-      max-width: 480px;
-    }
+    .container { width: 100%; max-width: 560px; }
 
-    .header {
-      text-align: center;
-      margin-bottom: 44px;
-    }
+    .header { text-align: center; margin-bottom: 36px; }
 
     .flag {
-      width: 76px;
-      height: 46px;
-      margin: 0 auto 18px;
-      border-radius: 8px;
-      overflow: hidden;
+      width: 76px; height: 46px; margin: 0 auto 18px;
+      border-radius: 8px; overflow: hidden;
       box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14);
-      border: 1px solid var(--border);
-      display: block;
+      border: 1px solid var(--border); display: block;
     }
     .flag svg { display: block; width: 100%; height: 100%; }
 
-    .header h1 {
-      font-size: 27px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      margin-bottom: 8px;
-      color: var(--text);
-    }
+    .header h1 { font-size: 27px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 8px; }
+    .header p { font-size: 14px; color: var(--muted); line-height: 1.6; }
 
-    .header p {
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
+    .levels { display: flex; flex-direction: column; gap: 14px; }
 
-    .cards {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+    /* ── level bar (collapsible header) ── */
+    .level { border-radius: 14px; }
+    .level-head {
+      width: 100%;
+      display: flex; align-items: center; gap: 14px;
+      background: var(--lc); color: var(--lt);
+      border: none; border-radius: 14px;
+      padding: 16px 20px;
+      font-family: inherit; text-align: left; cursor: pointer;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+      transition: border-radius 0.2s, filter 0.15s;
     }
+    .level-head:hover { filter: brightness(1.06); }
+    .level.open .level-head { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 
-    .card {
-      display: block;
-      text-decoration: none;
+    .level-badge {
+      width: 42px; height: 42px; flex-shrink: 0;
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 700;
+      background: color-mix(in srgb, #ffffff 42%, var(--lc));
+      color: var(--lt);
+    }
+    .level-info { flex: 1; min-width: 0; }
+    .level-name { display: block; font-size: 16px; font-weight: 700; letter-spacing: -0.2px; }
+    .level-sub { display: block; font-size: 12.5px; opacity: 0.9; margin-top: 2px; }
+    .chev {
+      flex-shrink: 0; font-size: 20px; line-height: 1;
+      transition: transform 0.25s ease; opacity: 0.95;
+    }
+    .level.open .chev { transform: rotate(180deg); }
+
+    /* ── expandable body ── */
+    .level-body {
+      display: grid; grid-template-rows: 0fr;
+      transition: grid-template-rows 0.28s ease;
+    }
+    .level.open .level-body { grid-template-rows: 1fr; }
+    .level-body-inner {
+      overflow: hidden;
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px 28px;
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-      cursor: pointer;
+      border: 1px solid var(--border); border-top: none;
+      border-bottom-left-radius: 14px; border-bottom-right-radius: 14px;
     }
 
-    .card:hover {
-      transform: translateY(-2px);
-      border-color: var(--c);
-      box-shadow: 0 12px 30px -10px color-mix(in srgb, var(--c) 45%, transparent);
+    .exam {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none;
+      padding: 15px 20px;
+      border-top: 1px solid var(--border);
+      transition: background 0.12s;
     }
+    .level-body-inner .exam:first-child { border-top: none; }
+    .exam:hover { background: color-mix(in srgb, var(--lc) 7%, #fff); }
 
-    .card-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
+    .exam-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+      background: var(--lc);
     }
+    .exam-text { flex: 1; min-width: 0; }
+    .exam-title { font-size: 15px; font-weight: 700; color: var(--le); letter-spacing: -0.1px; }
+    .exam-meta { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+    .exam-arrow { color: #94a3b8; font-size: 17px; transition: transform 0.15s, color 0.15s; flex-shrink: 0; }
+    .exam:hover .exam-arrow { transform: translateX(3px); color: var(--le); }
 
-    .badge {
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.3px;
-      padding: 4px 12px;
-      border-radius: 999px;
-      background: color-mix(in srgb, var(--c) 12%, #fff);
-      color: var(--c);
-      border: 1px solid color-mix(in srgb, var(--c) 28%, #fff);
-    }
+    .empty { padding: 16px 20px; font-size: 13px; color: var(--muted); font-style: italic; }
 
-    .arrow {
-      color: #94a3b8;
-      font-size: 18px;
-      transition: color 0.15s, transform 0.15s;
-    }
-
-    .card:hover .arrow {
-      transform: translateX(4px);
-      color: var(--c);
-    }
-
-    .card h2 {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 6px;
-      letter-spacing: -0.2px;
-      color: var(--c);
-    }
-
-    .card p {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 8px 0;
-    }
-
-    .divider span {
-      font-size: 12px;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
-    .divider::before, .divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    .footer {
-      text-align: center;
-      margin-top: 40px;
-      font-size: 12px;
-      color: var(--muted);
-    }
+    .footer { text-align: center; margin-top: 40px; font-size: 12px; color: var(--muted); }
   </style>
 </head>
 <body>
@@ -179,63 +132,81 @@
         </svg>
       </span>
       <h1>German Exam Portal</h1>
-      <p>Select your exam level to begin.<br/>You will need an internet connection to submit.</p>
+      <p>Choose your level, then pick a test.<br/>You will need an internet connection to submit.</p>
     </div>
 
-    <div class="cards">
+    <div class="levels">
 
-      <a class="card" style="--c:#f97316" href="a1_german_exam.html?v=20261028">
-        <div class="card-top">
-          <span class="badge">A1 — Beginner</span>
-          <span class="arrow">→</span>
-        </div>
-        <h2>A1 German Exam</h2>
-        <p>Reading, Grammar, Writing, Listening &amp; Speaking · 100 marks · ~90 min</p>
-      </a>
+      <!-- A1 -->
+      <div class="level open" style="--lc:#1034A6; --lt:#ffffff; --le:#1034A6">
+        <button class="level-head" aria-expanded="true" onclick="toggleLevel(this)">
+          <span class="level-badge">A1</span>
+          <span class="level-info"><span class="level-name">Level A1</span><span class="level-sub">3 tests · Beginner</span></span>
+          <span class="chev" aria-hidden="true">⌄</span>
+        </button>
+        <div class="level-body"><div class="level-body-inner">
+          <a class="exam" href="a1_german_exam.html?v=20261028">
+            <span class="exam-dot"></span>
+            <span class="exam-text"><div class="exam-title">A1 German Exam</div><div class="exam-meta">Main test · 100 marks · ~90 min</div></span>
+            <span class="exam-arrow">→</span>
+          </a>
+          <a class="exam" href="a1_retest_german_exam.html?v=20261028">
+            <span class="exam-dot"></span>
+            <span class="exam-text"><div class="exam-title">A1 Retest 01</div><div class="exam-meta">Retest · 100 marks · ~90 min</div></span>
+            <span class="exam-arrow">→</span>
+          </a>
+          <a class="exam" href="a1_retest2_german_exam.html?v=20261028">
+            <span class="exam-dot"></span>
+            <span class="exam-text"><div class="exam-title">A1 Retest 02</div><div class="exam-meta">Retest · 100 marks · ~90 min</div></span>
+            <span class="exam-arrow">→</span>
+          </a>
+        </div></div>
+      </div>
 
-      <div class="divider"><span>or</span></div>
+      <!-- A2 -->
+      <div class="level" style="--lc:#CC5500; --lt:#ffffff; --le:#CC5500">
+        <button class="level-head" aria-expanded="false" onclick="toggleLevel(this)">
+          <span class="level-badge">A2</span>
+          <span class="level-info"><span class="level-name">Level A2</span><span class="level-sub">2 tests · Elementary</span></span>
+          <span class="chev" aria-hidden="true">⌄</span>
+        </button>
+        <div class="level-body"><div class="level-body-inner">
+          <a class="exam" href="a2_german_exam.html?v=20261028">
+            <span class="exam-dot"></span>
+            <span class="exam-text"><div class="exam-title">A2 German Exam</div><div class="exam-meta">Main test · 100 marks · ~90 min</div></span>
+            <span class="exam-arrow">→</span>
+          </a>
+          <a class="exam" href="a2_retest_german_exam.html?v=20261028">
+            <span class="exam-dot"></span>
+            <span class="exam-text"><div class="exam-title">A2 Retest</div><div class="exam-meta">Retest · 100 marks · ~90 min</div></span>
+            <span class="exam-arrow">→</span>
+          </a>
+        </div></div>
+      </div>
 
-      <a class="card" style="--c:#cc0000" href="a2_german_exam.html?v=20261028">
-        <div class="card-top">
-          <span class="badge">A2 — Elementary</span>
-          <span class="arrow">→</span>
-        </div>
-        <h2>A2 German Exam</h2>
-        <p>Reading, Grammar, Writing, Listening &amp; Speaking · 100 marks · ~90 min</p>
-      </a>
+      <!-- B1 -->
+      <div class="level" style="--lc:#E1AD01; --lt:#3a2c00; --le:#8a6a00">
+        <button class="level-head" aria-expanded="false" onclick="toggleLevel(this)">
+          <span class="level-badge">B1</span>
+          <span class="level-info"><span class="level-name">Level B1</span><span class="level-sub">Coming soon · Intermediate</span></span>
+          <span class="chev" aria-hidden="true">⌄</span>
+        </button>
+        <div class="level-body"><div class="level-body-inner">
+          <div class="empty">No tests available yet — B1 exams are coming soon.</div>
+        </div></div>
+      </div>
 
-      <div class="divider"><span>or</span></div>
-
-      <a class="card" style="--c:#b45309" href="a1_retest_german_exam.html?v=20261028">
-        <div class="card-top">
-          <span class="badge">A1 — Retest 01</span>
-          <span class="arrow">→</span>
-        </div>
-        <h2>A1 Retest 01</h2>
-        <p>Reading, Grammar, Writing, Listening &amp; Speaking · 100 marks · ~90 min</p>
-      </a>
-
-      <div class="divider"><span>or</span></div>
-
-      <a class="card" style="--c:#0f172a" href="a1_retest2_german_exam.html?v=20261028">
-        <div class="card-top">
-          <span class="badge">A1 — Retest 02</span>
-          <span class="arrow">→</span>
-        </div>
-        <h2>A1 Retest 02</h2>
-        <p>Reading, Grammar, Writing, Listening &amp; Speaking · 100 marks · ~90 min</p>
-      </a>
-
-      <div class="divider"><span>or</span></div>
-
-      <a class="card" style="--c:#ea580c" href="a2_retest_german_exam.html?v=20261028">
-        <div class="card-top">
-          <span class="badge">A2 — Retest</span>
-          <span class="arrow">→</span>
-        </div>
-        <h2>A2 Retest</h2>
-        <p>Reading, Grammar, Writing, Listening &amp; Speaking · 100 marks · ~90 min</p>
-      </a>
+      <!-- B2 -->
+      <div class="level" style="--lc:#01796F; --lt:#ffffff; --le:#01796F">
+        <button class="level-head" aria-expanded="false" onclick="toggleLevel(this)">
+          <span class="level-badge">B2</span>
+          <span class="level-info"><span class="level-name">Level B2</span><span class="level-sub">Coming soon · Upper-intermediate</span></span>
+          <span class="chev" aria-hidden="true">⌄</span>
+        </button>
+        <div class="level-body"><div class="level-body-inner">
+          <div class="empty">No tests available yet — B2 exams are coming soon.</div>
+        </div></div>
+      </div>
 
     </div>
 
@@ -244,5 +215,13 @@
     </div>
 
   </div>
+
+  <script>
+    function toggleLevel(btn){
+      var level = btn.closest('.level');
+      var open = level.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+  </script>
 </body>
 </html>
