@@ -25,6 +25,8 @@
       --a1r-glow: rgba(217, 119, 6, 0.18);
       --a1r2: #2563eb;
       --a1r2-glow: rgba(37, 99, 235, 0.18);
+      --a2r: #0d9488;
+      --a2r-glow: rgba(13, 148, 136, 0.18);
     }
 
     body {
@@ -109,6 +111,11 @@
       box-shadow: 0 8px 32px var(--a1r2-glow);
     }
 
+    .card.a2r:hover {
+      border-color: var(--a2r);
+      box-shadow: 0 8px 32px var(--a2r-glow);
+    }
+
     .card-top {
       display: flex;
       align-items: center;
@@ -142,6 +149,18 @@
       border: 1px solid rgba(217,119,6,0.3);
     }
 
+    .a1r2 .badge {
+      background: var(--a1r2-glow);
+      color: #93c5fd;
+      border: 1px solid rgba(37,99,235,0.3);
+    }
+
+    .a2r .badge {
+      background: var(--a2r-glow);
+      color: #5eead4;
+      border: 1px solid rgba(13,148,136,0.3);
+    }
+
     .arrow {
       color: var(--muted);
       font-size: 18px;
@@ -155,6 +174,8 @@
     .a1:hover .arrow { color: #a78bfa; }
     .a2:hover .arrow { color: #34d399; }
     .a1r:hover .arrow { color: #fbbf24; }
+    .a1r2:hover .arrow { color: #93c5fd; }
+    .a2r:hover .arrow { color: #5eead4; }
 
     .card h2 {
       font-size: 18px;
@@ -250,10 +271,21 @@
         <p>Reading, Grammar, Writing, Listening & Speaking · 100 marks · ~90 min</p>
       </a>
 
+      <div class="divider"><span>or</span></div>
+
+      <a class="card a2r" href="a2_retest_german_exam.html?v=20261028">
+        <div class="card-top">
+          <span class="badge">A2 — Retest</span>
+          <span class="arrow">→</span>
+        </div>
+        <h2>A2 Retest</h2>
+        <p>Reading, Grammar, Writing, Listening & Speaking · 100 marks · ~90 min</p>
+      </a>
+
     </div>
 
     <div class="footer">
-      Global Careers by Testbook · German Language Programme<br/><span style="font-size:11px">Version 30 Sep 2026 · voice recording</span>
+      Global Careers by Testbook · German Language Programme<br/><span style="font-size:11px">Version 28 Oct 2026 · voice recording</span>
     </div>
 
   </div>
