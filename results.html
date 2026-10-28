@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/><meta http-equiv="Expires" content="0"/>
+<title>My Results – German Exam Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+:root{
+  --black:#1a1a2e;--white:#fff;--accent:#3b5bdb;--accent2:#059669;
+  --muted:#6b7280;--border:#e5e7eb;--bg:#f8f9fc;--radius:10px;
+  --error:#dc2626;--warn:#d97706;--purple:#7c3aed;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--black);min-height:100vh}
+
+/* LOGIN */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.login-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:40px 36px;max-width:380px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.08)}
+.login-card .badge{display:inline-block;background:var(--black);color:#fff;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:20px}
+.login-card h1{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:6px}
+.login-card p{font-size:13px;color:var(--muted);margin-bottom:28px}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;font-weight:500;margin-bottom:6px}
+.field input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:11px 14px;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,91,219,.1)}
+.btn-login{width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:13px;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s}
+.btn-login:hover{background:#2f4abf}
+.login-error{color:var(--error);font-size:13px;margin-top:12px;display:none;text-align:center}
+
+/* TOPBAR */
+#dashboard{display:none}
+.topbar{background:var(--black);color:#fff;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:58px}
+.topbar .brand{font-family:'Playfair Display',serif;font-size:18px}
+.topbar .brand span{color:#818cf8;font-size:13px;font-weight:400;margin-left:8px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.btn-sm{padding:7px 16px;border-radius:7px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn-outline{background:transparent;color:#fff;border:1.5px solid #4b5563}
+.btn-outline:hover{border-color:#fff}
+.btn-green{background:var(--accent2);color:#fff}.btn-green:hover{background:#047857}
+.btn-blue{background:var(--accent);color:#fff}.btn-blue:hover{background:#2f4abf}
+.btn-gold{background:#d97706;color:#fff}.btn-gold:hover{background:#b45309}
+
+.dashboard-body{max-width:1300px;margin:0 auto;padding:28px 20px 60px}
+
+/* VIEW TABS */
+.view-tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:2px solid var(--border)}
+.view-tab{padding:10px 22px;font-size:14px;font-weight:500;cursor:pointer;color:var(--muted);background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Inter',sans-serif;transition:all .2s}
+.view-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px}
+.stat-card .label{font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+.stat-card .value{font-size:28px;font-weight:700;line-height:1}
+.stat-card .sub{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* FILTER TABS */
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:5px;width:fit-content}
+.tab{padding:8px 20px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);transition:all .2s;border:none;background:transparent;font-family:'Inter',sans-serif}
+.tab.active{background:var(--accent);color:#fff}
+
+.controls{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.search-box{flex:1;min-width:200px;border:1.5px solid var(--border);border-radius:8px;padding:9px 14px;font-family:'Inter',sans-serif;font-size:13.5px;outline:none;transition:border-color .2s}
+.search-box:focus{border-color:var(--accent)}
+
+/* TABLE */
+.table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--black);color:#fff;padding:12px 14px;text-align:left;font-weight:500;font-size:12px;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+tbody tr:hover{background:#f8f9ff}
+tbody tr:last-child{border-bottom:none}
+td{padding:12px 14px;vertical-align:middle}
+.badge-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-a1{background:#d1fae5;color:#065f46}
+.badge-a2{background:#e0e7ff;color:#3730a3}
+.badge-a1r{background:#fef3c7;color:#92400e}
+.badge-a1r2{background:#dbeafe;color:#1e40af}
+.badge-a2r{background:#ccfbf1;color:#0f766e}
+.badge-b1{background:#fef9c3;color:#854d0e}
+.badge-b1r{background:#fde68a;color:#92400e}
+.score-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700}
+.score-none{background:#f3f4f6;color:#9ca3af}
+.score-low{background:#fee2e2;color:#991b1b}
+.score-mid{background:#fef3c7;color:#92400e}
+.score-high{background:#d1fae5;color:#065f46}
+.empty-state{text-align:center;padding:60px 24px;color:var(--muted)}
+.loading{text-align:center;padding:40px;color:var(--muted);font-size:14px}
+.spinner{display:inline-block;width:22px;height:22px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:14px;max-width:800px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1}
+.modal-header h3{font-size:17px;font-weight:700}
+.modal-header .score-pill{font-size:15px;font-weight:700;padding:5px 16px;border-radius:20px;margin-left:12px}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1;padding:4px}
+
+/* SECTION HEADERS IN MODAL */
+.section-header{background:var(--black);color:#fff;padding:10px 16px;font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;margin:0 -0px}
+.section-auto-score{background:#059669;color:#fff;font-size:11px;padding:2px 8px;border-radius:10px}
+.section-manual-score{background:#d97706;color:#fff;font-size:11px;padding:2px 8px;border-radius:10px}
+
+/* QA ROWS */
+.qa-block{padding:0 20px}
+.qa-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--border);align-items:stretch}
+.qa-row.has-mark{grid-template-columns:1fr 1fr 1fr auto}
+.qa-row:last-child{border-bottom:none}
+.qa-q{padding:12px 14px;font-size:13px;color:var(--muted);font-weight:500;border-right:1px solid var(--border);background:#fafafa}
+.qa-student{padding:12px 14px;font-size:13.5px;border-right:1px solid var(--border)}
+.qa-correct{padding:12px 14px;font-size:13px;color:#065f46;background:#f0fdf4;min-width:180px}
+.qa-mark{padding:10px 14px;display:flex;align-items:center;gap:8px;min-width:120px;background:#f8f9fc}
+
+/* AUTO MARKED */
+.correct-answer{color:#059669;font-weight:600}
+.wrong-answer{color:#dc2626;font-weight:600}
+.auto-tick{display:inline-block;width:22px;height:22px;border-radius:50%;text-align:center;line-height:22px;font-size:13px;font-weight:700;flex-shrink:0}
+.auto-tick.correct{background:#d1fae5;color:#059669}
+.auto-tick.wrong{background:#fee2e2;color:#dc2626}
+.auto-tick.empty{background:#f3f4f6;color:#9ca3af}
+
+/* MANUAL MARK INPUT */
+.mark-inp{width:56px;border:1.5px solid var(--border);border-radius:6px;padding:6px 8px;font-size:14px;font-weight:600;text-align:center;outline:none;font-family:'Inter',sans-serif}
+.mark-inp:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(59,91,219,.12)}
+.mark-max-label{font-size:12px;color:var(--muted);white-space:nowrap}
+
+/* SPEAKING SECTION */
+.speaking-block{padding:16px 20px}
+.speaking-task{background:#fafafa;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.speaking-task .task-label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.speaking-task .task-sample{font-size:13px;color:#374151;line-height:1.6;font-style:italic;margin-bottom:10px;padding:10px 12px;background:#f0f9ff;border-left:3px solid var(--accent);border-radius:4px}
+.speaking-task .task-status{font-size:13px;color:var(--muted);margin-bottom:10px}
+.speaking-task .task-mark-row{display:flex;align-items:center;gap:10px}
+.speaking-task .task-mark-row label{font-size:13px;font-weight:500}
+
+/* SCORE SUMMARY */
+.score-summary{margin:16px 20px;background:#f0f4ff;border:1.5px solid #c7d2fe;border-radius:12px;padding:18px 20px}
+.score-summary h4{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:14px}
+.score-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px}
+.score-mini{background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center}
+.score-mini .sm-label{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:4px}
+.score-mini .sm-val{font-size:18px;font-weight:700}
+.score-mini .sm-val.auto{color:var(--accent2)}
+.score-mini .sm-val.manual{color:var(--warn)}
+.score-mini .sm-val.pending{color:#9ca3af}
+.total-bar{background:var(--accent);color:#fff;border-radius:10px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
+.total-bar .tl{font-size:13px;opacity:.9}
+.total-bar .tv{font-size:26px;font-weight:700}
+.btn-save{background:var(--accent2);color:#fff;border:none;border-radius:8px;padding:11px 24px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:14px;width:100%}
+.btn-save:hover{background:#047857}
+
+/* COL HEADERS */
+.qa-col-heads{display:grid;grid-template-columns:1fr 1fr auto;background:#f3f4f6;border-bottom:1px solid var(--border)}
+.qa-col-heads span{padding:8px 14px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.qa-col-heads span:nth-child(2){border-left:1px solid var(--border);color:#374151}
+.qa-col-heads span:nth-child(3){border-left:1px solid var(--border);min-width:120px}
+
+/* LEADERBOARD */
+.lb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.lb-header h2{font-size:22px;font-weight:700}
+.progress-bar-bg{background:#f3f4f6;border-radius:999px;height:8px;width:100px}
+.progress-bar-fill{height:8px;border-radius:999px;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.no-marks-note{background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:14px 18px;font-size:13px;color:#92400e;margin-bottom:20px}
+.lb-rank-1 td:first-child{font-size:20px}
+.lb-rank-2 td:first-child{font-size:18px}
+.lb-rank-3 td:first-child{font-size:16px}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--black);color:#fff;padding:12px 18px;border-radius:8px;font-size:13px;transform:translateY(60px);opacity:0;transition:all .3s;z-index:999}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:var(--accent2)}
+.toast.error{background:var(--error)}
+</style>
+<style>
+  body.results-body{font-family:'Inter',sans-serif;background:radial-gradient(1200px 420px at 50% -120px,#fff7ed,transparent 70%),#f8fafc;color:#0f172a;min-height:100vh;margin:0;padding:48px 16px 60px}
+  .wrap{max-width:620px;margin:0 auto}
+  .r-header{text-align:center;margin-bottom:32px}
+  .flag{width:72px;height:44px;margin:0 auto 16px;border-radius:8px;overflow:hidden;box-shadow:0 4px 14px rgba(15,23,42,.14);border:1px solid #e2e8f0;display:block}
+  .flag svg{display:block;width:100%;height:100%}
+  .r-header h1{font-size:25px;font-weight:700;letter-spacing:-.5px;margin:0 0 6px}
+  .r-header p{font-size:14px;color:#64748b;line-height:1.6;margin:0}
+  .entry-card,.r-card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .entry-card{padding:24px 24px 22px}
+  .entry-card label{display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:#0f172a}
+  .entry-card input{width:100%;border:1.5px solid #e2e8f0;border-radius:9px;padding:12px 14px;font:inherit;font-size:15px;outline:none}
+  .entry-card input:focus{border-color:#f97316;box-shadow:0 0 0 3px rgba(249,115,22,.12)}
+  .btn-primary{margin-top:14px;width:100%;background:#f97316;color:#fff;border:none;border-radius:9px;padding:13px;font:inherit;font-size:15px;font-weight:600;cursor:pointer}
+  .btn-primary:hover{background:#ea580c}.btn-primary:disabled{opacity:.6;cursor:default}
+  .privacy{margin-top:14px;font-size:12px;color:#94a3b8;line-height:1.6}
+  .results-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px}
+  .results-head .rc{font-size:14px;color:#475569;font-weight:600}
+  .link-btn{background:none;border:none;color:#f97316;font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:0}
+  #results-list{display:flex;flex-direction:column;gap:12px}
+  .r-card{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 18px}
+  .r-main{flex:1;min-width:0}
+  .r-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+  .r-date{font-size:12.5px;color:#64748b}
+  .btn-view{flex-shrink:0;background:#0f172a;color:#fff;border:none;border-radius:8px;padding:9px 14px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+  .btn-view:hover{background:#1e293b}
+  #results-empty{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:28px;text-align:center;color:#64748b;font-size:14px}
+  /* read-only marks + hidden examiner save button */
+  .btn-save{display:none!important}
+  .mark-inp{background:#f1f5f9!important;color:#0f172a!important;-webkit-text-fill-color:#0f172a!important;opacity:1!important;cursor:default}
+</style>
+</head>
+<body class="results-body">
+  <div class="wrap">
+    <div class="r-header">
+      <span class="flag" role="img" aria-label="Flag of Germany"><svg viewBox="0 0 5 3" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><rect width="5" height="3" y="0" fill="#000000"/><rect width="5" height="2" y="1" fill="#DD0000"/><rect width="5" height="1" y="2" fill="#FFCE00"/></svg></span>
+      <h1>My Results</h1>
+      <p>Enter the mobile number you used for the exam to see your tests, your marks, and your graded answer sheet.</p>
+    </div>
+
+    <section id="entry">
+      <div class="entry-card">
+        <label for="mobile">Mobile number</label>
+        <input type="tel" id="mobile" placeholder="e.g. 9045686310" autocomplete="tel"/>
+        <button class="btn-primary" id="search-btn" onclick="searchResults()">View my results</button>
+        <p class="privacy">🔒 Enter the same number you used when you submitted the exam. Please keep your results private — anyone who enters your number can see them.</p>
+      </div>
+    </section>
+
+    <section id="results" style="display:none">
+      <div class="results-head">
+        <span class="rc" id="results-count"></span>
+        <button class="link-btn" onclick="resetSearch()">← Search another number</button>
+      </div>
+      <div id="results-list"></div>
+      <div id="results-empty" style="display:none">No tests were found for this mobile number. Check the number and try again.</div>
+    </section>
+  </div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <h3 id="modal-title">Student Response</h3>
+        <span class="score-pill score-badge score-none" id="modal-score-pill">Not saved</span>
+      </div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL='https://uxdrldreaockdloqvojs.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4ZHJsZHJlYW9ja2Rsb3F2b2pzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzE2MjIsImV4cCI6MjA4OTQwNzYyMn0.swqYBfGzHP5qSDPnZ_AivFE0zljyK33Kq-_ephz4Ybc';
+
+const ANSWERS = {
+  a1: {
+    reading_tf: ['False','True','True','True','False'],
+    reading_open: ['Maria arbeitet im Krankenhaus','Ihre Arbeit beginnt um sieben Uhr','Sie hilft den Patienten und gibt Medikamente','Sie macht Pause im Garten','Weil sie gern Menschen hilft'],
+    grammar_articles: ['Die Krankenschwester','Der Arzt die Patientin','Ein Bett eine Lampe','Das Medikament','Der Krankenpfleger dem alten Mann'],
+    grammar_verbs: ['Ich arbeite','Du hilfst','Er gibt','Wir sprechen','Sie ist'],
+    grammar_sentences: ['Maria arbeitet im Krankenhaus','Sie gibt den Patienten Medikamente','Die Krankenschwester isst das Frühstück im Pausenraum','Der Arzt spricht mit der Krankenschwester','Wir helfen gern Menschen'],
+    grammar_prepositions: ['in dem Krankenhaus','um acht Uhr','mit dem Arzt','nach der Arbeit','seit zwei Jahren'],
+    grammar_negation: ['kein Arzt ein Pfleger','nicht müde sehr fit','keine Pause','nicht teuer billig','nicht krank gesund'],
+    grammar_question_modals: ['Wer arbeitet im Krankenhaus','Wann beginnt die Arbeit','Ich muss heute Medikamente geben','Warum sprichst du mit dem Arzt','Wir können den Patienten helfen'],
+    listen_tf: ['False','True','True','False','True'],
+    listen_open: ['Sie heißt Sabine','Sie arbeitet in Frankfurt','Sie gibt Medikamente und hilft beim Frühstück','Sie isst ein Sandwich','Weil sie Menschen helfen kann'],
+    listen_fill: ['Krankenschwester','Frankfurt','Medikamente','ein Sandwich','fünf Uhr']
+  },
+  a2: {
+    reading_tf: ['False','True','True','False','True'],
+    reading_open: ['Seit fünf Jahren','Sie hat die Patientenakten kontrolliert','Mit den Ärzten','Die Regeln im Krankenhaus','Weil sie Menschen helfen kann'],
+    grammar_conjunctions: ['weil/da','wenn/falls','darum/deshalb/deswegen','obwohl/trotzdem','dass'],
+    grammar_comparatives: ['stressiger','wichtigste','neues','nicht gesund','nicht fit'],
+    grammar_verbs_tenses: ['arbeitete','musste','las','haben gesprochen','möchte'],
+    grammar_prepositions: ['in','bei','in','mit','seit'],
+    grammar_relativsaetze: ['der','die','deren','ob','die'],
+    listen_tf: ['False','True','True','False','True'],
+    listen_open: ['Er hat Medikamente gegeben','Mit den Ärzten','Berichte','Die Regeln im Krankenhaus','Mit dem Fahrrad'],
+    listen_fill: ['Krankenpfleger','Krankenhaus','Medikamente','Berichte','Fahrrad']
+  },
+  a1r: {
+    reading_tf: ['True','False','True','True','False'],
+    reading_open: ['Um 5:30 Uhr','Mit dem Fahrrad','Sie zieht die Arbeitskleidung an und begrüßt die Patienten','Herrn Weber','Sie lernt eine Stunde Deutsch'],
+    grammar_pronouns: ['Sie','Wir','Sie','du','Sie'],
+    grammar_possessives: ['Mein','Ihre','dein','Sein','Meine'],
+    grammar_prepositions: ['um','Am','mit','Nach','bei'],
+    grammar_separable_verbs: ['Ich stehe um 6 Uhr auf','Die Schicht fängt um 7 Uhr an','Wir rufen den Patienten an','Sie macht das Fenster auf','Wann kaufst du ein'],
+    grammar_perfekt: ['habe … gelernt','ist … aufgestanden','haben … gearbeitet','ist … gefahren','hat … getrunken'],
+    grammar_satzbau: ['Morgen arbeite ich nicht','Wann beginnt die Schicht?','Heute muss sie länger arbeiten','Wo wohnst du?','Am Abend lernen wir Deutsch'],
+    listen_tf: ['True','False','True','True','False'],
+    listen_open: ['In einem Seniorenheim in Leipzig','Um 14 Uhr','Herrn Braun','Er trinkt Tee und isst einen Apfel','Mit der Straßenbahn'],
+    listen_fill: ['Spätdienst','Leipzig','Medikamente','Tee','22 Uhr']
+  },
+  a1r2: {
+    reading_tf: ['True','False','True','False','True'],
+    reading_open: ['Er kommt aus Ägypten','Zwei Zimmer','420 Euro im Monat','Er studiert Musik','Der Supermarkt'],
+    grammar_plural: ['die Ärzte','die Ärztinnen','die Formulare','die Männer','die Städte'],
+    grammar_kasus: ['der','den','den','einen','dem'],
+    grammar_praepositionen: ['der','der','die','zum / dem','den'],
+    grammar_verben: ['lese','schlafen','nehme','Sprichst','esst'],
+    grammar_negation: ['keinen','nicht','keine','nichts','nicht'],
+    grammar_nebensatz: ['Ich lerne Deutsch, weil ich in Deutschland arbeiten möchte.','Er kommt heute nicht, weil er krank ist.','Ich glaube, dass der Zug Verspätung hat.','Sie sagt, dass die Wohnung zu teuer ist.','Wir bleiben zu Hause, weil es regnet.'],
+    listen_tf: ['True','False','False','True','True'],
+    listen_open: ['Am Freitagabend','Vier Stunden','Sie war im Deutschen Museum','Weil es geregnet hat','Brezeln'],
+    listen_fill: ['Zug','sechzig / 60','Museum','Regenschirm','sechzehn / 16']
+  },
+  a2r: {
+    reading_tf: ['False','True','True','False','True'],
+    reading_open: ['Seit sechs Monaten.','Weil die Bewohner schnell und manchmal Dialekt sprechen.','Er hat am Abend Vokabeln gelernt.','Er liest die Berichte der Nachtschicht.','Er möchte die B1-Prüfung machen und eine Ausbildung beginnen.'],
+    grammar_wechsel: ['an die','an der','auf den','im / in dem','vor der'],
+    grammar_verbprep: ['auf','über','für','mit','an'],
+    grammar_reflexiv: ['mir','sich','uns','dich','sich'],
+    grammar_modalpraet: ['musste','konnte','durfte','wollten','konnte / wollte'],
+    grammar_nebensatz: ['Als ich zwanzig Jahre alt war, habe ich in der Türkei gelebt.','Bevor die Schicht beginnt, trinkt Yusuf einen Kaffee.','Wenn ich frei habe, rufe ich meine Mutter an.','Bevor er ins Zimmer geht, wäscht er sich die Hände.','Als die Spätschicht zu Ende war, waren wir sehr müde.'],
+    listen_tf: ['True','False','True','False','True'],
+    listen_open: ['Sie lädt ihn zu einem Gespräch ein.','Am Donnerstag, dem zwölften März, um vierzehn Uhr.','Im Büro im ersten Stock.','Ungefähr vierzig Minuten.','Er soll bis Dienstag anrufen.'],
+    listen_fill: ['Sonnenhof','Donnerstag','ersten','Sprachzertifikat / Zeugnis','Dienstag']
+  },
+  b1: {
+    reading_tf: ['False','True','False','True','False'],
+    reading_open: ['Rund 35.000 Stellen in der Pflege.','Nicht in der Fachlichkeit, sondern in der Sprache im Alltag (Dialekt, Abkürzungen, schnelles Sprechen am Telefon).','Dass die Herkunftsländer selbst zu wenig Personal haben.','Mit einem bezahlten Sprachkurs und mit einer erfahrenen Pflegekraft als Mentorin.','Dass nach zwei Jahren deutlich mehr neue Pflegekräfte bleiben als im Durchschnitt.'],
+    grammar_konjunktiv: ['Könnten Sie mir bitte die Unterlagen geben?','Du solltest weniger Überstunden machen.','Ich hätte gern einen Termin bei der Anerkennungsstelle.','Wenn ich Zeit hätte, würde ich mitkommen.','Sie sollten den Antrag früher stellen.'],
+    grammar_passiv: ['Die Unterlagen werden in zwei Wochen geprüft.','Zwanzig Pflegekräfte sind von der Klinik eingestellt worden.','Der Termin musste verschoben werden.','Jede neue Kollegin wird von einer Mentorin begleitet.','Die Station wurde im letzten Jahr renoviert.'],
+    grammar_relativ: ['die','dessen','für den','der','denen'],
+    grammar_konnektoren: ['Die Anerkennung dauert lange, obwohl die Behörden mehr Personal haben.','Die Klinik zahlt den Sprachkurs, damit die neuen Kolleginnen schneller Deutsch lernen.','Ich stehe früher auf, um pünktlich in der Klinik zu sein.','Er hat die Prüfung bestanden, obwohl er wenig Zeit zum Lernen gehabt hat.','Wir schreiben alles auf, damit die Nachtschicht über die Patienten Bescheid weiß.'],
+    grammar_genitiv: ['der','der','Wegen','der','des'],
+    listen_tf: ['True','False','False','True','True'],
+    listen_open: ['Von sechs bis vierzehn Uhr.','Spätdienste und zwei Wochenenden im Monat.','Erst nach drei Monaten und nur, wenn man das möchte.','In den ersten acht Wochen.','An die Personalabteilung im Erdgeschoss.'],
+    listen_fill: ['Pflegedienstleitung','Montag','Köhler','dienstags','Erdgeschoss']
+  },
+  b1r: {
+    reading_tf: ['False','True','False','True','True'],
+    reading_open: ['Vier Monate.','Eine Gehaltsabrechnung der letzten drei Monate, eine Auskunft über die Zahlungsfähigkeit und eine Bestätigung des früheren Vermieters.','Das Nettoeinkommen soll mindestens dreimal so hoch sein wie die Miete.','Es ist günstig (480 Euro warm) und sie hat sofort Kontakte in der neuen Stadt gefunden.','Sonst zahlt man beim Auszug für Schäden, die man nicht verursacht hat.'],
+    grammar_indirekt: ['Können Sie mir sagen, wann der Besichtigungstermin ist?','Ich möchte wissen, wie hoch die Kaution ist.','Könnten Sie mir sagen, ob die Wohnung noch frei ist?','Weißt du, wo ich das Formular abgeben muss?','Ich frage mich, ob der Vermieter schon geantwortet hat.'],
+    grammar_konnektoren2: ['Die Wohnung ist nicht nur klein, sondern auch teuer.','Ich habe weder eine Zusage noch eine Absage bekommen.','Entweder nehmen wir das Zimmer in der WG, oder wir suchen weiter.','Das Zimmer ist sowohl hell als auch ruhig.','Nicht nur die Miete ist hoch, sondern auch die Nebenkosten.'],
+    grammar_plusquam: ['Nachdem Samira die Wohnung besichtigt hatte, unterschrieb sie den Vertrag.','Nachdem wir die Kaution überwiesen hatten, bekamen wir die Schlüssel.','Nachdem er das Zimmer renoviert hatte, zog er ein.','Nachdem sie dreißig Bewerbungen geschrieben hatte, fand sie eine Wohnung.','Nachdem wir die Unterlagen geschickt hatten, meldete sich der Vermieter.'],
+    grammar_adjektiv: ['ruhige','neuen','großen','freundlichen','möbliertes'],
+    grammar_dawo: ['Worauf','daran','Worüber','Damit','Worauf'],
+    listen_tf: ['False','True','False','True','True'],
+    listen_open: ['Neunzehn.','900 Euro: 720 Euro kalt plus 180 Euro Nebenkosten.','Die Gehaltsabrechnungen und die Auskunft über die Zahlungsfähigkeit.','Bis Montagmittag.','Per E-Mail; am Telefon ist sie nur vormittags erreichbar.'],
+    listen_fill: ['Gartenstraße','dritten','58 / achtundfünfzig','Samstag','Rauchen']
+  }
+};
+
+// ── MARK SCHEME ──
+// Single source of truth for every maximum. Each level must total exactly
+// 100; assertMaxes() fails loudly if an edit ever breaks that.
+const MAXES = {
+  a1: {
+    reading_tf:5, reading_open:5, grammar:30, writing_form:5, writing_email:15,
+    listen_tf:5, listen_open:10, listen_fill:5, speaking:20,
+    grammar_sections:['g_articles','g_verbs','g_sentences','g_prepositions','g_negation','g_qmodals'],
+    speaking_fields:['spk_1','spk_2','spk_3','spk_4'],
+  },
+  a2: {
+    reading_tf:5, reading_open:10, grammar:25, writing_form:5, writing_email:15,
+    listen_tf:5, listen_open:10, listen_fill:5, speaking:20,
+    grammar_sections:['g_conjunctions','g_comparatives','g_verbs','g_prepositions','g_relativsaetze'],
+    speaking_fields:['spk_1','spk_2','spk_3'],
+  },
+  a1r: {
+    reading_tf:5, reading_open:5, grammar:30, writing_form:5, writing_email:15,
+    listen_tf:5, listen_open:10, listen_fill:5, speaking:20,
+    grammar_sections:['g_pronouns','g_possessives','g_prepositions','g_separable','g_perfekt','g_satzbau'],
+    speaking_fields:['spk_1','spk_2','spk_3','spk_4'],
+  },
+  a1r2: {
+    reading_tf:5, reading_open:5, grammar:30, writing_form:5, writing_email:15,
+    listen_tf:5, listen_open:10, listen_fill:5, speaking:20,
+    grammar_sections:['g_plural','g_kasus','g_praepositionen','g_verben','g_negation','g_nebensatz'],
+    speaking_fields:['spk_1','spk_2','spk_3','spk_4'],
+  },
+  a2r: {
+    reading_tf:5, reading_open:10, grammar:25, writing_form:5, writing_email:15,
+    listen_tf:5, listen_open:10, listen_fill:5, speaking:20,
+    grammar_sections:['g_wechsel','g_verbprep','g_reflexiv','g_modalpraet','g_nebensatz'],
+    speaking_fields:['spk_1','spk_2','spk_3'],
+  },
+  b1: {
+    reading_tf:5, reading_open:10, grammar:25, writing_form:5, writing_email:15,
+    listen_tf:5, listen_open:10, listen_fill:5, speaking:20,
+    grammar_sections:['g_konjunktiv','g_passiv','g_relativ','g_konnektoren','g_genitiv'],
+    speaking_fields:['spk_1','spk_2','spk_3'],
+  },
+  b1r: {
+    reading_tf:5, reading_open:10, grammar:25, writing_form:5, writing_email:15,
+    listen_tf:5, listen_open:10, listen_fill:5, speaking:20,
+    grammar_sections:['g_indirekt','g_konnektoren2','g_plusquam','g_adjektiv','g_dawo'],
+    speaking_fields:['spk_1','spk_2','spk_3'],
+  }
+};
+// The scheme marks were originally saved under, before the /100 correction.
+const MARK_SCALE = 100;
+const LVKEY = {A1:'a1', A2:'a2', A1R:'a1r', A1R2:'a1r2', A2R:'a2r', B1:'b1', B1R:'b1r'};
+function maxesFor(code){ return MAXES[LVKEY[code]] || MAXES.a1 }
+function paperTotal(M){
+  return M.reading_tf + M.reading_open + M.grammar + M.writing_form + M.writing_email +
+         M.listen_tf + M.listen_open + M.listen_fill + M.speaking;
+}
+function readingMax(M){ return M.reading_tf + M.reading_open }
+function listeningMax(M){ return M.listen_tf + M.listen_open + M.listen_fill }
+function normalise(s){return(s||'').toLowerCase().replace(/[^a-zäöü0-9]/g,' ').replace(/\s+/g,' ').trim()}
+function tfMatch(student,correct){
+  const s=(student||'').trim().toLowerCase();
+  const c=correct.toLowerCase();
+  return s===c||s===c.substring(0,1)||s==='richtig'&&c==='true'||s==='falsch'&&c==='false'||s==='wahr'&&c==='true';
+}
+
+function autoGradeA1(r){
+  const ans=ANSWERS.a1;
+  // Reading T/F (1 mark each = 5)
+  const rtf=[r.tf_schule,r.tf_sieben_uhr,r.tf_aerzte,r.tf_garten,r.tf_mag_nicht];
+  const rtfScore=rtf.reduce((s,v,i)=>s+(tfMatch(v,ans.reading_tf[i])?1:0),0);
+  // Listening T/F (1 mark each = 5)
+  const ltf=[r.listen_tf_kleines_kh,r.listen_tf_sieben_uhr,r.listen_tf_medikamente,r.listen_tf_keine_pause,r.listen_tf_bus];
+  const ltfScore=ltf.reduce((s,v,i)=>s+(tfMatch(v,ans.listen_tf[i])?1:0),0);
+  // Fill blanks (1 mark each = 5)
+  const fills=(r.listen_fill_blanks||'').split('|').map(x=>x.trim());
+  const fillScore=ans.listen_fill.reduce((s,a,i)=>s+(normalise(fills[i])===normalise(a)?1:0),0);
+  return {reading_tf:rtfScore,listen_tf:ltfScore,listen_fill:fillScore,auto_total:rtfScore+ltfScore+fillScore};
+}
+
+function autoGradeA2(r){
+  const ans=ANSWERS.a2;
+  const rtf=[r.tf_sabine_months,r.tf_patientenakten,r.tf_fruehstueck,r.tf_neue_patienten,r.tf_beruf_wichtig];
+  const rtfScore=rtf.reduce((s,v,i)=>s+(tfMatch(v,ans.reading_tf[i])?1:0),0);
+  const ltf=[r.listen_tf_thomas_arzt,r.listen_tf_krankenhaus,r.listen_tf_pause,r.listen_tf_geschlafen,r.listen_tf_fahrrad];
+  const ltfScore=ltf.reduce((s,v,i)=>s+(tfMatch(v,ans.listen_tf[i])?1:0),0);
+  const fills=(r.listen_fill_blanks||'').split('|').map(x=>x.trim());
+  const fillScore=ans.listen_fill.reduce((s,a,i)=>s+(normalise(fills[i])===normalise(a)?1:0),0);
+  return {reading_tf:rtfScore,listen_tf:ltfScore,listen_fill:fillScore,auto_total:rtfScore+ltfScore+fillScore};
+}
+
+function autoGradeA1R(r){
+  const ans=ANSWERS.a1r;
+  const rtf=[r.tf_wohnt_bonn,r.tf_bus_klinik,r.tf_schicht_sieben,r.tf_frau_klein_wasser,r.tf_direkt_zurueck];
+  const rtfScore=rtf.reduce((s,v,i)=>s+(tfMatch(v,ans.reading_tf[i])?1:0),0);
+  const ltf=[r.listen_tf_seniorenheim,r.listen_tf_zwoelf_uhr,r.listen_tf_abendessen,r.listen_tf_pause_18,r.listen_tf_morgen_arbeit];
+  const ltfScore=ltf.reduce((s,v,i)=>s+(tfMatch(v,ans.listen_tf[i])?1:0),0);
+  const fills=(r.listen_fill_blanks||'').split('|').map(x=>x.trim());
+  const fillScore=ans.listen_fill.reduce((s,a,i)=>s+(normalise(fills[i])===normalise(a)?1:0),0);
+  return {reading_tf:rtfScore,listen_tf:ltfScore,listen_fill:fillScore,auto_total:rtfScore+ltfScore+fillScore};
+}
+
+function autoGradeA1R2(r){
+  const ans=ANSWERS.a1r2;
+  const rtf=[r.tf1,r.tf2,r.tf3,r.tf4,r.tf5];
+  const rtfScore=rtf.reduce((s,v,i)=>s+(tfMatch(v,ans.reading_tf[i])?1:0),0);
+  const ltf=[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5];
+  const ltfScore=ltf.reduce((s,v,i)=>s+(tfMatch(v,ans.listen_tf[i])?1:0),0);
+  const fills=(r.listen_fill_blanks||'').split('|').map(x=>x.trim());
+  const fillScore=ans.listen_fill.reduce((s,a,i)=>s+(normalise(fills[i])===normalise(a)?1:0),0);
+  return {reading_tf:rtfScore,listen_tf:ltfScore,listen_fill:fillScore,auto_total:rtfScore+ltfScore+fillScore};
+}
+
+function autoGradeA2R(r){
+  const ans=ANSWERS.a2r;
+  const rtf=[r.tf1,r.tf2,r.tf3,r.tf4,r.tf5];
+  const rtfScore=rtf.reduce((s,v,i)=>s+(tfMatch(v,ans.reading_tf[i])?1:0),0);
+  const ltf=[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5];
+  const ltfScore=ltf.reduce((s,v,i)=>s+(tfMatch(v,ans.listen_tf[i])?1:0),0);
+  const fills=(r.listen_fill_blanks||'').split('|').map(x=>x.trim());
+  const fillScore=ans.listen_fill.reduce((s,a,i)=>s+(normalise(fills[i])===normalise(a)?1:0),0);
+  return {reading_tf:rtfScore,listen_tf:ltfScore,listen_fill:fillScore,auto_total:rtfScore+ltfScore+fillScore};
+}
+
+function autoGradeB1(r){
+  const ans=ANSWERS.b1;
+  const rtf=[r.tf1,r.tf2,r.tf3,r.tf4,r.tf5];
+  const rtfScore=rtf.reduce((s,v,i)=>s+(tfMatch(v,ans.reading_tf[i])?1:0),0);
+  const ltf=[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5];
+  const ltfScore=ltf.reduce((s,v,i)=>s+(tfMatch(v,ans.listen_tf[i])?1:0),0);
+  const fills=(r.listen_fill_blanks||'').split('|').map(x=>x.trim());
+  const fillScore=ans.listen_fill.reduce((s,a,i)=>s+(normalise(fills[i])===normalise(a)?1:0),0);
+  return {reading_tf:rtfScore,listen_tf:ltfScore,listen_fill:fillScore,auto_total:rtfScore+ltfScore+fillScore};
+}
+
+function autoGradeB1R(r){
+  const ans=ANSWERS.b1r;
+  const rtf=[r.tf1,r.tf2,r.tf3,r.tf4,r.tf5];
+  const rtfScore=rtf.reduce((s,v,i)=>s+(tfMatch(v,ans.reading_tf[i])?1:0),0);
+  const ltf=[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5];
+  const ltfScore=ltf.reduce((s,v,i)=>s+(tfMatch(v,ans.listen_tf[i])?1:0),0);
+  const fills=(r.listen_fill_blanks||'').split('|').map(x=>x.trim());
+  const fillScore=ans.listen_fill.reduce((s,a,i)=>s+(normalise(fills[i])===normalise(a)?1:0),0);
+  return {reading_tf:rtfScore,listen_tf:ltfScore,listen_fill:fillScore,auto_total:rtfScore+ltfScore+fillScore};
+}
+
+// ── LEVELS ──
+function levelBadge(code){
+  const cls=code==='A2'?'badge-a2':code==='A1R'?'badge-a1r':code==='A1R2'?'badge-a1r2':code==='A2R'?'badge-a2r':code==='B1'?'badge-b1':code==='B1R'?'badge-b1r':'badge-a1';
+  const txt=code==='A1R'?'A1 Retest 01':code==='A1R2'?'A1 Retest 02':code==='A2R'?'A2 Retest':code==='B1R'?'B1 Retest':code;
+  return `<span class="badge-pill ${cls}">${txt}</span>`;
+}
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function fmt(ts){if(!ts)return'—';const d=new Date(ts);return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}
+function scoreClass(s,max){if(s===null||s===undefined)return'score-none';const p=s/max;return p>=0.7?'score-high':p>=0.4?'score-mid':'score-low'}
+function openModal(id,level){
+  modalStudentId=id;modalLevel=level;
+  const isA2=level==='A2';
+  const isA1R=level==='A1R';
+  const isA1R2=level==='A1R2';
+  const isA2R=level==='A2R';
+  const isB1=level==='B1';
+  const isB1R=level==='B1R';
+  const lvKey=isA2?'a2':isA1R?'a1r':isA1R2?'a1r2':isA2R?'a2r':isB1?'b1':isB1R?'b1r':'a1';
+  const r=(allData[lvKey]||[]).find(x=>x.id===id);
+  if(!r)return;
+  const ans=ANSWERS[lvKey];
+  const M=MAXES[lvKey];
+  const ag=isA2?autoGradeA2(r):isA1R?autoGradeA1R(r):isA1R2?autoGradeA1R2(r):isA2R?autoGradeA2R(r):isB1?autoGradeB1(r):isB1R?autoGradeB1R(r):autoGradeA1(r);
+  const saved=getM(id)||{};
+
+  document.getElementById('modal-title').textContent=`${r.student_name||'Student'} — ${isA1R?'A1 Retest 01':isA1R2?'A1 Retest 02':isA2R?'A2 Retest':isB1R?'B1 Retest':level} Exam`;
+
+  // Helpers
+  const studentVal=(v)=>v?`<span>${v}</span>`:`<em style="color:#d1d5db">not answered</em>`;
+  const tfRow=(q,student,correct)=>{
+    const isCorrect=tfMatch(student,correct);
+    const cls=!student?'empty':isCorrect?'correct':'wrong';
+    const tick=!student?'—':isCorrect?'✓':'✗';
+    return`<div class="qa-row">
+      <div class="qa-q">${q}</div>
+      <div class="qa-student"><span class="${isCorrect?'correct-answer':student?'wrong-answer':''}">${student||'—'}</span></div>
+      <div class="qa-correct" style="display:flex;align-items:center;gap:8px">
+        <span class="auto-tick ${cls}">${tick}</span>
+        <span>${correct}</span>
+      </div>
+    </div>`;
+  };
+  const openRow=(q,student,correct)=>`<div class="qa-row">
+    <div class="qa-q">${q}</div>
+    <div class="qa-student">${studentVal(student)}</div>
+    <div class="qa-correct" style="font-style:italic">${correct}</div>
+  </div>`;
+  const manualRow=(q,student,correct,field,max)=>{
+    const savedVal=saved[field]??'';
+    return`<div class="qa-row has-mark">
+      <div class="qa-q">${q}</div>
+      <div class="qa-student">${studentVal(student)}</div>
+      <div class="qa-correct" style="font-style:italic">${correct}</div>
+      <div class="qa-mark">
+        <input class="mark-inp" type="number" min="0" max="${max}" value="${savedVal}" placeholder="0"
+          id="mf-${field}" oninput="clampMax(this);recalcModal()"/>
+        <span class="mark-max-label">/${max}</span>
+      </div>
+    </div>`;
+  };
+
+  // Build reading section
+  let readingTFRows='', readingOpenRows='';
+  if(isA2){
+    const tfQ=['Sabine arbeitet seit 5 Monaten?','Patientenakten kontrolliert?','Beim Frühstück geholfen?','Keine neuen Patienten?','Beruf wichtig?'];
+    const tfV=[r.tf_sabine_months,r.tf_patientenakten,r.tf_fruehstueck,r.tf_neue_patienten,r.tf_beruf_wichtig];
+    readingTFRows=tfQ.map((q,i)=>tfRow(q,tfV[i],ans.reading_tf[i])).join('');
+    const oQ=['Wie lange schon im Krankenhaus?','Was hat sie am Morgen gemacht?','Mit wem hat sie gesprochen?','Was hat sie erklärt?','Warum macht ihr der Beruf Spaß?'];
+    const oV=[r.q1_wie_lange,r.q2_was_morgen,r.q3_mit_wem,r.q4_was_erklaert,r.q5_warum_spass];
+    readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
+  }else if(isA1R){
+    const tfQ=['Sophie wohnt in Bonn?','Fährt mit dem Bus zur Klinik?','Schicht beginnt um 7 Uhr?','Bringt Frau Klein Wasser?','Geht direkt ins Krankenhaus zurück?'];
+    const tfV=[r.tf_wohnt_bonn,r.tf_bus_klinik,r.tf_schicht_sieben,r.tf_frau_klein_wasser,r.tf_direkt_zurueck];
+    readingTFRows=tfQ.map((q,i)=>tfRow(q,tfV[i],ans.reading_tf[i])).join('');
+    const oQ=['Wann steht Sophie auf?','Wie fährt sie zur Klinik?','Was macht sie zuerst auf der Station?','Wem hilft sie beim Frühstück?','Was macht sie am Abend?'];
+    const oV=[r.q1_wann_aufstehen,r.q2_wie_zur_klinik,r.q3_zuerst_station,r.q4_wem_fruehstueck,r.q5_was_am_abend];
+    readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
+  }else if(isA1R2){
+    const tfQ=['Tarek wohnt seit August in Dresden?','Seine Wohnung ist im ersten Stock?','Sein Zimmer hat ein großes Fenster?','Jonas studiert Medizin?','Am Samstag kochen sie zusammen?'];
+    const tfV=[r.tf1,r.tf2,r.tf3,r.tf4,r.tf5];
+    readingTFRows=tfQ.map((q,i)=>tfRow(q,tfV[i],ans.reading_tf[i])).join('');
+    const oQ=['Woher kommt Tarek?','Wie viele Zimmer hat die Wohnung?','Wie viel kostet die Miete?','Was macht Jonas?','Was ist neben dem Haus?'];
+    const oV=[r.q1,r.q2,r.q3,r.q4,r.q5];
+    readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
+  }else if(isA2R){
+    const tfQ=['Praktikum in einem Krankenhaus?','Anfang: Bewohner schwer verstanden?','Schicht endet um 15 Uhr?','Frau Hoffmann bleibt nach dem Essen im Zimmer?','Möchte später eine Ausbildung machen?'];
+    const tfV=[r.tf1,r.tf2,r.tf3,r.tf4,r.tf5];
+    readingTFRows=tfQ.map((q,i)=>tfRow(q,tfV[i],ans.reading_tf[i])).join('');
+    const oQ=['Seit wann arbeitet Yusuf im Pflegeheim?','Warum war der Anfang schwer?','Was hat er gemacht, um besser zu verstehen?','Was macht er zuerst in der Schicht?','Was möchte er im nächsten Jahr machen?'];
+    const oV=[r.q1,r.q2,r.q3,r.q4,r.q5];
+    readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
+  }else if(isB1){
+    const tfQ=['B1 reicht für die Anerkennung als Pflegefachkraft?','Dr. Weiss hält die Fachlichkeit für gut?','Anerkennung geht inzwischen sehr schnell?','Klinik in Essen bezahlt den Sprachkurs?','Nach zwei Jahren hat die Mehrheit die Klinik verlassen?'];
+    const tfV=[r.tf1,r.tf2,r.tf3,r.tf4,r.tf5];
+    readingTFRows=tfQ.map((q,i)=>tfRow(q,tfV[i],ans.reading_tf[i])).join('');
+    const oQ=['Wie viele Stellen bleiben unbesetzt?','Worin sieht Dr. Weiss das eigentliche Problem?','Welches Argument nennen die Kritiker?','Mit welchen zwei Maßnahmen unterstützt die Klinik ihre neuen Mitarbeitenden?','Was zeigt die Zahl von 85 Prozent?'];
+    const oV=[r.q1,r.q2,r.q3,r.q4,r.q5];
+    readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
+  }else if(isB1R){
+    const tfQ=['Unterkunft in wenigen Wochen gefunden?','Braucht man normalerweise eine Gehaltsabrechnung?','Kaution darf mehr als drei Kaltmieten betragen?','Samira würde lieber allein wohnen?','Schäden beim Einzug im Übergabeprotokoll festhalten?'];
+    const tfV=[r.tf1,r.tf2,r.tf3,r.tf4,r.tf5];
+    readingTFRows=tfQ.map((q,i)=>tfRow(q,tfV[i],ans.reading_tf[i])).join('');
+    const oQ=['Wie lange hat Samira gesucht?','Welche drei Dokumente braucht man in der Regel?','Welche Bedingung stellen viele Vermieter an das Einkommen?','Welche zwei Vorteile hat das WG-Zimmer?','Warum ist das Übergabeprotokoll wichtig?'];
+    const oV=[r.q1,r.q2,r.q3,r.q4,r.q5];
+    readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
+  }else{
+    const tfQ=['Maria arbeitet in einer Schule?','Sie beginnt um 7 Uhr morgens?','Sie spricht mit Ärzten?','Pause im Garten?','Mag ihren Beruf nicht?'];
+    const tfV=[r.tf_schule,r.tf_sieben_uhr,r.tf_aerzte,r.tf_garten,r.tf_mag_nicht];
+    readingTFRows=tfQ.map((q,i)=>tfRow(q,tfV[i],ans.reading_tf[i])).join('');
+    const oQ=['Wo arbeitet Maria?','Wann beginnt ihre Arbeit?','Was macht sie mit den Patienten?','Wo macht sie Pause?','Warum mag sie ihren Beruf?'];
+    const oV=[r.q1_wo_arbeitet,r.q2_wann_arbeit,r.q3_was_patienten,r.q4_wo_pause,r.q5_warum_beruf];
+    readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
+  }
+
+  // Grammar sections
+  let grammarHTML='';
+  if(isA2){
+    const sections=[
+      {label:'1. Conjunctions (5 pts)',key:'grammar_conjunctions',field:'g_conjunctions',vals:r.grammar_conjunctions,answers:ans.grammar_conjunctions},
+      {label:'2. Comparatives & Adjectives (5 pts)',key:'grammar_comparatives',field:'g_comparatives',vals:r.grammar_comparatives,answers:ans.grammar_comparatives},
+      {label:'3. Verbs & Tenses (5 pts)',key:'grammar_verbs_tenses',field:'g_verbs',vals:r.grammar_verbs_tenses,answers:ans.grammar_verbs_tenses},
+      {label:'4. Prepositions (5 pts)',key:'grammar_prepositions',field:'g_prepositions',vals:r.grammar_prepositions,answers:ans.grammar_prepositions},
+      {label:'5. Relativsätze (5 pts)',key:'grammar_relativsaetze',field:'g_relativsaetze',vals:r.grammar_relativsaetze,answers:ans.grammar_relativsaetze},
+    ];
+    sections.forEach(s=>{
+      const parts=(s.vals||'').split('|').map(x=>x.trim());
+      const rows=s.answers.map((a,i)=>{
+        const sv=parts[i]||'';
+        const isOk=normalise(sv)===normalise(a)||s.answers.some(opt=>normalise(sv)===normalise(opt));
+        return`<div class="qa-row">
+          <div class="qa-q">Q${i+1}</div>
+          <div class="qa-student"><span class="${sv?(isOk?'correct-answer':'wrong-answer'):''}">${sv||'—'}</span></div>
+          <div class="qa-correct" style="display:flex;align-items:center;gap:8px">
+            <span class="auto-tick ${!sv?'empty':isOk?'correct':'wrong'}">${!sv?'—':isOk?'✓':'✗'}</span>${a}
+          </div>
+        </div>`;
+      }).join('');
+      grammarHTML+=`<div class="section-header">${s.label}<span class="section-manual-score">Examiner grades section</span></div>
+        <div class="qa-col-heads"><span>Question</span><span>Student Answer</span><span style="min-width:180px">Correct Answer</span></div>
+        <div class="qa-block">${rows}</div>
+        <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+          <label style="font-size:13px;font-weight:500">Section marks:</label>
+          <input class="mark-inp" type="number" min="0" max="5" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
+          <span class="mark-max-label">/5</span>
+        </div>`;
+    });
+  }else if(isA1R){
+    const sections=[
+      {label:'Personal Pronouns (5 pts)',field:'g_pronouns',vals:r.grammar_pronouns,answers:ans.grammar_pronouns},
+      {label:'Possessive Articles (5 pts)',field:'g_possessives',vals:r.grammar_possessives,answers:ans.grammar_possessives},
+      {label:'Prepositions (5 pts)',field:'g_prepositions',vals:r.grammar_prepositions,answers:ans.grammar_prepositions},
+      {label:'Separable Verbs (5 pts)',field:'g_separable',vals:r.grammar_separable_verbs,answers:ans.grammar_separable_verbs},
+      {label:'Perfekt (5 pts)',field:'g_perfekt',vals:r.grammar_perfekt,answers:ans.grammar_perfekt},
+      {label:'Satzbau & W-Fragen (5 pts)',field:'g_satzbau',vals:r.grammar_satzbau,answers:ans.grammar_satzbau},
+    ];
+    sections.forEach(s=>{
+      const parts=(s.vals||'').split('|').map(x=>x.trim());
+      const rows=s.answers.map((a,i)=>`<div class="qa-row">
+          <div class="qa-q">Q${i+1}</div>
+          <div class="qa-student">${parts[i]||'<em style="color:#d1d5db">—</em>'}</div>
+          <div class="qa-correct" style="font-style:italic">${a}</div>
+        </div>`).join('');
+      grammarHTML+=`<div class="section-header">${s.label}<span class="section-manual-score">Examiner grades</span></div>
+        <div class="qa-col-heads"><span>Q</span><span>Student Answer</span><span>Correct Answer</span></div>
+        <div class="qa-block">${rows}</div>
+        <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+          <label style="font-size:13px;font-weight:500">Section marks:</label>
+          <input class="mark-inp" type="number" min="0" max="5" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
+          <span class="mark-max-label">/5 <em style="color:#9ca3af;font-size:11px">(A1 Retest grammar /30 across 6 sections)</em></span>
+        </div>`;
+    });
+  }else if(isA1R2){
+    const sections=[
+      {label:'1. Plural der Nomen (5 pts)',field:'g_plural',vals:r.grammar_plural,answers:ans.grammar_plural},
+      {label:'2. Artikel im Akkusativ und Dativ (5 pts)',field:'g_kasus',vals:r.grammar_kasus,answers:ans.grammar_kasus},
+      {label:'3. Präpositionen mit Kasus (5 pts)',field:'g_praepositionen',vals:r.grammar_praepositionen,answers:ans.grammar_praepositionen},
+      {label:'4. Unregelmäßige Verbformen (5 pts)',field:'g_verben',vals:r.grammar_verben,answers:ans.grammar_verben},
+      {label:'5. Negation (5 pts)',field:'g_negation',vals:r.grammar_negation,answers:ans.grammar_negation},
+      {label:'6. Nebensätze mit weil und dass (5 pts)',field:'g_nebensatz',vals:r.grammar_nebensatz,answers:ans.grammar_nebensatz},
+    ];
+    sections.forEach(s=>{
+      const parts=(s.vals||'').split('|').map(x=>x.trim());
+      const rows=s.answers.map((a,i)=>`<div class="qa-row">
+          <div class="qa-q">Q${i+1}</div>
+          <div class="qa-student">${parts[i]||'<em style="color:#d1d5db">—</em>'}</div>
+          <div class="qa-correct" style="font-style:italic">${a}</div>
+        </div>`).join('');
+      grammarHTML+=`<div class="section-header">${s.label}<span class="section-manual-score">Examiner grades</span></div>
+        <div class="qa-col-heads"><span>Q</span><span>Student Answer</span><span>Correct Answer</span></div>
+        <div class="qa-block">${rows}</div>
+        <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+          <label style="font-size:13px;font-weight:500">Section marks:</label>
+          <input class="mark-inp" type="number" min="0" max="5" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
+          <span class="mark-max-label">/5 <em style="color:#9ca3af;font-size:11px">(A1 Retest 02 grammar /30 across 6 sections)</em></span>
+        </div>`;
+    });
+  }else if(isA2R){
+    const sections=[
+      {label:'1. Wechselpräpositionen (5 pts)',field:'g_wechsel',vals:r.grammar_wechselpraep,answers:ans.grammar_wechsel},
+      {label:'2. Verben mit Präpositionen (5 pts)',field:'g_verbprep',vals:r.grammar_verbpraep,answers:ans.grammar_verbprep},
+      {label:'3. Reflexive Verben (5 pts)',field:'g_reflexiv',vals:r.grammar_reflexiv,answers:ans.grammar_reflexiv},
+      {label:'4. Modalverben im Präteritum (5 pts)',field:'g_modalpraet',vals:r.grammar_modalpraeteritum,answers:ans.grammar_modalpraet},
+      {label:'5. Temporale Nebensätze (5 pts)',field:'g_nebensatz',vals:r.grammar_nebensatz,answers:ans.grammar_nebensatz},
+    ];
+    sections.forEach(s=>{
+      const parts=(s.vals||'').split('|').map(x=>x.trim());
+      const rows=s.answers.map((a,i)=>{
+        const sv=parts[i]||'';
+        const isOk=normalise(sv)===normalise(a)||a.split('/').some(opt=>normalise(sv)===normalise(opt));
+        return`<div class="qa-row">
+          <div class="qa-q">Q${i+1}</div>
+          <div class="qa-student"><span class="${sv?(isOk?'correct-answer':'wrong-answer'):''}">${sv||'—'}</span></div>
+          <div class="qa-correct" style="display:flex;align-items:center;gap:8px">
+            <span class="auto-tick ${!sv?'empty':isOk?'correct':'wrong'}">${!sv?'—':isOk?'✓':'✗'}</span>${a}
+          </div>
+        </div>`;
+      }).join('');
+      grammarHTML+=`<div class="section-header">${s.label}<span class="section-manual-score">Examiner grades section</span></div>
+        <div class="qa-col-heads"><span>Question</span><span>Student Answer</span><span style="min-width:180px">Correct Answer</span></div>
+        <div class="qa-block">${rows}</div>
+        <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+          <label style="font-size:13px;font-weight:500">Section marks:</label>
+          <input class="mark-inp" type="number" min="0" max="5" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
+          <span class="mark-max-label">/5</span>
+        </div>`;
+    });
+  }else if(isB1){
+    const sections=[
+      {label:'1. Konjunktiv II (5 pts)',field:'g_konjunktiv',vals:r.grammar_konjunktiv,answers:ans.grammar_konjunktiv},
+      {label:'2. Passiv (5 pts)',field:'g_passiv',vals:r.grammar_passiv,answers:ans.grammar_passiv},
+      {label:'3. Relativsätze (5 pts)',field:'g_relativ',vals:r.grammar_relativ,answers:ans.grammar_relativ},
+      {label:'4. Konnektoren: obwohl, damit, um … zu (5 pts)',field:'g_konnektoren',vals:r.grammar_konnektoren,answers:ans.grammar_konnektoren},
+      {label:'5. Genitiv &amp; Präpositionen mit Genitiv (5 pts)',field:'g_genitiv',vals:r.grammar_genitiv,answers:ans.grammar_genitiv},
+    ];
+    sections.forEach(s=>{
+      const parts=(s.vals||'').split('|').map(x=>x.trim());
+      const rows=s.answers.map((a,i)=>`<div class="qa-row">
+          <div class="qa-q">Q${i+1}</div>
+          <div class="qa-student">${parts[i]||'<em style="color:#d1d5db">—</em>'}</div>
+          <div class="qa-correct" style="font-style:italic">${a}</div>
+        </div>`).join('');
+      grammarHTML+=`<div class="section-header">${s.label}<span class="section-manual-score">Examiner grades</span></div>
+        <div class="qa-col-heads"><span>Q</span><span>Student Answer</span><span>Correct Answer</span></div>
+        <div class="qa-block">${rows}</div>
+        <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+          <label style="font-size:13px;font-weight:500">Section marks:</label>
+          <input class="mark-inp" type="number" min="0" max="5" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
+          <span class="mark-max-label">/5</span>
+        </div>`;
+    });
+  }else if(isB1R){
+    const sections=[
+      {label:'1. Indirekte Fragen (5 pts)',field:'g_indirekt',vals:r.grammar_indirekt,answers:ans.grammar_indirekt},
+      {label:'2. Zweiteilige Konnektoren (5 pts)',field:'g_konnektoren2',vals:r.grammar_konnektoren2,answers:ans.grammar_konnektoren2},
+      {label:'3. Plusquamperfekt mit nachdem (5 pts)',field:'g_plusquam',vals:r.grammar_plusquam,answers:ans.grammar_plusquam},
+      {label:'4. Adjektivendungen (5 pts)',field:'g_adjektiv',vals:r.grammar_adjektiv,answers:ans.grammar_adjektiv},
+      {label:'5. da- und wo-Formen (5 pts)',field:'g_dawo',vals:r.grammar_dawo,answers:ans.grammar_dawo},
+    ];
+    sections.forEach(s=>{
+      const parts=(s.vals||'').split('|').map(x=>x.trim());
+      const rows=s.answers.map((a,i)=>`<div class="qa-row">
+          <div class="qa-q">Q${i+1}</div>
+          <div class="qa-student">${parts[i]||'<em style="color:#d1d5db">—</em>'}</div>
+          <div class="qa-correct" style="font-style:italic">${a}</div>
+        </div>`).join('');
+      grammarHTML+=`<div class="section-header">${s.label}<span class="section-manual-score">Examiner grades</span></div>
+        <div class="qa-col-heads"><span>Q</span><span>Student Answer</span><span>Correct Answer</span></div>
+        <div class="qa-block">${rows}</div>
+        <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+          <label style="font-size:13px;font-weight:500">Section marks:</label>
+          <input class="mark-inp" type="number" min="0" max="5" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
+          <span class="mark-max-label">/5</span>
+        </div>`;
+    });
+  }else{
+    const sections=[
+      {label:'1. Articles & Nouns (5 pts)',field:'g_articles',vals:r.grammar_articles,answers:ans.grammar_articles},
+      {label:'2. Verb Conjugation (5 pts)',field:'g_verbs',vals:r.grammar_verbs,answers:ans.grammar_verbs},
+      {label:'3. Sentence Formation (5 pts)',field:'g_sentences',vals:r.grammar_sentences,answers:ans.grammar_sentences},
+      {label:'4. Prepositions & Time (5 pts)',field:'g_prepositions',vals:r.grammar_prepositions,answers:ans.grammar_prepositions},
+      {label:'5. Negation & Adjectives (5 pts)',field:'g_negation',vals:r.grammar_negation,answers:ans.grammar_negation},
+      {label:'6. Question Words & Modals (5 pts)',field:'g_qmodals',vals:r.grammar_question_modals,answers:ans.grammar_question_modals},
+    ];
+    sections.forEach(s=>{
+      const parts=(s.vals||'').split('|').map(x=>x.trim());
+      const rows=s.answers.map((a,i)=>{
+        const sv=parts[i]||'';
+        const isOk=normalise(sv).includes(normalise(a).split(' ')[0]);
+        return`<div class="qa-row">
+          <div class="qa-q">Q${i+1}</div>
+          <div class="qa-student">${sv||'<em style="color:#d1d5db">—</em>'}</div>
+          <div class="qa-correct" style="font-style:italic">${a}</div>
+        </div>`;
+      }).join('');
+      grammarHTML+=`<div class="section-header">${s.label}<span class="section-manual-score">Examiner grades</span></div>
+        <div class="qa-col-heads"><span>Q</span><span>Student Answer</span><span>Correct Answer</span></div>
+        <div class="qa-block">${rows}</div>
+        <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+          <label style="font-size:13px;font-weight:500">Section marks:</label>
+          <input class="mark-inp" type="number" min="0" max="5" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
+          <span class="mark-max-label">/5 <em style="color:#9ca3af;font-size:11px">(A1 grammar /30 across 6 sections)</em></span>
+        </div>`;
+    });
+  }
+
+  // Listening open & fill
+  let listenOpenRows='';
+  if(isA2){
+    const lQ=['Was hat Thomas am Morgen gemacht?','Mit wem hat er gesprochen?','Was am Nachmittag?','Was hat er den Familien erklärt?','Wie ist er nach Hause?'];
+    const lV=[r.listen_q1_morgen,r.listen_q2_mit_wem,r.listen_q3_nachmittag,r.listen_q4_familien,r.listen_q5_nach_hause];
+    listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
+  }else if(isA1R){
+    const lQ=['Wo arbeitet Daniel?','Wann beginnt sein Dienst?','Wem bringt er Medikamente?','Was macht er in der Pause?','Wie fährt er nach Hause?'];
+    const lV=[r.listen_q1_wo,r.listen_q2_wann,r.listen_q3_wem_medikamente,r.listen_q4_pause,r.listen_q5_wie_hause];
+    listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
+  }else if(isA1R2){
+    const lQ=['Wann ist Julia nach München gefahren?','Wie lange hat die Fahrt gedauert?','Was hat sie am Samstag gemacht?','Warum hat sie einen Regenschirm gekauft?','Was haben Julia und Laura gegessen?'];
+    const lV=[r.listen_q1,r.listen_q2,r.listen_q3,r.listen_q4,r.listen_q5];
+    listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
+  }else if(isA2R){
+    const lQ=['Warum ruft Frau Schneider an?','Wann ist der Termin?','Wo soll Herr Demir sich melden?','Wie lange dauert das Gespräch?','Was soll er tun, wenn der Termin nicht passt?'];
+    const lV=[r.listen_q1,r.listen_q2,r.listen_q3,r.listen_q4,r.listen_q5];
+    listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
+  }else if(isB1){
+    const lQ=['Wie lange dauert der Frühdienst?','Was enthält der normale Dienstplan außer Frühdiensten?','Unter welchen zwei Bedingungen macht man Nachtdienste?','Wie lange begleitet die Mentorin die neue Kollegin?','An wen wendet man sich bei Fragen zum Vertrag?'];
+    const lV=[r.listen_q1,r.listen_q2,r.listen_q3,r.listen_q4,r.listen_q5];
+    listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
+  }else if(isB1R){
+    const lQ=['Wie viele Interessenten gibt es schon?','Wie hoch ist die Gesamtmiete?','Welche zwei Unterlagen soll man mitbringen?','Bis wann muss man sich melden?','Wie erreicht man Frau Hartmann am besten?'];
+    const lV=[r.listen_q1,r.listen_q2,r.listen_q3,r.listen_q4,r.listen_q5];
+    listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
+  }else{
+    const lQ=['Wie heißt die Person?','Wo arbeitet sie?','Was macht sie am Morgen?','Was isst sie in der Pause?','Warum mag sie ihren Beruf?'];
+    const lV=[r.listen_q1_name,r.listen_q2_wo,r.listen_q3_morgen,r.listen_q4_pause,r.listen_q5_warum];
+    listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
+  }
+
+  // Fill blanks auto
+  const fills=(r.listen_fill_blanks||'').split('|').map(x=>x.trim());
+  const fillRows=ans.listen_fill.map((a,i)=>{
+    const sv=fills[i]||'';
+    const isOk=normalise(sv)===normalise(a);
+    return`<div class="qa-row">
+      <div class="qa-q">Blank ${i+1}</div>
+      <div class="qa-student"><span class="${sv?(isOk?'correct-answer':'wrong-answer'):''}">${sv||'—'}</span></div>
+      <div class="qa-correct" style="display:flex;align-items:center;gap:8px">
+        <span class="auto-tick ${!sv?'empty':isOk?'correct':'wrong'}">${!sv?'—':isOk?'✓':'✗'}</span>${a}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Speaking
+  const speakingSamples=isA2?[
+    {label:'Room / Home Description (10 marks)',sample:'„In meinem Zimmer steht das Bett neben dem Fenster. Der Tisch steht vor dem Bett. Der Schrank ist in der Ecke."',akey:'speaking_task1',val:r.speaking_task1,field:'spk_1',max:10},
+    {label:'Last Vacation (5 marks)',sample:'„Letztes Jahr bin ich nach Goa gefahren. Ich habe am Strand geschwommen und viele Fotos gemacht."',akey:'speaking_task2',val:r.speaking_task2,field:'spk_2',max:5},
+    {label:'Food & Health (5 marks)',sample:'„Ich esse gern Gemüse und Obst, weil das gesund ist. Ich trinke viel Wasser."',akey:'speaking_task3',val:r.speaking_task3,field:'spk_3',max:5},
+  ]:isA1R?[
+    {label:'Sich vorstellen – Introduction (5 marks)',sample:'„Hallo! Ich heiße Priya. Ich bin 26 Jahre alt und komme aus Pune. Ich lerne Deutsch für meine Arbeit."',akey:'speaking_intro',val:r.speaking_intro,field:'spk_1',max:5},
+    {label:'Picture Description (5 marks)',sample:'„Das ist eine Klinik. Ich sehe Ärzte, Krankenschwestern und Patienten. Sie sprechen miteinander."',akey:'speaking_picture',val:r.speaking_picture,field:'spk_2',max:5},
+    {label:'Daily Life / Routine (5 marks)',sample:'„Ich stehe um sechs Uhr auf. Dann frühstücke ich und fahre zur Arbeit. Am Abend lerne ich Deutsch."',akey:'speaking_routine',val:r.speaking_routine,field:'spk_3',max:5},
+    {label:'Role Play – In der Apotheke (5 marks)',sample:'„Guten Tag! Ich brauche ein Medikament. Ich habe Kopfschmerzen. Was kostet das? Vielen Dank!"',akey:'speaking_roleplay',val:r.speaking_roleplay,field:'spk_4',max:5},
+  ]:isA1R2?[
+    {label:'Sich vorstellen – Introduction (5 marks)',sample:'„Hallo! Ich heiße Ayesha. Ich bin 24 Jahre alt und komme aus Hyderabad. Ich bin Krankenschwester und lerne Deutsch."',akey:'speaking_intro',val:r.speaking_intro,field:'spk_1',max:5},
+    {label:'My Family (5 marks)',sample:'„Meine Familie ist nicht groß. Mein Vater ist Lehrer und meine Mutter arbeitet im Krankenhaus. Ich habe eine Schwester. Sie wohnt in Delhi."',akey:'speaking_family',val:r.speaking_family,field:'spk_2',max:5},
+    {label:'Meine Wohnung & meine Stadt (5 marks)',sample:'„Ich wohne in einer kleinen Wohnung. Sie hat zwei Zimmer und eine Küche. Mein Zimmer ist hell. Die Stadt ist schön und nicht teuer."',akey:'speaking_wohnung',val:r.speaking_wohnung,field:'spk_3',max:5},
+    {label:'Role Play – Am Bahnhof (5 marks)',sample:'„Guten Tag! Ich möchte nach München fahren. Wann fährt der nächste Zug? Was kostet die Fahrkarte? Welches Gleis, bitte? Vielen Dank!"',akey:'speaking_roleplay',val:r.speaking_roleplay,field:'spk_4',max:5},
+  ]:isA2R?[
+    {label:'Krank sein – eine Erfahrung erzählen (10 marks)',sample:'„Letztes Jahr hatte ich eine starke Erkältung. Ich bin zum Arzt gegangen und er hat mir ein Medikament verschrieben. Ich habe drei Tage im Bett gelegen und viel Tee getrunken."',akey:'speaking_task1',val:r.speaking_task1,field:'spk_1',max:10},
+    {label:'Pläne für die Zukunft (5 marks)',sample:'„Nächstes Jahr möchte ich die B1-Prüfung machen. Danach will ich in Deutschland arbeiten, weil ich dort eine Ausbildung machen kann."',akey:'speaking_task2',val:r.speaking_task2,field:'spk_2',max:5},
+    {label:'Vergleich: zwei Länder (5 marks)',sample:'„In meinem Land ist das Wetter wärmer als in Deutschland. Das Essen ist bei uns schärfer. In Deutschland sind die Arbeitszeiten besser organisiert, aber die Familie ist weiter weg."',akey:'speaking_task3',val:r.speaking_task3,field:'spk_3',max:5},
+  ]:isB1?[
+    {label:'Kurzvortrag: Arbeiten im Ausland (10 marks)',sample:'„Viele Pflegekräfte gehen ins Ausland, weil sie dort besser bezahlt werden und sich weiterbilden können. Ein Nachteil ist die Entfernung von der Familie. Meine Cousine arbeitet seit drei Jahren in Hamburg … Ich finde …"',akey:'speaking_task1',val:r.speaking_task1,field:'spk_1',max:10},
+    {label:'Meinung: Schichtarbeit (5 marks)',sample:'„Schichtarbeit ist anstrengend, weil der Körper keinen festen Rhythmus hat. Andererseits hat man unter der Woche frei und kann Termine erledigen. Für Familien mit kleinen Kindern ist es aber schwer."',akey:'speaking_task2',val:r.speaking_task2,field:'spk_2',max:5},
+    {label:'Rollenspiel: Dienstplan ändern (5 marks)',sample:'„Ich würde am Freitag gern tauschen, weil ich einen Arzttermin habe. Herr Yilmaz würde für mich arbeiten. Wenn das nicht geht, könnte ich auch am Samstag die Frühschicht übernehmen."',akey:'speaking_task3',val:r.speaking_task3,field:'spk_3',max:5},
+  ]:isB1R?[
+    {label:'Kurzvortrag: Stadt oder Land (10 marks)',sample:'„In der Stadt gibt es mehr Arbeit, Busse und Ärzte, aber die Mieten sind hoch und es ist laut. Auf dem Land ist es ruhiger und günstiger, dafür braucht man ein Auto. Ich selbst wohne …"',akey:'speaking_task1',val:r.speaking_task1,field:'spk_1',max:10},
+    {label:'Meinung: Wohnungsmarkt (5 marks)',sample:'„Die Städte sollten mehr Wohnungen bauen, weil das Angebot zu klein ist. Außerdem könnte man Mieterhöhungen stärker begrenzen, damit die Leute nicht wegziehen müssen."',akey:'speaking_task2',val:r.speaking_task2,field:'spk_2',max:5},
+    {label:'Rollenspiel: Reparatur vereinbaren (5 marks)',sample:'„Die Heizung wird seit Montag nicht mehr warm. Am Mittwoch habe ich leider Frühdienst. Ginge es auch am Donnerstagnachmittag oder am Samstagvormittag?"',akey:'speaking_task3',val:r.speaking_task3,field:'spk_3',max:5},
+  ]:[
+    {label:'Introduction (5 marks)',sample:'„Hallo! Ich heiße Maria. Ich bin 28 Jahre alt und komme aus Indien."',akey:'speaking_intro',val:r.speaking_intro,field:'spk_1',max:5},
+    {label:'Picture Description (5 marks)',sample:'„Das ist ein Krankenhaus. Ich sehe Ärzte, Krankenschwestern und Patienten."',akey:'speaking_picture',val:r.speaking_picture,field:'spk_2',max:5},
+    {label:'Free Time Activity (5 marks)',sample:'„In meiner Freizeit lese ich Bücher und gehe spazieren."',akey:'speaking_freetime',val:r.speaking_freetime,field:'spk_3',max:5},
+    {label:'Role Play (5 marks)',sample:'„Guten Tag! Ich möchte Brot und Milch kaufen. Das kostet drei Euro."',akey:'speaking_roleplay',val:r.speaking_roleplay,field:'spk_4',max:5},
+  ];
+  const speakingHTML=speakingSamples.map(s=>`
+    <div class="speaking-task">
+      <div class="task-label">${s.label}</div>
+      <div class="task-sample">📝 Sample: ${s.sample}</div>
+      <div class="task-status">${audioSlot(r,s.akey)}</div>
+      <div class="task-mark-row">
+        <label>Marks awarded:</label>
+        <input class="mark-inp" type="number" min="0" max="${s.max}" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
+        <span class="mark-max-label">/${s.max}</span>
+      </div>
+    </div>`).join('');
+
+  // Writing
+  const writingHTML=`<div class="qa-block" style="padding-top:8px">
+    <div class="qa-row has-mark">
+      <div class="qa-q">${(isA1R||isA1R2)?'Short Message':'Short Writing Task'}</div>
+      <div class="qa-student" style="white-space:pre-wrap;line-height:1.6">${studentVal((isA1R||isA1R2)?r.short_message:r.form_details)}</div>
+      <div class="qa-correct" style="font-style:italic">${isA1R?'25–30 Wörter: krank, Grund, Frage nach den Hausaufgaben':isA1R2?'25–30 Wörter: Geburtstag, wann/wo, Mitbringsel, Antwort erbeten':isA2R?'~40 Wörter, Notiz an die Nachbarin: was passiert ist, wo das Paket ist, wann zu Hause, wie erreichbar':isB1?'~40 Wörter, Schichttausch-Mitteilung an die Stationsleitung: mit wem getauscht, welche Schichten, warum, wo die Unterschrift fehlt':isB1R?'~40 Wörter an die Hausverwaltung: Heizung kaputt, seit wann, Bitte um Termin, Erreichbarkeit':'30–40 Wörter in ganzen Sätzen: wer, wo, was, warum Deutsch'}</div>
+      <div class="qa-mark">
+        <input class="mark-inp" type="number" min="0" max="${M.writing_form}" value="${saved.writing_form??''}" placeholder="0" id="mf-writing_form" oninput="clampMax(this);recalcModal()"/>
+        <span class="mark-max-label">/${M.writing_form}</span>
+      </div>
+    </div>
+    <div class="qa-row has-mark" style="align-items:flex-start">
+      <div class="qa-q">Email Writing</div>
+      <div class="qa-student" style="white-space:pre-wrap;line-height:1.6">${studentVal(r.email_writing)}</div>
+      <div class="qa-correct" style="font-style:italic;font-size:12px;line-height:1.5">${isA2?'Gestern hatte ich einen stressigen Tag…':isA1R?'50–70 Wörter: erste Woche, Arbeitszeiten, Kollegen, eine Aufgabe, Pause, was gefällt…':isA1R2?'50–70 Wörter: Wohnort, Transport, Wochentage, Wochenende, Einladung':isA2R?'80–100 Wörter an die Sprachschule: Wechsel in den Vormittagskurs, Grund (weil), deshalb, höfliche Frage im Konjunktiv II, Kosten, Lehrmaterial':isB1?'120–150 Wörter Forumsbeitrag: Meinung + 2 Argumente mit Beispielen + Gegenargument + Vorschlag; weil, obwohl, deshalb':isB1R?'120–150 Wörter an eine Freundin: nötige Unterlagen, eigene Wohnungssuche, 2 Tipps, Hilfsangebot; nachdem, deshalb, indirekte Frage':'Ich arbeite jeden Tag im Krankenhaus…'}</div>
+      <div class="qa-mark">
+        <input class="mark-inp" type="number" min="0" max="${M.writing_email}" value="${saved.writing_email??''}" placeholder="0" id="mf-writing_email" oninput="clampMax(this);recalcModal()"/>
+        <span class="mark-max-label">/${M.writing_email}</span>
+      </div>
+    </div>
+  </div>`;
+
+  const clean=(r.tab_switches||0)===0&&!r.auto_submitted;
+  const integrityHTML=clean
+    ? `<div style="padding:14px 20px;font-size:13px;color:#065f46;background:#f0fdf4;border-bottom:1px solid var(--border)">\u2705 No tab or window switches recorded during this attempt.</div>`
+    : `<div style="padding:14px 20px;font-size:13px;background:#fef2f2;color:#991b1b;border-bottom:1px solid var(--border)">
+        <strong>${r.tab_switches||0} tab/window switch${(r.tab_switches||0)===1?'':'es'} recorded.</strong>
+        ${r.auto_submitted?'<strong> Paper was auto-submitted after 3 violations.</strong>':''}
+        <div style="margin-top:8px;font-size:12px;color:#7f1d1d;white-space:pre-wrap;font-family:ui-monospace,monospace">${esc(r.violation_log||'—').split(' | ').join('\n')}</div>
+      </div>`;
+
+  document.getElementById('modal-body').innerHTML=`
+    <!-- EXAM INTEGRITY -->
+    <div class="section-header">Exam integrity<span class="section-manual-score">\ud83d\udd0e Monitoring</span></div>
+    ${integrityHTML}
+
+    <!-- READING T/F MANUAL -->
+    <div class="section-header">Part A – Reading: True/False (Examiner grades, /${M.reading_tf})<span class="section-manual-score">✍ Manual</span></div>
+    <div class="qa-col-heads"><span>Statement</span><span>Student Answer</span><span style="min-width:180px">Correct Answer</span></div>
+    <div class="qa-block">${readingTFRows}</div>
+    <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <label style="font-size:13px;font-weight:500">Section marks:</label>
+      <input class="mark-inp" type="number" min="0" max="${M.reading_tf}" value="${saved.reading_tf??''}" placeholder="0" id="mf-reading_tf" oninput="clampMax(this);recalcModal()"/>
+      <span class="mark-max-label">/${M.reading_tf}</span>
+    </div>
+
+    <!-- READING OPEN MANUAL -->
+    <div class="section-header">Part A – Reading: Answer in German (Examiner grades, /${M.reading_open})<span class="section-manual-score">✍ Manual</span></div>
+    <div class="qa-col-heads"><span>Question</span><span>Student Answer</span><span style="min-width:180px">Sample Answer</span></div>
+    <div class="qa-block">${readingOpenRows}</div>
+    <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <label style="font-size:13px;font-weight:500">Section marks:</label>
+      <input class="mark-inp" type="number" min="0" max="${M.reading_open}" value="${saved.reading_open??''}" placeholder="0" id="mf-reading_open" oninput="clampMax(this);recalcModal()"/>
+      <span class="mark-max-label">/${M.reading_open}</span>
+    </div>
+
+    <!-- GRAMMAR -->
+    <div class="section-header">Part B – Grammar (Examiner grades, /${M.grammar})<span class="section-manual-score">✍ Manual</span></div>
+    ${grammarHTML}
+
+    <!-- WRITING -->
+    <div class="section-header">Part C – Writing (Examiner grades, /${M.writing_form + M.writing_email})<span class="section-manual-score">✍ Manual</span></div>
+    <div class="qa-col-heads"><span>Task</span><span>Student Answer</span><span>Reference</span><span style="min-width:120px">Marks</span></div>
+    ${writingHTML}
+
+    <!-- LISTENING T/F MANUAL -->
+    <div class="section-header">Part D – Listening: True/False (Examiner grades, /${M.listen_tf})<span class="section-manual-score">✍ Manual</span></div>
+    <div class="qa-col-heads"><span>Statement</span><span>Student Answer</span><span style="min-width:180px">Correct Answer</span></div>
+    <div class="qa-block">${(()=>{
+      const ltfQ=isA2?['Thomas ist Arzt?','Im Krankenhaus?','Pause am Mittag?','Hat geschlafen?','Fahrrad nach Hause?']:isA1R?['Arbeitet im Seniorenheim?','Beginnt um 12 Uhr?','Hilft Frau Sommer beim Abendessen?','Pause um 18 Uhr?','Muss morgen wieder arbeiten?']:isA1R2?['Mit dem Zug gefahren?','Fahrt zwei Stunden?','Hotel war teuer?','Am Samstag geregnet?','Mit Laura gefrühstückt?']:isA2R?['Arbeitet im Pflegeheim?','Gespräch am Dienstag?','Zeugnis mitbringen?','Lebenslauf mitbringen?','Danach die Station sehen?']:isB1?['Einführungswoche im Frühdienst?','Nachtdienste sofort danach?','Frau Köhler ist neu?','Sprachkurs zählt als Arbeitszeit?','Krankmeldung bis acht Uhr?']:isB1R?['Wohnung schon vermietet?','Haus ohne Aufzug?','Kaution drei Kaltmieten?','Alle zum selben Termin?','Haustiere nicht erlaubt?']:['Kleines Krankenhaus?','Um 7 Uhr?','Gibt Medikamente?','Keine Pause?','Fährt mit Bus?'];
+      const ltfV=isA2?[r.listen_tf_thomas_arzt,r.listen_tf_krankenhaus,r.listen_tf_pause,r.listen_tf_geschlafen,r.listen_tf_fahrrad]:isA1R?[r.listen_tf_seniorenheim,r.listen_tf_zwoelf_uhr,r.listen_tf_abendessen,r.listen_tf_pause_18,r.listen_tf_morgen_arbeit]:isA1R2?[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5]:isA2R?[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5]:isB1?[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5]:isB1R?[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5]:[r.listen_tf_kleines_kh,r.listen_tf_sieben_uhr,r.listen_tf_medikamente,r.listen_tf_keine_pause,r.listen_tf_bus];
+      return ltfQ.map((q,i)=>openRow(q,ltfV[i],ans.listen_tf[i])).join('');
+    })()}</div>
+    <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <label style="font-size:13px;font-weight:500">Section marks:</label>
+      <input class="mark-inp" type="number" min="0" max="${M.listen_tf}" value="${saved.listen_tf??''}" placeholder="0" id="mf-listen_tf" oninput="clampMax(this);recalcModal()"/>
+      <span class="mark-max-label">/${M.listen_tf}</span>
+    </div>
+
+    <!-- LISTENING OPEN MANUAL -->
+    <div class="section-header">Part D – Listening: Answer the Questions (Examiner grades, /${M.listen_open})<span class="section-manual-score">✍ Manual</span></div>
+    <div class="qa-col-heads"><span>Question</span><span>Student Answer</span><span style="min-width:180px">Sample Answer</span></div>
+    <div class="qa-block">${listenOpenRows}</div>
+    <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <label style="font-size:13px;font-weight:500">Section marks:</label>
+      <input class="mark-inp" type="number" min="0" max="${M.listen_open}" value="${saved.listen_open??''}" placeholder="0" id="mf-listen_open" oninput="clampMax(this);recalcModal()"/>
+      <span class="mark-max-label">/${M.listen_open}</span>
+    </div>
+
+    <!-- FILL BLANKS MANUAL -->
+    <div class="section-header">Part D – Listening: Fill in the Missing Words (Examiner grades, /${M.listen_fill})<span class="section-manual-score">✍ Manual</span></div>
+    <div class="qa-col-heads"><span>Blank</span><span>Student Answer</span><span style="min-width:180px">Correct Answer</span></div>
+    <div class="qa-block">${fillRows}</div>
+    <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <label style="font-size:13px;font-weight:500">Section marks:</label>
+      <input class="mark-inp" type="number" min="0" max="${M.listen_fill}" value="${saved.listen_fill??''}" placeholder="0" id="mf-listen_fill" oninput="clampMax(this);recalcModal()"/>
+      <span class="mark-max-label">/${M.listen_fill}</span>
+    </div>
+
+    <!-- SPEAKING MANUAL -->
+    <div class="section-header">Part E – Speaking (Examiner grades, /${M.speaking})<span class="section-manual-score">✍ Manual</span></div>
+    <div class="speaking-block">${speakingHTML}</div>
+
+    <!-- SCORE SUMMARY -->
+    <div class="score-summary">
+      <h4>📊 Score Summary</h4>
+      <div class="score-grid" id="score-grid">
+        <div class="score-mini"><div class="sm-label">Reading T/F</div><div class="sm-val manual" id="ss-reading_tf">—/${M.reading_tf}</div></div>
+        <div class="score-mini"><div class="sm-label">Reading Open</div><div class="sm-val manual" id="ss-reading_open">—/${M.reading_open}</div></div>
+        <div class="score-mini"><div class="sm-label">Grammar</div><div class="sm-val manual" id="ss-grammar">—/${M.grammar}</div></div>
+        <div class="score-mini"><div class="sm-label">Writing</div><div class="sm-val manual" id="ss-writing">—/${M.writing_form + M.writing_email}</div></div>
+        <div class="score-mini"><div class="sm-label">Listen T/F</div><div class="sm-val manual" id="ss-listen_tf">—/${M.listen_tf}</div></div>
+        <div class="score-mini"><div class="sm-label">Listen Open</div><div class="sm-val manual" id="ss-listen_open">—/${M.listen_open}</div></div>
+        <div class="score-mini"><div class="sm-label">Fill Blanks</div><div class="sm-val manual" id="ss-listen_fill">—/${M.listen_fill}</div></div>
+        <div class="score-mini"><div class="sm-label">Speaking</div><div class="sm-val manual" id="ss-speaking">—/${M.speaking}</div></div>
+      </div>
+      <div class="total-bar">
+        <span class="tl">Total Score</span>
+        <span class="tv" id="ss-total">— / ${paperTotal(M)}</span>
+      </div>
+      <button class="btn-save" onclick="saveCurrentMarks()">💾 Save All Marks</button>
+    </div>
+  `;
+
+  // Restore saved values & calc
+  recalcModal();
+  updateModalPill();
+  document.getElementById('modal').classList.add('open');
+  hydrateAudio();
+}
+
+function clampMax(el){
+  const max=parseFloat(el.max);
+  const min=parseFloat(el.min)||0;
+  if(el.value===''||el.value===null)return;
+  if(parseFloat(el.value)>max){el.value=max;el.style.borderColor='#dc2626';}
+  else if(parseFloat(el.value)<min){el.value=min;el.style.borderColor='#dc2626';}
+  else{el.style.borderColor='';}
+}
+
+function recalcModal(){
+  if(!modalStudentId)return;
+  const isA2=modalLevel==='A2';
+  const isA1R=modalLevel==='A1R';
+  const isA1R2=modalLevel==='A1R2';
+  const isA2R=modalLevel==='A2R';
+  const isB1=modalLevel==='B1';
+  const isB1R=modalLevel==='B1R';
+  const lvKey=isA2?'a2':isA1R?'a1r':isA1R2?'a1r2':isA2R?'a2r':isB1?'b1':isB1R?'b1r':'a1';
+  const r=(allData[lvKey]||[]).find(x=>x.id===modalStudentId);
+  if(!r)return;
+
+  const gv=id=>{const el=document.getElementById('mf-'+id);return el?parseFloat(el.value)||0:0};
+
+  const M=MAXES[lvKey];
+  const readingTF=gv('reading_tf');
+  const readingOpen=gv('reading_open');
+  const grammar=M.grammar_sections.reduce((a,f)=>a+gv(f),0);
+  const writing=gv('writing_form')+gv('writing_email');
+  const listenTF=gv('listen_tf');
+  const listenOpen=gv('listen_open');
+  const listenFill=gv('listen_fill');
+  const speaking=M.speaking_fields.reduce((a,f)=>a+gv(f),0);
+
+  const total=readingTF+readingOpen+grammar+writing+listenTF+listenOpen+listenFill+speaking;
+
+  const ss=id=>document.getElementById('ss-'+id);
+  if(ss('reading_tf'))ss('reading_tf').textContent=`${readingTF}/${M.reading_tf}`;
+  if(ss('reading_open'))ss('reading_open').textContent=`${readingOpen}/${M.reading_open}`;
+  if(ss('grammar'))ss('grammar').textContent=`${grammar}/${M.grammar}`;
+  if(ss('writing'))ss('writing').textContent=`${writing}/${M.writing_form+M.writing_email}`;
+  if(ss('listen_tf'))ss('listen_tf').textContent=`${listenTF}/${M.listen_tf}`;
+  if(ss('listen_open'))ss('listen_open').textContent=`${listenOpen}/${M.listen_open}`;
+  if(ss('listen_fill'))ss('listen_fill').textContent=`${listenFill}/${M.listen_fill}`;
+  if(ss('speaking'))ss('speaking').textContent=`${speaking}/${M.speaking}`;
+  if(ss('total'))ss('total').textContent=`${total} / ${paperTotal(M)}`;
+}
+
+
+/* ── STUDENT RESULTS LAYER (read-only) ───────────────────────────────── */
+let allData={a1:[],a2:[],a1r:[],a1r2:[],a2r:[],b1:[],b1r:[]};
+let studentMarks={};
+let modalStudentId=null, modalLevel=null;
+function getM(id){return studentMarks[id]||null}
+/* students can't play the recordings (private bucket) — show a note instead */
+function audioSlot(r,key){return '<em style="color:#6b7280">🎙️ Your recording was reviewed by the examiner — the marks are shown below.</em>'}
+function hydrateAudio(){}
+function saveCurrentMarks(){}
+function updateModalPill(){
+  const pill=document.getElementById('modal-score-pill');
+  const m=getM(modalStudentId);
+  if(m&&m.saved){const sc=m.scale||100;pill.textContent=`${m.total}/${sc}`;pill.className=`score-pill score-badge ${scoreClass(m.total,sc)}`;}
+  else{pill.textContent='Awaiting grading';pill.className='score-pill score-badge score-none';}
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');modalStudentId=null;modalLevel=null;}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal();});
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show';setTimeout(()=>t.className='toast',3500);}
+/* escape every student-entered value so a stored answer can never inject markup */
+function escRow(row){const o={};for(const k in row){const v=row[k];o[k]=(typeof v==='string')?esc(v):v;}return o;}
+
+async function searchResults(){
+  const raw=document.getElementById('mobile').value.trim();
+  const digits=raw.replace(/\D/g,'');
+  if(digits.length<6){showToast('Please enter the mobile number you used for the exam.');return;}
+  const btn=document.getElementById('search-btn');btn.disabled=true;btn.textContent='Searching…';
+  try{
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_student_results`,{method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY},
+      body:JSON.stringify({p_mobile:raw})});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    allData={a1:[],a2:[],a1r:[],a1r2:[],a2r:[],b1:[],b1r:[]};studentMarks={};
+    (data||[]).forEach(e=>{const k=LVKEY[e.level];if(!k)return;allData[k].push(escRow(e.row||{}));if(e.marks)studentMarks[e.id]=e.marks;});
+    renderList(data||[]);
+  }catch(err){showToast('Could not load your results: '+err.message);}
+  finally{btn.disabled=false;btn.textContent='View my results';}
+}
+
+function renderList(data){
+  document.getElementById('entry').style.display='none';
+  const sec=document.getElementById('results');sec.style.display='block';
+  const list=document.getElementById('results-list');
+  if(!data.length){list.innerHTML='';document.getElementById('results-empty').style.display='block';
+    document.getElementById('results-count').textContent='';return;}
+  document.getElementById('results-empty').style.display='none';
+  const name=(data.find(e=>e.student_name)||{}).student_name||'';
+  document.getElementById('results-count').textContent=
+    (name?name+' · ':'')+data.length+(data.length===1?' test':' tests')+' found';
+  list.innerHTML=data.map(e=>{
+    const graded=!!e.marks;const sc=e.scale||100;
+    const scoreHtml=graded
+      ? `<span class="score-badge ${scoreClass(+e.total,sc)}">${e.total}/${sc}</span>`
+      : `<span class="score-badge score-none">Awaiting grading</span>`;
+    return `<div class="r-card">
+      <div class="r-main">
+        <div class="r-top">${levelBadge(e.level)}<span class="r-date">${fmt(e.submitted_at)}</span></div>
+        <div class="r-score">${scoreHtml}</div>
+      </div>
+      <button class="btn-view" onclick="openSheet('${e.id}','${e.level}')">View answer sheet →</button>
+    </div>`;
+  }).join('');
+}
+
+function openSheet(id,level){
+  openModal(id,level);
+  document.querySelectorAll('#modal-body .mark-inp').forEach(i=>{i.disabled=true;});
+}
+function resetSearch(){
+  document.getElementById('results').style.display='none';
+  document.getElementById('entry').style.display='block';
+  document.getElementById('mobile').value='';
+}
+document.getElementById('mobile').addEventListener('keydown',e=>{if(e.key==='Enter')searchResults();});
+
+</script>
+</body>
+</html>
