@@ -84,6 +84,7 @@ td{padding:12px 14px;vertical-align:middle}
 .badge-a2r{background:#ccfbf1;color:#0f766e}
 .badge-b1{background:#fef9c3;color:#854d0e}
 .badge-b1r{background:#fde68a;color:#92400e}
+.badge-b2{background:#cffafe;color:#155e75}
 .score-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700}
 .score-none{background:#f3f4f6;color:#9ca3af}
 .score-low{background:#fee2e2;color:#991b1b}
@@ -345,6 +346,18 @@ const ANSWERS = {
     listen_tf: ['False','True','False','True','True'],
     listen_open: ['Neunzehn.','900 Euro: 720 Euro kalt plus 180 Euro Nebenkosten.','Die Gehaltsabrechnungen und die Auskunft über die Zahlungsfähigkeit.','Bis Montagmittag.','Per E-Mail; am Telefon ist sie nur vormittags erreichbar.'],
     listen_fill: ['Gartenstraße','dritten','58 / achtundfünfzig','Samstag','Rauchen']
+  },
+  b2: {
+    reading_tf: ['True','False','False','True','True'],
+    reading_open: ['Die Dokumentation am Tablet wird mehrheitlich für sinnvoll gehalten, führt aber nach Angaben von 54 Prozent zu mehr statt weniger Bildschirmzeit.','Er warnt vor überzogenen Erwartungen an die Technik; entscheidend sei, dass die Beschäftigten über die Einführung mitbestimmen.','Weil Gesundheitsdaten besonders sensibel sind und nicht jede Einrichtung über das nötige Fachpersonal verfügt.','Mehr Schulungen, die während der Arbeitszeit stattfinden, statt der Einarbeitung in der Freizeit.','Mit deutlich weniger Widerstand und einer um rund ein Drittel niedrigeren Fluktuation.'],
+    grammar_partizip: ['Die zu verarbeitenden Daten sind sehr sensibel.','Der gerade eingearbeitete Kollege kommt aus Spanien.','Die am Montag stattfindende Schulung dauert vier Stunden.','Das zu lösende Problem betrifft den Datenschutz.','Die gestern aufgenommene Patientin liegt in Zimmer 8.'],
+    grammar_indirekt: ['Die Pflegekraft sagte, die Technik entlaste sie nicht.','Er erklärte, er habe die Schulung besucht.','Die Leitung kündigte an, sie werde mehr Personal einstellen.','Der Betriebsrat fragte, ob die Daten sicher seien.','Sie bat uns, pünktlich zu kommen.'],
+    grammar_passiversatz: ['Der Fehler lässt sich leicht beheben.','Die Software ist bis Freitag zu installieren.','Die Daten lassen sich nicht wiederherstellen.','Die Formulare sind vollständig auszufüllen.','Der Termin lässt sich leider nicht verschieben.'],
+    grammar_konnektoren: ['Die Station war unterbesetzt, sodass wir Überstunden machen mussten.','Man verbessert die Dokumentation, indem man die Mitarbeitenden regelmäßig schult.','Der Vorschlag überzeugt mich nicht, zumal die Kosten nicht kalkuliert sind.','Das neue System spart Zeit, indem die Daten einmal zentral erfasst werden.','Die Schulung fiel aus, zumal viele Kolleginnen krank waren.'],
+    grammar_nominalverbal: ['Trotz des starken Regens kamen alle pünktlich.','Weil auf Tablets umgestellt wurde, gab es anfangs Probleme.','Nachdem das System eingeführt worden war, sank die Fehlerquote.','Während die Nachtschicht läuft, ist die Besetzung geringer.','Bevor die Schulung beginnt, werden die Geräte verteilt.'],
+    listen_tf: ['False','True','False','True','True'],
+    listen_open: ['Noch drei Monate.','In Gruppen von acht Personen, jeweils zwei Stunden, während der Arbeitszeit.','Dass keine neuen Daten erfasst werden, sondern sich nur der Ort der Eintragung ändert.','Sie sind die Ansprechpersonen auf der Station, die sogenannten Digital-Lotsen.','Dann wird das Konzept korrigiert; es ist keine einmalige Entscheidung.'],
+    listen_fill: ['Juni','sechs','zwei','Lotsen','IT']
   }
 };
 
@@ -393,11 +406,17 @@ const MAXES = {
     listen_tf:5, listen_open:10, listen_fill:5, speaking:20,
     grammar_sections:['g_indirekt','g_konnektoren2','g_plusquam','g_adjektiv','g_dawo'],
     speaking_fields:['spk_1','spk_2','spk_3'],
+  },
+  b2: {
+    reading_tf:5, reading_open:10, grammar:25, writing_form:5, writing_email:15,
+    listen_tf:5, listen_open:10, listen_fill:5, speaking:20,
+    grammar_sections:['g_partizip','g_indirekt','g_passiversatz','g_konnektoren','g_nominalverbal'],
+    speaking_fields:['spk_1','spk_2','spk_3'],
   }
 };
 // The scheme marks were originally saved under, before the /100 correction.
 const MARK_SCALE = 100;
-const LVKEY = {A1:'a1', A2:'a2', A1R:'a1r', A1R2:'a1r2', A2R:'a2r', B1:'b1', B1R:'b1r'};
+const LVKEY = {A1:'a1', A2:'a2', A1R:'a1r', A1R2:'a1r2', A2R:'a2r', B1:'b1', B1R:'b1r', B2:'b2'};
 function maxesFor(code){ return MAXES[LVKEY[code]] || MAXES.a1 }
 function paperTotal(M){
   return M.reading_tf + M.reading_open + M.grammar + M.writing_form + M.writing_email +
@@ -492,9 +511,20 @@ function autoGradeB1R(r){
   return {reading_tf:rtfScore,listen_tf:ltfScore,listen_fill:fillScore,auto_total:rtfScore+ltfScore+fillScore};
 }
 
+function autoGradeB2(r){
+  const ans=ANSWERS.b2;
+  const rtf=[r.tf1,r.tf2,r.tf3,r.tf4,r.tf5];
+  const rtfScore=rtf.reduce((s,v,i)=>s+(tfMatch(v,ans.reading_tf[i])?1:0),0);
+  const ltf=[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5];
+  const ltfScore=ltf.reduce((s,v,i)=>s+(tfMatch(v,ans.listen_tf[i])?1:0),0);
+  const fills=(r.listen_fill_blanks||'').split('|').map(x=>x.trim());
+  const fillScore=ans.listen_fill.reduce((s,a,i)=>s+(normalise(fills[i])===normalise(a)?1:0),0);
+  return {reading_tf:rtfScore,listen_tf:ltfScore,listen_fill:fillScore,auto_total:rtfScore+ltfScore+fillScore};
+}
+
 // ── LEVELS ──
 function levelBadge(code){
-  const cls=code==='A2'?'badge-a2':code==='A1R'?'badge-a1r':code==='A1R2'?'badge-a1r2':code==='A2R'?'badge-a2r':code==='B1'?'badge-b1':code==='B1R'?'badge-b1r':'badge-a1';
+  const cls=code==='A2'?'badge-a2':code==='A1R'?'badge-a1r':code==='A1R2'?'badge-a1r2':code==='A2R'?'badge-a2r':code==='B1'?'badge-b1':code==='B1R'?'badge-b1r':code==='B2'?'badge-b2':'badge-a1';
   const txt=code==='A1R'?'A1 Retest 01':code==='A1R2'?'A1 Retest 02':code==='A2R'?'A2 Retest':code==='B1R'?'B1 Retest':code;
   return `<span class="badge-pill ${cls}">${txt}</span>`;
 }
@@ -509,12 +539,13 @@ function openModal(id,level){
   const isA2R=level==='A2R';
   const isB1=level==='B1';
   const isB1R=level==='B1R';
-  const lvKey=isA2?'a2':isA1R?'a1r':isA1R2?'a1r2':isA2R?'a2r':isB1?'b1':isB1R?'b1r':'a1';
+  const isB2=level==='B2';
+  const lvKey=isA2?'a2':isA1R?'a1r':isA1R2?'a1r2':isA2R?'a2r':isB1?'b1':isB1R?'b1r':isB2?'b2':'a1';
   const r=(allData[lvKey]||[]).find(x=>x.id===id);
   if(!r)return;
   const ans=ANSWERS[lvKey];
   const M=MAXES[lvKey];
-  const ag=isA2?autoGradeA2(r):isA1R?autoGradeA1R(r):isA1R2?autoGradeA1R2(r):isA2R?autoGradeA2R(r):isB1?autoGradeB1(r):isB1R?autoGradeB1R(r):autoGradeA1(r);
+  const ag=isA2?autoGradeA2(r):isA1R?autoGradeA1R(r):isA1R2?autoGradeA1R2(r):isA2R?autoGradeA2R(r):isB1?autoGradeB1(r):isB1R?autoGradeB1R(r):isB2?autoGradeB2(r):autoGradeA1(r);
   const saved=getM(id)||{};
 
   document.getElementById('modal-title').textContent=`${r.student_name||'Student'} — ${isA1R?'A1 Retest 01':isA1R2?'A1 Retest 02':isA2R?'A2 Retest':isB1R?'B1 Retest':level} Exam`;
@@ -595,6 +626,13 @@ function openModal(id,level){
     const tfV=[r.tf1,r.tf2,r.tf3,r.tf4,r.tf5];
     readingTFRows=tfQ.map((q,i)=>tfRow(q,tfV[i],ans.reading_tf[i])).join('');
     const oQ=['Wie lange hat Samira gesucht?','Welche drei Dokumente braucht man in der Regel?','Welche Bedingung stellen viele Vermieter an das Einkommen?','Welche zwei Vorteile hat das WG-Zimmer?','Warum ist das Übergabeprotokoll wichtig?'];
+    const oV=[r.q1,r.q2,r.q3,r.q4,r.q5];
+    readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
+  }else if(isB2){
+    const tfQ=['Mehrheit hält Tablet-Dokumentation für sinnvoll?','Befragte verbringen weniger Zeit am Bildschirm?','Ebeling hält Technik für Ersatz von Fachkräften?','Gesundheitsdaten gelten als besonders sensibel?','Schulungen in der Arbeitszeit → niedrigere Fluktuation?'];
+    const tfV=[r.tf1,r.tf2,r.tf3,r.tf4,r.tf5];
+    readingTFRows=tfQ.map((q,i)=>tfRow(q,tfV[i],ans.reading_tf[i])).join('');
+    const oQ=['Welcher Widerspruch zeigt sich in der Befragung?','Wovor warnt Prof. Ebeling, und was ist entscheidend?','Warum wird der Datenschutz kritisch gesehen?','Welchen Wunsch äußern drei Viertel der Befragten?','Mit welchem Ergebnis wird dieser Ansatz verbunden?'];
     const oV=[r.q1,r.q2,r.q3,r.q4,r.q5];
     readingOpenRows=oQ.map((q,i)=>openRow(q,oV[i],ans.reading_open[i])).join('');
   }else{
@@ -766,6 +804,30 @@ function openModal(id,level){
           <span class="mark-max-label">/5</span>
         </div>`;
     });
+  }else if(isB2){
+    const sections=[
+      {label:'1. Partizipialattribute (5 pts)',field:'g_partizip',vals:r.grammar_partizip,answers:ans.grammar_partizip},
+      {label:'2. Indirekte Rede (5 pts)',field:'g_indirekt',vals:r.grammar_indirekt,answers:ans.grammar_indirekt},
+      {label:'3. Passiversatzformen (5 pts)',field:'g_passiversatz',vals:r.grammar_passiversatz,answers:ans.grammar_passiversatz},
+      {label:'4. Konnektoren: sodass, indem, zumal (5 pts)',field:'g_konnektoren',vals:r.grammar_konnektoren,answers:ans.grammar_konnektoren},
+      {label:'5. Nominalstil und Verbalstil (5 pts)',field:'g_nominalverbal',vals:r.grammar_nominalverbal,answers:ans.grammar_nominalverbal},
+    ];
+    sections.forEach(s=>{
+      const parts=(s.vals||'').split('|').map(x=>x.trim());
+      const rows=s.answers.map((a,i)=>`<div class="qa-row">
+          <div class="qa-q">Q${i+1}</div>
+          <div class="qa-student">${parts[i]||'<em style="color:#d1d5db">—</em>'}</div>
+          <div class="qa-correct" style="font-style:italic">${a}</div>
+        </div>`).join('');
+      grammarHTML+=`<div class="section-header">${s.label}<span class="section-manual-score">Examiner grades</span></div>
+        <div class="qa-col-heads"><span>Q</span><span>Student Answer</span><span>Correct Answer</span></div>
+        <div class="qa-block">${rows}</div>
+        <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+          <label style="font-size:13px;font-weight:500">Section marks:</label>
+          <input class="mark-inp" type="number" min="0" max="5" value="${saved[s.field]??''}" placeholder="0" id="mf-${s.field}" oninput="clampMax(this);recalcModal()"/>
+          <span class="mark-max-label">/5</span>
+        </div>`;
+    });
   }else{
     const sections=[
       {label:'1. Articles & Nouns (5 pts)',field:'g_articles',vals:r.grammar_articles,answers:ans.grammar_articles},
@@ -823,6 +885,10 @@ function openModal(id,level){
     const lQ=['Wie viele Interessenten gibt es schon?','Wie hoch ist die Gesamtmiete?','Welche zwei Unterlagen soll man mitbringen?','Bis wann muss man sich melden?','Wie erreicht man Frau Hartmann am besten?'];
     const lV=[r.listen_q1,r.listen_q2,r.listen_q3,r.listen_q4,r.listen_q5];
     listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
+  }else if(isB2){
+    const lQ=['Wie lange wird die Papierakte parallel geführt?','Wie sind die Schulungen organisiert?','Was betont Frau Dr. Lange zum Thema Daten?','Welche Aufgabe haben Frau Osei und Herr Kowalski?','Was passiert, wenn die Auswertung keine Zeitersparnis zeigt?'];
+    const lV=[r.listen_q1,r.listen_q2,r.listen_q3,r.listen_q4,r.listen_q5];
+    listenOpenRows=lQ.map((q,i)=>openRow(q,lV[i],ans.listen_open[i])).join('');
   }else{
     const lQ=['Wie heißt die Person?','Wo arbeitet sie?','Was macht sie am Morgen?','Was isst sie in der Pause?','Warum mag sie ihren Beruf?'];
     const lV=[r.listen_q1_name,r.listen_q2_wo,r.listen_q3_morgen,r.listen_q4_pause,r.listen_q5_warum];
@@ -870,6 +936,10 @@ function openModal(id,level){
     {label:'Kurzvortrag: Stadt oder Land (10 marks)',sample:'„In der Stadt gibt es mehr Arbeit, Busse und Ärzte, aber die Mieten sind hoch und es ist laut. Auf dem Land ist es ruhiger und günstiger, dafür braucht man ein Auto. Ich selbst wohne …"',akey:'speaking_task1',val:r.speaking_task1,field:'spk_1',max:10},
     {label:'Meinung: Wohnungsmarkt (5 marks)',sample:'„Die Städte sollten mehr Wohnungen bauen, weil das Angebot zu klein ist. Außerdem könnte man Mieterhöhungen stärker begrenzen, damit die Leute nicht wegziehen müssen."',akey:'speaking_task2',val:r.speaking_task2,field:'spk_2',max:5},
     {label:'Rollenspiel: Reparatur vereinbaren (5 marks)',sample:'„Die Heizung wird seit Montag nicht mehr warm. Am Mittwoch habe ich leider Frühdienst. Ginge es auch am Donnerstagnachmittag oder am Samstagvormittag?"',akey:'speaking_task3',val:r.speaking_task3,field:'spk_3',max:5},
+  ]:isB2?[
+    {label:'Meine Arbeit und die Technik (10 marks)',sample:'„Wir dokumentieren am Tablet und benutzen einen digitalen Dienstplan. Praktisch ist, dass die Nachtschicht alles sofort sieht. Störend finde ich, dass das Gerät manchmal langsam ist. Gelernt habe ich, dass man neue Kolleginnen in Ruhe einarbeiten muss."',akey:'speaking_task1',val:r.speaking_task1,field:'spk_1',max:10},
+    {label:'Schulungen im Betrieb (5 marks)',sample:'„Ich finde ja, weil man nach einer Schicht zu müde ist, um noch zu lernen. Außerdem nehmen mehr Leute teil, wenn es zur Arbeitszeit zählt."',akey:'speaking_task2',val:r.speaking_task2,field:'spk_2',max:5},
+    {label:'Rollenspiel: Einarbeitung vereinbaren (5 marks)',sample:'„Ich würde gern eine Einweisung in das neue Dokumentationssystem bekommen. Am Dienstag hätte ich nach dem Frühdienst Zeit. Wenn das zu kurzfristig ist, ginge auch nächste Woche."',akey:'speaking_task3',val:r.speaking_task3,field:'spk_3',max:5},
   ]:[
     {label:'Introduction (5 marks)',sample:'„Hallo! Ich heiße Maria. Ich bin 28 Jahre alt und komme aus Indien."',akey:'speaking_intro',val:r.speaking_intro,field:'spk_1',max:5},
     {label:'Picture Description (5 marks)',sample:'„Das ist ein Krankenhaus. Ich sehe Ärzte, Krankenschwestern und Patienten."',akey:'speaking_picture',val:r.speaking_picture,field:'spk_2',max:5},
@@ -893,7 +963,7 @@ function openModal(id,level){
     <div class="qa-row has-mark">
       <div class="qa-q">${(isA1R||isA1R2)?'Short Message':'Short Writing Task'}</div>
       <div class="qa-student" style="white-space:pre-wrap;line-height:1.6">${studentVal((isA1R||isA1R2)?r.short_message:r.form_details)}</div>
-      <div class="qa-correct" style="font-style:italic">${isA1R?'25–30 Wörter: krank, Grund, Frage nach den Hausaufgaben':isA1R2?'25–30 Wörter: Geburtstag, wann/wo, Mitbringsel, Antwort erbeten':isA2R?'~40 Wörter, Notiz an die Nachbarin: was passiert ist, wo das Paket ist, wann zu Hause, wie erreichbar':isB1?'~40 Wörter, Schichttausch-Mitteilung an die Stationsleitung: mit wem getauscht, welche Schichten, warum, wo die Unterschrift fehlt':isB1R?'~40 Wörter an die Hausverwaltung: Heizung kaputt, seit wann, Bitte um Termin, Erreichbarkeit':'30–40 Wörter in ganzen Sätzen: wer, wo, was, warum Deutsch'}</div>
+      <div class="qa-correct" style="font-style:italic">${isA1R?'25–30 Wörter: krank, Grund, Frage nach den Hausaufgaben':isA1R2?'25–30 Wörter: Geburtstag, wann/wo, Mitbringsel, Antwort erbeten':isA2R?'~40 Wörter, Notiz an die Nachbarin: was passiert ist, wo das Paket ist, wann zu Hause, wie erreichbar':isB1?'~40 Wörter, Schichttausch-Mitteilung an die Stationsleitung: mit wem getauscht, welche Schichten, warum, wo die Unterschrift fehlt':isB1R?'~40 Wörter an die Hausverwaltung: Heizung kaputt, seit wann, Bitte um Termin, Erreichbarkeit':isB2?'~50 Wörter, Mitteilung an die Pflegedienstleitung: Problem (keine Schulung), Folge für die Arbeit, konkreter Vorschlag, Bitte um Antwort':'30–40 Wörter in ganzen Sätzen: wer, wo, was, warum Deutsch'}</div>
       <div class="qa-mark">
         <input class="mark-inp" type="number" min="0" max="${M.writing_form}" value="${saved.writing_form??''}" placeholder="0" id="mf-writing_form" oninput="clampMax(this);recalcModal()"/>
         <span class="mark-max-label">/${M.writing_form}</span>
@@ -902,7 +972,7 @@ function openModal(id,level){
     <div class="qa-row has-mark" style="align-items:flex-start">
       <div class="qa-q">Email Writing</div>
       <div class="qa-student" style="white-space:pre-wrap;line-height:1.6">${studentVal(r.email_writing)}</div>
-      <div class="qa-correct" style="font-style:italic;font-size:12px;line-height:1.5">${isA2?'Gestern hatte ich einen stressigen Tag…':isA1R?'50–70 Wörter: erste Woche, Arbeitszeiten, Kollegen, eine Aufgabe, Pause, was gefällt…':isA1R2?'50–70 Wörter: Wohnort, Transport, Wochentage, Wochenende, Einladung':isA2R?'80–100 Wörter an die Sprachschule: Wechsel in den Vormittagskurs, Grund (weil), deshalb, höfliche Frage im Konjunktiv II, Kosten, Lehrmaterial':isB1?'120–150 Wörter Forumsbeitrag: Meinung + 2 Argumente mit Beispielen + Gegenargument + Vorschlag; weil, obwohl, deshalb':isB1R?'120–150 Wörter an eine Freundin: nötige Unterlagen, eigene Wohnungssuche, 2 Tipps, Hilfsangebot; nachdem, deshalb, indirekte Frage':'Ich arbeite jeden Tag im Krankenhaus…'}</div>
+      <div class="qa-correct" style="font-style:italic;font-size:12px;line-height:1.5">${isA2?'Gestern hatte ich einen stressigen Tag…':isA1R?'50–70 Wörter: erste Woche, Arbeitszeiten, Kollegen, eine Aufgabe, Pause, was gefällt…':isA1R2?'50–70 Wörter: Wohnort, Transport, Wochentage, Wochenende, Einladung':isA2R?'80–100 Wörter an die Sprachschule: Wechsel in den Vormittagskurs, Grund (weil), deshalb, höfliche Frage im Konjunktiv II, Kosten, Lehrmaterial':isB1?'120–150 Wörter Forumsbeitrag: Meinung + 2 Argumente mit Beispielen + Gegenargument + Vorschlag; weil, obwohl, deshalb':isB1R?'120–150 Wörter an eine Freundin: nötige Unterlagen, eigene Wohnungssuche, 2 Tipps, Hilfsangebot; nachdem, deshalb, indirekte Frage':isB2?'180–200 Wörter Stellungnahme: Einleitung + 2 Argumente mit Beispielen + Gegenargument entkräften + Empfehlung; sachlicher Stil, Konnektoren zumal, sodass, anstatt … zu':'Ich arbeite jeden Tag im Krankenhaus…'}</div>
       <div class="qa-mark">
         <input class="mark-inp" type="number" min="0" max="${M.writing_email}" value="${saved.writing_email??''}" placeholder="0" id="mf-writing_email" oninput="clampMax(this);recalcModal()"/>
         <span class="mark-max-label">/${M.writing_email}</span>
@@ -957,8 +1027,8 @@ function openModal(id,level){
     <div class="section-header">Part D – Listening: True/False (Examiner grades, /${M.listen_tf})<span class="section-manual-score">✍ Manual</span></div>
     <div class="qa-col-heads"><span>Statement</span><span>Student Answer</span><span style="min-width:180px">Correct Answer</span></div>
     <div class="qa-block">${(()=>{
-      const ltfQ=isA2?['Thomas ist Arzt?','Im Krankenhaus?','Pause am Mittag?','Hat geschlafen?','Fahrrad nach Hause?']:isA1R?['Arbeitet im Seniorenheim?','Beginnt um 12 Uhr?','Hilft Frau Sommer beim Abendessen?','Pause um 18 Uhr?','Muss morgen wieder arbeiten?']:isA1R2?['Mit dem Zug gefahren?','Fahrt zwei Stunden?','Hotel war teuer?','Am Samstag geregnet?','Mit Laura gefrühstückt?']:isA2R?['Arbeitet im Pflegeheim?','Gespräch am Dienstag?','Zeugnis mitbringen?','Lebenslauf mitbringen?','Danach die Station sehen?']:isB1?['Einführungswoche im Frühdienst?','Nachtdienste sofort danach?','Frau Köhler ist neu?','Sprachkurs zählt als Arbeitszeit?','Krankmeldung bis acht Uhr?']:isB1R?['Wohnung schon vermietet?','Haus ohne Aufzug?','Kaution drei Kaltmieten?','Alle zum selben Termin?','Haustiere nicht erlaubt?']:['Kleines Krankenhaus?','Um 7 Uhr?','Gibt Medikamente?','Keine Pause?','Fährt mit Bus?'];
-      const ltfV=isA2?[r.listen_tf_thomas_arzt,r.listen_tf_krankenhaus,r.listen_tf_pause,r.listen_tf_geschlafen,r.listen_tf_fahrrad]:isA1R?[r.listen_tf_seniorenheim,r.listen_tf_zwoelf_uhr,r.listen_tf_abendessen,r.listen_tf_pause_18,r.listen_tf_morgen_arbeit]:isA1R2?[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5]:isA2R?[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5]:isB1?[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5]:isB1R?[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5]:[r.listen_tf_kleines_kh,r.listen_tf_sieben_uhr,r.listen_tf_medikamente,r.listen_tf_keine_pause,r.listen_tf_bus];
+      const ltfQ=isA2?['Thomas ist Arzt?','Im Krankenhaus?','Pause am Mittag?','Hat geschlafen?','Fahrrad nach Hause?']:isA1R?['Arbeitet im Seniorenheim?','Beginnt um 12 Uhr?','Hilft Frau Sommer beim Abendessen?','Pause um 18 Uhr?','Muss morgen wieder arbeiten?']:isA1R2?['Mit dem Zug gefahren?','Fahrt zwei Stunden?','Hotel war teuer?','Am Samstag geregnet?','Mit Laura gefrühstückt?']:isA2R?['Arbeitet im Pflegeheim?','Gespräch am Dienstag?','Zeugnis mitbringen?','Lebenslauf mitbringen?','Danach die Station sehen?']:isB1?['Einführungswoche im Frühdienst?','Nachtdienste sofort danach?','Frau Köhler ist neu?','Sprachkurs zählt als Arbeitszeit?','Krankmeldung bis acht Uhr?']:isB1R?['Wohnung schon vermietet?','Haus ohne Aufzug?','Kaution drei Kaltmieten?','Alle zum selben Termin?','Haustiere nicht erlaubt?']:isB2?['Papierakte wird sofort abgeschafft?','Tablets dürfen nicht mit nach Hause?','Schulungen in der Freizeit?','Keine neuen Daten erfasst?','Nach sechs Monaten ausgewertet?']:['Kleines Krankenhaus?','Um 7 Uhr?','Gibt Medikamente?','Keine Pause?','Fährt mit Bus?'];
+      const ltfV=isA2?[r.listen_tf_thomas_arzt,r.listen_tf_krankenhaus,r.listen_tf_pause,r.listen_tf_geschlafen,r.listen_tf_fahrrad]:isA1R?[r.listen_tf_seniorenheim,r.listen_tf_zwoelf_uhr,r.listen_tf_abendessen,r.listen_tf_pause_18,r.listen_tf_morgen_arbeit]:isA1R2?[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5]:isA2R?[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5]:isB1?[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5]:isB1R?[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5]:isB2?[r.listen_tf1,r.listen_tf2,r.listen_tf3,r.listen_tf4,r.listen_tf5]:[r.listen_tf_kleines_kh,r.listen_tf_sieben_uhr,r.listen_tf_medikamente,r.listen_tf_keine_pause,r.listen_tf_bus];
       return ltfQ.map((q,i)=>openRow(q,ltfV[i],ans.listen_tf[i])).join('');
     })()}</div>
     <div style="padding:10px 20px;background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
@@ -1036,7 +1106,8 @@ function recalcModal(){
   const isA2R=modalLevel==='A2R';
   const isB1=modalLevel==='B1';
   const isB1R=modalLevel==='B1R';
-  const lvKey=isA2?'a2':isA1R?'a1r':isA1R2?'a1r2':isA2R?'a2r':isB1?'b1':isB1R?'b1r':'a1';
+  const isB2=modalLevel==='B2';
+  const lvKey=isA2?'a2':isA1R?'a1r':isA1R2?'a1r2':isA2R?'a2r':isB1?'b1':isB1R?'b1r':isB2?'b2':'a1';
   const r=(allData[lvKey]||[]).find(x=>x.id===modalStudentId);
   if(!r)return;
 
@@ -1068,7 +1139,7 @@ function recalcModal(){
 
 
 /* ── STUDENT RESULTS LAYER (read-only) ───────────────────────────────── */
-let allData={a1:[],a2:[],a1r:[],a1r2:[],a2r:[],b1:[],b1r:[]};
+let allData={a1:[],a2:[],a1r:[],a1r2:[],a2r:[],b1:[],b1r:[],b2:[]};
 let studentMarks={};
 let modalStudentId=null, modalLevel=null;
 function getM(id){return studentMarks[id]||null}
@@ -1099,7 +1170,7 @@ async function searchResults(){
       body:JSON.stringify({p_mobile:raw})});
     if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();
-    allData={a1:[],a2:[],a1r:[],a1r2:[],a2r:[],b1:[],b1r:[]};studentMarks={};
+    allData={a1:[],a2:[],a1r:[],a1r2:[],a2r:[],b1:[],b1r:[],b2:[]};studentMarks={};
     (data||[]).forEach(e=>{const k=LVKEY[e.level];if(!k)return;allData[k].push(escRow(e.row||{}));if(e.marks)studentMarks[e.id]=e.marks;});
     renderList(data||[]);
   }catch(err){showToast('Could not load your results: '+err.message);}
