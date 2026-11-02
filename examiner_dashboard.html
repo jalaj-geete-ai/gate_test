@@ -217,7 +217,7 @@ td{padding:12px 14px;vertical-align:middle}
         <div class="stat-card"><div class="label">Total</div><div class="value" id="stat-total">—</div><div class="sub">submissions</div></div>
         <div class="stat-card"><div class="label">A2</div><div class="value" id="stat-a2">—</div></div>
         <div class="stat-card"><div class="label">A1</div><div class="value" id="stat-a1">—</div></div>
-        <div class="stat-card"><div class="label">A1 Retest 01</div><div class="value" id="stat-a1r">—</div></div>
+        <div class="stat-card"><div class="label">A1 Retest</div><div class="value" id="stat-a1r">—</div></div>
         <div class="stat-card"><div class="label">A1 Retest 02</div><div class="value" id="stat-a1r2">—</div></div>
         <div class="stat-card"><div class="label">A2 Retest</div><div class="value" id="stat-a2r">—</div></div>
         <div class="stat-card"><div class="label">B1</div><div class="value" id="stat-b1">—</div></div>
@@ -235,7 +235,7 @@ td{padding:12px 14px;vertical-align:middle}
         <button class="tab active" onclick="switchTab('all')">All</button>
         <button class="tab" onclick="switchTab('a2')">A2 Exam</button>
         <button class="tab" onclick="switchTab('a1')">A1 Exam</button>
-        <button class="tab" onclick="switchTab('a1r')">A1 Retest 01</button>
+        <button class="tab" onclick="switchTab('a1r')">A1 Retest</button>
         <button class="tab" onclick="switchTab('a1r2')">A1 Retest 02</button>
         <button class="tab" onclick="switchTab('a2r')">A2 Retest</button>
         <button class="tab" onclick="switchTab('b1')">B1 Exam</button>
@@ -274,7 +274,7 @@ td{padding:12px 14px;vertical-align:middle}
             <button class="tab active" onclick="switchLBTab('all')">All</button>
             <button class="tab" onclick="switchLBTab('a2')">A2</button>
             <button class="tab" onclick="switchLBTab('a1')">A1</button>
-            <button class="tab" onclick="switchLBTab('a1r')">A1 Retest 01</button>
+            <button class="tab" onclick="switchLBTab('a1r')">A1 Retest</button>
             <button class="tab" onclick="switchLBTab('a1r2')">A1 Retest 02</button>
             <button class="tab" onclick="switchLBTab('a2r')">A2 Retest</button>
             <button class="tab" onclick="switchLBTab('b1')">B1</button>
@@ -806,7 +806,7 @@ function collectRows(tab){
 }
 function levelBadge(code){
   const cls=code==='A2'?'badge-a2':code==='A1R'?'badge-a1r':code==='A1R2'?'badge-a1r2':code==='A2R'?'badge-a2r':code==='B1'?'badge-b1':code==='B1R'?'badge-b1r':code==='B2'?'badge-b2':code==='B2R'?'badge-b2r':'badge-a1';
-  const txt=code==='A1R'?'A1 Retest 01':code==='A1R2'?'A1 Retest 02':code==='A2R'?'A2 Retest':code==='B1R'?'B1 Retest':code==='B2R'?'B2 Retest':code;
+  const txt=code==='A1R'?'A1 Retest':code==='A1R2'?'A1 Retest 02':code==='A2R'?'A2 Retest':code==='B1R'?'B1 Retest':code==='B2R'?'B2 Retest':code;
   return `<span class="badge-pill ${cls}">${txt}</span>`;
 }
 function grammarMax(code){return maxesFor(code).grammar}
@@ -1091,7 +1091,7 @@ function openModal(id,level){
   const ag=isA2?autoGradeA2(r):isA1R?autoGradeA1R(r):isA1R2?autoGradeA1R2(r):isA2R?autoGradeA2R(r):isB1?autoGradeB1(r):isB1R?autoGradeB1R(r):isB2?autoGradeB2(r):isB2R?autoGradeB2R(r):autoGradeA1(r);
   const saved=getM(id)||{};
 
-  document.getElementById('modal-title').textContent=`${r.student_name||'Student'} — ${isA1R?'A1 Retest 01':isA1R2?'A1 Retest 02':isA2R?'A2 Retest':isB1R?'B1 Retest':isB2R?'B2 Retest':level} Exam`;
+  document.getElementById('modal-title').textContent=`${r.student_name||'Student'} — ${isA1R?'A1 Retest':isA1R2?'A1 Retest 02':isA2R?'A2 Retest':isB1R?'B1 Retest':isB2R?'B2 Retest':level} Exam`;
 
   // Helpers
   const studentVal=(v)=>v?`<span>${v}</span>`:`<em style="color:#d1d5db">not answered</em>`;
