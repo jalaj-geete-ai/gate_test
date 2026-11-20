@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="robots" content="noindex,nofollow">
+<title>Nurses to Germany — Qualification Test | Global Careers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#24CCE4;--brand-deep:#0FA8C6;--brand-dark:#0B7E96;
+  --brand-pale:#E6FAFE;--brand-wash:#F4FDFF;
+  --gold:#F5A524;--gold-deep:#C97C06;--gold-pale:#FFF6E6;
+  --primary:#0E2B35;--primary-mid:#14414F;--primary-lo:#1B5567;
+  --cta:#1BBF6B;--cta-hover:#15A35D;--cta-glow:rgba(27,191,107,.30);
+  --bg:#F6FBFD;--bg-warm:#EDF6F9;--surface:#FFFFFF;
+  --text:#15262E;--text-2:#44606C;--text-3:#8AA3AD;
+  --border:#DCEAF0;--border-l:#EDF5F8;
+  --danger:#DC2626;--danger-pale:#FEF2F2;
+  --ff-display:'Outfit',system-ui,sans-serif;
+  --ff-body:'Plus Jakarta Sans',system-ui,sans-serif;
+  --r-sm:10px;--r-md:14px;--r-lg:20px;--r-xl:24px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--ff-body);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.55}
+body.exam-mode{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+input{user-select:text;-webkit-user-select:text}
+@media print{body{display:none!important}}
+
+.screen{display:none}
+.screen.active{display:block}
+.wrap{max-width:640px;margin:0 auto;padding:0 20px}
+
+/* ── Buttons ── */
+.btn{font-family:inherit;font-size:15px;font-weight:700;border:none;border-radius:var(--r-sm);
+  padding:14px 28px;cursor:pointer;transition:.18s;display:inline-flex;align-items:center;
+  justify-content:center;gap:8px;text-decoration:none}
+.btn-primary{background:var(--cta);color:#fff;box-shadow:0 4px 16px var(--cta-glow)}
+.btn-primary:hover{background:var(--cta-hover);transform:translateY(-1px)}
+.btn-outline{background:transparent;color:var(--brand-dark);border:1.5px solid var(--brand)}
+.btn-outline:hover{background:var(--brand-pale)}
+.btn-brand{background:var(--brand);color:var(--primary);box-shadow:0 4px 16px rgba(36,204,228,.3)}
+.btn-brand:hover{background:var(--brand-deep);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+.btn-full{width:100%}
+
+/* ── Inputs ── */
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:7px;letter-spacing:.04em;text-transform:uppercase}
+.field input{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:var(--r-sm);
+  font-family:inherit;font-size:15px;font-weight:500;color:var(--text);background:var(--surface);transition:.15s}
+.field input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(36,204,228,.18)}
+.field input::placeholder{color:var(--text-3)}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:var(--primary);color:#fff;padding:11px 20px;border-radius:40px;
+  font-size:14px;font-weight:600;z-index:999;opacity:0;pointer-events:none;
+  transition:opacity .2s;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+
+/* ── Home screen ── */
+#s-home{min-height:100vh;display:flex;flex-direction:column}
+#s-home .nav{background:var(--primary);padding:16px 20px;display:flex;align-items:center;justify-content:center}
+#s-home .nav .logo{font-family:var(--ff-display);color:#fff;font-size:17px;font-weight:700;letter-spacing:-.01em}
+#s-home .nav .logo span{color:var(--brand)}
+#s-home .hero{flex:1;padding:48px 20px 40px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.badge-pill{display:inline-block;background:var(--gold-pale);color:var(--gold-deep);
+  border:1.5px solid #EBD9A8;border-radius:40px;padding:5px 14px;
+  font-size:12.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-bottom:20px}
+#s-home h1{font-family:var(--ff-display);font-size:clamp(26px,6vw,38px);font-weight:800;
+  line-height:1.2;color:var(--primary);margin-bottom:16px;letter-spacing:-.02em}
+#s-home h1 em{font-style:normal;color:var(--brand-dark)}
+#s-home .sub{font-size:clamp(14px,2vw,16px);color:var(--text-2);font-weight:500;max-width:520px;margin:0 auto 32px}
+.prize-card{background:linear-gradient(145deg,#FFF3CC,#FFF9E6 60%,#FFFDF5);
+  border:2px solid #E5A800;border-radius:var(--r-lg);padding:22px 24px;
+  max-width:360px;width:100%;margin:0 auto 32px;text-align:center;
+  box-shadow:0 6px 24px rgba(229,168,0,.15)}
+.prize-card .crown{font-size:36px;display:block;margin-bottom:8px}
+.prize-card .amt{font-family:var(--ff-display);font-size:30px;font-weight:800;color:#A3720A;margin-bottom:4px}
+.prize-card .cond{font-size:13px;color:var(--text-2);font-weight:500}
+.info-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:36px}
+.info-pill{background:var(--surface);border:1px solid var(--border);border-radius:40px;
+  padding:7px 16px;font-size:13px;color:var(--text-2);font-weight:600;display:flex;align-items:center;gap:6px}
+
+/* ── Register screen ── */
+#s-register{min-height:100vh;display:flex;flex-direction:column}
+.card-screen{max-width:480px;margin:0 auto;width:100%;padding:40px 24px}
+.card-screen h2{font-family:var(--ff-display);font-size:24px;font-weight:800;color:var(--primary);margin-bottom:8px}
+.card-screen p.hint{font-size:14px;color:var(--text-2);margin-bottom:28px}
+.err-box{background:var(--danger-pale);border:1px solid #FCA5A5;border-radius:var(--r-sm);
+  padding:11px 14px;font-size:13.5px;color:var(--danger);margin-bottom:16px;display:none}
+
+/* ── Instructions ── */
+#s-instructions{min-height:100vh;display:flex;flex-direction:column}
+.instr-list{list-style:none;margin:0 0 28px}
+.instr-list li{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-l);font-size:14.5px;color:var(--text-2)}
+.instr-list li:last-child{border-bottom:none}
+.instr-list li .ico{font-size:18px;flex-shrink:0;margin-top:1px}
+
+/* ── Exam screen ── */
+#s-exam{min-height:100vh;display:flex;flex-direction:column;background:var(--bg)}
+.exam-top{background:var(--primary);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:10}
+.exam-title{font-family:var(--ff-display);font-size:14px;font-weight:700;color:rgba(255,255,255,.75);flex:1}
+#timer{font-family:var(--ff-display);font-size:17px;font-weight:800;color:#fff;
+  background:rgba(255,255,255,.12);padding:5px 14px;border-radius:40px;white-space:nowrap}
+#timer.warn{color:#FBBF24}
+#timer.urgent{color:#F87171;animation:pulse .8s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+.q-progress{background:var(--border);height:3px;width:100%}
+.q-progress-fill{height:3px;background:var(--brand);transition:width .3s}
+
+.q-body{flex:1;padding:20px 16px 100px;max-width:640px;margin:0 auto;width:100%}
+.q-num{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px}
+.q-text{font-size:clamp(16px,2.5vw,18px);font-weight:600;color:var(--text);line-height:1.5;margin-bottom:22px}
+
+.options{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;
+  background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-md);
+  cursor:pointer;transition:.15s;-webkit-tap-highlight-color:transparent}
+.opt:hover{border-color:var(--brand);background:var(--brand-pale)}
+.opt.selected{border-color:var(--brand-deep);background:var(--brand-pale);box-shadow:0 0 0 3px rgba(36,204,228,.18)}
+.opt-letter{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;
+  color:var(--text-3);flex-shrink:0;transition:.15s}
+.opt.selected .opt-letter{background:var(--brand-deep);border-color:var(--brand-deep);color:#fff}
+.opt-text{font-size:14.5px;font-weight:500;color:var(--text);line-height:1.4;padding-top:3px}
+
+.q-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);
+  padding:12px 16px;display:flex;gap:10px;max-width:640px;margin:0 auto}
+#btn-prev{flex:1}
+#btn-next{flex:1}
+#btn-submit{flex:2;background:var(--cta);color:#fff;display:none}
+#btn-submit:hover{background:var(--cta-hover)}
+
+.q-grid-wrap{margin-bottom:16px}
+.q-grid-label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px}
+.q-grid{display:flex;flex-wrap:wrap;gap:7px}
+.q-dot{width:30px;height:30px;border-radius:6px;border:1.5px solid var(--border);
+  background:var(--surface);font-size:11px;font-weight:700;color:var(--text-3);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
+.q-dot.answered{background:var(--brand-pale);border-color:var(--brand-deep);color:var(--brand-dark)}
+.q-dot.current{background:var(--brand-deep);border-color:var(--brand-deep);color:#fff}
+
+/* ── Result screen ── */
+#s-result{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 20px;text-align:center}
+.result-wrap{max-width:400px;width:100%}
+.result-icon{font-size:64px;display:block;margin-bottom:12px}
+.result-headline{font-family:var(--ff-display);font-size:28px;font-weight:800;color:var(--primary);margin-bottom:8px;line-height:1.2}
+.result-sub{font-size:15px;color:var(--text-2);margin-bottom:24px}
+.score-badge{display:inline-block;background:var(--brand-pale);border:2px solid var(--brand);
+  border-radius:var(--r-lg);padding:16px 28px;margin-bottom:24px}
+.score-badge .sc{font-family:var(--ff-display);font-size:40px;font-weight:800;color:var(--brand-dark);line-height:1}
+.score-badge .sl{font-size:13px;color:var(--text-3);font-weight:600;margin-top:4px}
+
+/* Pass prize card */
+.win-card{background:linear-gradient(145deg,#FFF3CC,#FFF9E6 60%,#FFFDF5);
+  border:2.5px solid #E5A800;border-radius:var(--r-lg);padding:24px;margin-bottom:24px;
+  box-shadow:0 6px 28px rgba(229,168,0,.2)}
+.win-card .wc-crown{font-size:44px;display:block;margin-bottom:8px}
+.win-card h3{font-family:var(--ff-display);font-size:20px;font-weight:800;color:#A3720A;margin-bottom:6px}
+.win-card .wc-amt{font-family:var(--ff-display);font-size:34px;font-weight:800;color:#C07800;
+  background:#FFF0B3;border-radius:10px;padding:5px 16px;display:inline-block;
+  border:1.5px solid #E5C44A;margin:4px 0 10px}
+.win-card p{font-size:13.5px;color:var(--text);line-height:1.55}
+
+/* Fail card */
+.fail-card{background:var(--bg-warm);border:1.5px solid var(--border);border-radius:var(--r-lg);
+  padding:20px;margin-bottom:24px}
+.fail-card h3{font-family:var(--ff-display);font-size:17px;font-weight:700;color:var(--primary);margin-bottom:6px}
+.fail-card p{font-size:13.5px;color:var(--text-2);line-height:1.55}
+
+/* WhatsApp button */
+.btn-wa{background:#25D366;color:#fff;font-size:15px}
+.btn-wa:hover{background:#1ebe59}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     SCREEN: HOME
+══════════════════════════════════════════ -->
+<section id="s-home" class="screen active">
+  <nav class="nav">
+    <div class="logo"><span>Global Careers</span> by Testbook</div>
+  </nav>
+  <div class="hero">
+    <span class="badge-pill">Free Qualification Test</span>
+    <h1>Nurses to <em>Germany</em><br>Qualification Test</h1>
+    <p class="sub">20 questions · 30 minutes · Instant result. Score above 50% and win a scholarship on the spot.</p>
+
+    <div class="prize-card">
+      <span class="crown">🏆</span>
+      <div class="amt">₹40,000 Scholarship</div>
+      <div class="cond">Score more than 50% → win instantly</div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-pill">📋 20 Questions</div>
+      <div class="info-pill">⏱ 30 Minutes</div>
+      <div class="info-pill">⚡ Instant Result</div>
+    </div>
+
+    <button class="btn btn-primary btn-full" style="max-width:360px" onclick="goRegister()">
+      Start the Test &rarr;
+    </button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SCREEN: REGISTER
+══════════════════════════════════════════ -->
+<section id="s-register" class="screen">
+  <nav class="nav" style="background:var(--primary);padding:16px 20px;display:flex;align-items:center;justify-content:center">
+    <div class="logo" style="font-family:var(--ff-display);color:#fff;font-size:17px;font-weight:700">
+      <span style="color:var(--brand)">Global Careers</span> by Testbook
+    </div>
+  </nav>
+  <div class="wrap">
+    <div class="card-screen">
+      <h2>Enter your details</h2>
+      <p class="hint">We'll use these to contact you if you win the scholarship.</p>
+      <div id="reg-err" class="err-box"></div>
+      <div class="field">
+        <label>Full Name</label>
+        <input id="reg-name" type="text" placeholder="e.g. Priya Sharma" autocomplete="name">
+      </div>
+      <div class="field">
+        <label>Mobile Number</label>
+        <input id="reg-phone" type="tel" placeholder="10-digit mobile number" autocomplete="tel" inputmode="numeric">
+      </div>
+      <button class="btn btn-primary btn-full" id="btn-register" onclick="doRegister()">Continue &rarr;</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SCREEN: INSTRUCTIONS
+══════════════════════════════════════════ -->
+<section id="s-instructions" class="screen">
+  <nav class="nav" style="background:var(--primary);padding:16px 20px;display:flex;align-items:center;justify-content:center">
+    <div class="logo" style="font-family:var(--ff-display);color:#fff;font-size:17px;font-weight:700">
+      <span style="color:var(--brand)">Global Careers</span> by Testbook
+    </div>
+  </nav>
+  <div class="wrap">
+    <div class="card-screen">
+      <h2>Before you begin</h2>
+      <p class="hint">Read these instructions carefully.</p>
+      <ul class="instr-list">
+        <li><span class="ico">📋</span><span><b>20 questions</b>, all multiple choice. One correct answer each.</span></li>
+        <li><span class="ico">⏱</span><span><b>30 minutes</b> to complete the test. The timer starts when you click Begin.</span></li>
+        <li><span class="ico">✅</span><span><b>+1 mark</b> for each correct answer. No negative marking.</span></li>
+        <li><span class="ico">🏆</span><span>Score <b>more than 10 out of 20</b> (above 50%) and <b>win ₹40,000 instantly</b>.</span></li>
+        <li><span class="ico">📱</span><span>Keep your phone handy. <b>Do not refresh or close</b> the page during the test.</span></li>
+        <li><span class="ico">🔒</span><span>One attempt per mobile number.</span></li>
+      </ul>
+      <button class="btn btn-primary btn-full" onclick="startExam()">Begin Test &rarr;</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SCREEN: EXAM
+══════════════════════════════════════════ -->
+<section id="s-exam" class="screen">
+  <div class="exam-top">
+    <div class="exam-title">Qualification Test</div>
+    <div id="timer">30:00</div>
+  </div>
+  <div class="q-progress"><div class="q-progress-fill" id="q-progress-fill" style="width:5%"></div></div>
+
+  <div class="q-body">
+    <!-- question grid overview -->
+    <div class="q-grid-wrap">
+      <div class="q-grid-label">Questions</div>
+      <div class="q-grid" id="q-grid"></div>
+    </div>
+
+    <!-- active question -->
+    <div class="q-num" id="q-num"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <div class="q-nav">
+    <button class="btn btn-outline" id="btn-prev" onclick="navQ(-1)">&larr; Prev</button>
+    <button class="btn btn-outline" id="btn-next" onclick="navQ(1)">Next &rarr;</button>
+    <button class="btn" id="btn-submit" onclick="confirmSubmit()">Submit Test</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SCREEN: RESULT
+══════════════════════════════════════════ -->
+<section id="s-result" class="screen">
+  <div class="result-wrap">
+    <span class="result-icon" id="res-icon"></span>
+    <div class="result-headline" id="res-headline"></div>
+    <div class="result-sub" id="res-sub"></div>
+    <div class="score-badge">
+      <div class="sc" id="res-score"></div>
+      <div class="sl">out of 20 marks</div>
+    </div>
+    <div id="res-prize"></div>
+    <a id="res-wa" class="btn btn-wa btn-full" href="#" target="_blank" rel="noopener" style="margin-top:4px">
+      📞 Talk to a Counsellor on WhatsApp
+    </a>
+  </div>
+</section>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Canvas Confetti -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.2/confetti.browser.min.js"></script>
+
+<script>
+/* ── Config ───────────────────────────── */
+var API = 'https://uxdrldreaockdloqvojs.supabase.co/functions/v1/lead-qualifier-api';
+var WA_NUMBER = '918630604949'; // change to team WhatsApp
+
+/* ── Questions (options only; correct answers live in Edge Function) ── */
+var QUESTIONS = [
+  {id:'q1', text:'What is the normal resting heart rate for a healthy adult?',
+   opts:['40–60 beats per minute','60–100 beats per minute','100–120 beats per minute','120–140 beats per minute']},
+
+  {id:'q2', text:'Normal blood pressure for a healthy adult is:',
+   opts:['90/60 mmHg','120/80 mmHg','140/90 mmHg','160/100 mmHg']},
+
+  {id:'q3', text:'In medical records, "NPO" means:',
+   opts:['No Patient Orders','Nothing by Mouth (Nil Per Os)','Normal Patient Output','Non-Prescribed Operation']},
+
+  {id:'q4', text:'Normal body temperature in a healthy adult is approximately:',
+   opts:['35.0 °C','36.0 °C','37.0 °C','38.5 °C']},
+
+  {id:'q5', text:'Normal blood oxygen saturation (SpO₂) in a healthy adult is:',
+   opts:['75–85%','85–90%','90–94%','95–100%']},
+
+  {id:'q6', text:'Which vitamin is essential for normal blood clotting?',
+   opts:['Vitamin A','Vitamin C','Vitamin D','Vitamin K']},
+
+  {id:'q7', text:'Which organ in the human body produces insulin?',
+   opts:['Liver','Kidney','Pancreas','Spleen']},
+
+  {id:'q8', text:'The normal respiratory rate for a resting adult is:',
+   opts:['5–10 breaths per minute','12–20 breaths per minute','25–30 breaths per minute','35–40 breaths per minute']},
+
+  {id:'q9', text:'How many millilitres are in one litre?',
+   opts:['100 mL','500 mL','1000 mL','10,000 mL']},
+
+  {id:'q10', text:'The WHO-recommended minimum duration for effective hand-washing with soap is:',
+   opts:['5 seconds','10 seconds','20 seconds','60 seconds']},
+
+  {id:'q11', text:'Which route of drug administration typically produces the fastest effect?',
+   opts:['Oral','Sublingual','Intramuscular','Intravenous']},
+
+  {id:'q12', text:'A diabetic patient suddenly becomes confused and sweaty. The most likely cause is:',
+   opts:['High blood pressure','High blood sugar (hyperglycaemia)','Low blood sugar (hypoglycaemia)','Fever']},
+
+  {id:'q13', text:'"ICU" stands for:',
+   opts:['Internal Clinical Unit','Intensive Care Unit','Intensive Cardiac Unit','Interim Care Unit']},
+
+  {id:'q14', text:'Which type of isolation precaution is used for diseases spread through the air (e.g. tuberculosis)?',
+   opts:['Contact precautions','Droplet precautions','Airborne precautions','Standard precautions']},
+
+  {id:'q15', text:'A patient is prescribed 500 mg of a drug available as 250 mg tablets. How many tablets should be given?',
+   opts:['½ tablet','1 tablet','2 tablets','4 tablets']},
+
+  {id:'q16', text:'The official process of recognising a foreign nursing qualification in Germany is called:',
+   opts:['Ausbildung','Approbation','Anerkennung','Anmeldung']},
+
+  {id:'q17', text:'What is the minimum German language level typically required to work as a registered nurse in Germany?',
+   opts:['A1','A2','B1','B2']},
+
+  {id:'q18', text:'Germany is located in which continent?',
+   opts:['Asia','North America','Europe','Australia']},
+
+  {id:'q19', text:'The currency used in Germany is:',
+   opts:['Pound Sterling','Swiss Franc','Euro','Danish Krone']},
+
+  {id:'q20', text:'What is the standard emergency telephone number in Germany?',
+   opts:['100','112','911','999']},
+];
+
+var TOTAL = QUESTIONS.length; // 20
+
+/* ── State ────────────────────────────── */
+var S = { token: null, name: '', qi: 0, answers: {}, timerSec: 30*60, timerID: null, startTs: 0, submitted: false };
+
+/* ── Helpers ──────────────────────────── */
+function $(id){ return document.getElementById(id); }
+function show(id){
+  document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('active'); });
+  $(id).classList.add('active');
+}
+function toast(msg, err){
+  var t = $('toast'); t.textContent = msg;
+  t.style.background = err ? 'var(--danger)' : 'var(--primary)';
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+function busy(el, yes, label){
+  el.disabled = yes;
+  if(label !== undefined) el.textContent = label;
+}
+
+function api(action, body){
+  return fetch(API, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(Object.assign({action:action}, body))
+  }).then(function(r){ return r.json(); });
+}
+
+/* ── Confetti ─────────────────────────── */
+var CONFETTI = {
+  fire: function(){
+    confetti({particleCount:120, spread:70, origin:{y:0.6}, colors:['#24CCE4','#F5A524','#1BBF6B','#fff']});
+    setTimeout(function(){
+      confetti({particleCount:100, spread:90, origin:{y:0.55}, angle:60, colors:['#F5A524','#24CCE4','#fff']});
+    }, 350);
+    setTimeout(function(){
+      confetti({particleCount:80, spread:80, origin:{y:0.5}, angle:120, colors:['#1BBF6B','#F5A524','#24CCE4']});
+    }, 700);
+  }
+};
+
+/* ── Screen navigation ────────────────── */
+function goRegister(){
+  show('s-register');
+  setTimeout(function(){ $('reg-name').focus(); }, 100);
+}
+
+/* ── Register ─────────────────────────── */
+function doRegister(){
+  var btn = $('btn-register');
+  var name = $('reg-name').value.trim();
+  var phone = $('reg-phone').value.replace(/\D/g,'');
+  var errBox = $('reg-err');
+  errBox.style.display = 'none';
+
+  if(!name){ toast('Please enter your name.', true); return; }
+  if(phone.length < 10){ toast('Please enter a valid 10-digit mobile number.', true); return; }
+
+  busy(btn, true, 'Please wait…');
+  api('register', {name:name, phone:phone}).then(function(res){
+    busy(btn, false, 'Continue →');
+    if(!res.ok){ errBox.textContent = res.error || 'Could not register. Please try again.'; errBox.style.display='block'; return; }
+    S.token = res.token;
+    S.name = name;
+    if(res.already_attempted && res.result){
+      showResult(res.result.score, res.result.total, res.result.passed, false);
+    } else {
+      show('s-instructions');
+    }
+  }).catch(function(){
+    busy(btn, false, 'Continue →');
+    toast('Network error. Please check your connection.', true);
+  });
+}
+
+/* ── Exam ─────────────────────────────── */
+function startExam(){
+  document.body.classList.add('exam-mode');
+  S.answers = {}; S.qi = 0; S.startTs = Date.now(); S.submitted = false;
+  buildGrid();
+  renderQ(0);
+  show('s-exam');
+  startTimer();
+}
+
+function buildGrid(){
+  var g = $('q-grid'); g.innerHTML = '';
+  for(var i=0;i<TOTAL;i++){
+    (function(idx){
+      var d = document.createElement('div');
+      d.className = 'q-dot'; d.textContent = idx+1; d.id = 'qd-'+idx;
+      d.addEventListener('click', function(){ renderQ(idx); });
+      g.appendChild(d);
+    })(i);
+  }
+}
+
+function renderQ(idx){
+  S.qi = idx;
+  var q = QUESTIONS[idx];
+  $('q-num').textContent = 'Question '+(idx+1)+' of '+TOTAL;
+  $('q-text').textContent = q.text;
+  $('q-progress-fill').style.width = ((idx+1)/TOTAL*100)+'%';
+
+  var opts = $('options'); opts.innerHTML = '';
+  var letters = ['A','B','C','D'];
+  q.opts.forEach(function(opt,oi){
+    var div = document.createElement('div');
+    div.className = 'opt' + (S.answers[q.id]===oi ? ' selected' : '');
+    div.innerHTML = '<div class="opt-letter">'+letters[oi]+'</div>'
+                  + '<div class="opt-text">'+opt+'</div>';
+    div.addEventListener('click', function(){
+      S.answers[q.id] = oi;
+      document.querySelectorAll('.opt').forEach(function(el){ el.classList.remove('selected'); });
+      div.classList.add('selected');
+      updateDot(idx);
+    });
+    opts.appendChild(div);
+  });
+
+  // Update dots
+  for(var i=0;i<TOTAL;i++){
+    var d = $('qd-'+i);
+    if(!d) continue;
+    d.className = 'q-dot'
+      + (S.answers[QUESTIONS[i].id]!==undefined ? ' answered' : '')
+      + (i===idx ? ' current' : '');
+  }
+
+  $('btn-prev').style.display = idx === 0 ? 'none' : '';
+  $('btn-next').style.display = idx === TOTAL-1 ? 'none' : '';
+  $('btn-submit').style.display = idx === TOTAL-1 ? '' : 'none';
+}
+
+function updateDot(idx){
+  var d = $('qd-'+idx);
+  if(!d) return;
+  d.className = 'q-dot answered current';
+}
+
+function navQ(dir){
+  var next = S.qi + dir;
+  if(next < 0 || next >= TOTAL) return;
+  renderQ(next);
+}
+
+/* ── Timer ────────────────────────────── */
+function startTimer(){
+  S.timerSec = 30*60;
+  if(S.timerID) clearInterval(S.timerID);
+  S.timerID = setInterval(function(){
+    S.timerSec--;
+    var m = Math.floor(S.timerSec/60), s = S.timerSec%60;
+    var t = $('timer');
+    t.textContent = (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+    t.className = S.timerSec <= 60 ? 'urgent' : (S.timerSec <= 300 ? 'warn' : '');
+    if(S.timerSec <= 0){ clearInterval(S.timerID); autoSubmit(); }
+  }, 1000);
+}
+
+function autoSubmit(){
+  if(S.submitted) return;
+  toast('Time up! Submitting your answers…');
+  submitExam();
+}
+
+function confirmSubmit(){
+  var answered = Object.keys(S.answers).length;
+  var unanswered = TOTAL - answered;
+  if(unanswered > 0){
+    var msg = unanswered + ' question'+(unanswered>1?'s are':' is')+' unanswered. Submit anyway?';
+    if(!confirm(msg)) return;
+  }
+  submitExam();
+}
+
+function submitExam(){
+  if(S.submitted) return;
+  S.submitted = true;
+  if(S.timerID){ clearInterval(S.timerID); S.timerID = null; }
+  document.body.classList.remove('exam-mode');
+
+  var duration = Math.round((Date.now() - S.startTs) / 1000);
+
+  api('submit', {token:S.token, answers:S.answers, duration:duration}).then(function(res){
+    if(!res.ok){ toast('Submission failed. Please try again.', true); S.submitted=false; return; }
+    showResult(res.score, res.total, res.passed, true);
+  }).catch(function(){
+    toast('Network error. Please check your connection.', true);
+    S.submitted = false;
+  });
+}
+
+/* ── Result ────────────────────────────── */
+function showResult(score, total, passed, animate){
+  show('s-result');
+
+  $('res-score').textContent = score + '/' + total;
+
+  var waMsg = passed
+    ? 'Hi! I just took the Nurses to Germany Qualification Test and scored ' + score + '/' + total + '. I would like to know more about claiming my ₹40,000 scholarship.'
+    : 'Hi! I took the Nurses to Germany Qualification Test and scored ' + score + '/' + total + '. I would like to speak with a counsellor about the programme.';
+  $('res-wa').href = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(waMsg);
+
+  if(passed){
+    $('res-icon').textContent = '🎉';
+    $('res-headline').textContent = 'Congratulations, ' + S.name.split(' ')[0] + '!';
+    $('res-sub').textContent = 'You have qualified for the ₹40,000 scholarship.';
+    $('res-prize').innerHTML =
+      '<div class="win-card">'
+      + '<span class="wc-crown">🏆</span>'
+      + '<h3>You\'ve Won!</h3>'
+      + '<div class="wc-amt">₹40,000 Scholarship</div>'
+      + '<p>Our counselling team will call you on your registered number within 24 hours to confirm and activate your scholarship on the Nurses to Germany Programme.</p>'
+      + '</div>';
+    if(animate) setTimeout(function(){ CONFETTI.fire(); }, 400);
+  } else {
+    $('res-icon').textContent = '📋';
+    $('res-headline').textContent = 'Good effort, ' + S.name.split(' ')[0] + '!';
+    $('res-sub').textContent = 'You need more than 10/20 to qualify. Keep going!';
+    $('res-prize').innerHTML =
+      '<div class="fail-card">'
+      + '<h3>Keep going — Germany awaits you 🇩🇪</h3>'
+      + '<p>Don\'t worry — our team can still guide you on your journey to work as a nurse in Germany. Talk to a counsellor and find out how to get started.</p>'
+      + '</div>';
+  }
+}
+
+/* ── Enter key on register form ─────── */
+document.addEventListener('DOMContentLoaded', function(){
+  ['reg-name','reg-phone'].forEach(function(id){
+    $(id).addEventListener('keydown', function(e){ if(e.key==='Enter') doRegister(); });
+  });
+});
+</script>
+</body>
+</html>
