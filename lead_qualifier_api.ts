@@ -25,6 +25,16 @@ const ANSWER_KEY: Record<string, number> = {
   q18: 2, // Europe
   q19: 2, // Euro
   q20: 1, // 112
+  q21: 2, // 800–2000 mL/day
+  q22: 3, // O−
+  q23: 1, // Level of consciousness
+  q24: 2, // Fowler's position
+  q25: 2, // +200 mL
+  q26: 2, // Production of red blood cells (NOT a skin function)
+  q27: 1, // Fast heart rate
+  q28: 1, // As needed / when required
+  q29: 1, // Krankenversicherung
+  q30: 3, // Berlin
 };
 
 const TOTAL = Object.keys(ANSWER_KEY).length;
@@ -62,8 +72,10 @@ Deno.serve(async (req) => {
 
     if (existing) {
       const attempt = (existing as any).lq_attempts?.[0];
-      if (attempt)
-        return json({ ok: true, token: existing.id, already_attempted: true, result: attempt });
+      if (attempt) {
+        const premium = attempt.score / (attempt.total || TOTAL) > 0.9;
+        return json({ ok: true, token: existing.id, already_attempted: true, result: { ...attempt, premium } });
+      }
       return json({ ok: true, token: existing.id, already_attempted: false });
     }
 
@@ -90,7 +102,10 @@ Deno.serve(async (req) => {
       .eq("lead_id", token)
       .maybeSingle();
 
-    if (existing) return json({ ok: true, ...existing });
+    if (existing) {
+      const premium = existing.score / (existing.total || TOTAL) > 0.9;
+      return json({ ok: true, ...existing, premium });
+    }
 
     // Score server-side
     let score = 0;
@@ -99,6 +114,7 @@ Deno.serve(async (req) => {
     }
 
     const passed = score > TOTAL / 2; // strictly more than 50%
+    const premium = score / TOTAL > 0.9; // >90% for ₹40,000
 
     const { error } = await sb.from("lq_attempts").insert({
       lead_id: token,
@@ -110,7 +126,7 @@ Deno.serve(async (req) => {
     });
 
     if (error) return json({ error: error.message }, 500);
-    return json({ ok: true, score, total: TOTAL, passed });
+    return json({ ok: true, score, total: TOTAL, passed, premium });
   }
 
   return json({ error: "unknown action" }, 400);

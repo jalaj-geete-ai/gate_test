@@ -192,7 +192,7 @@ input{user-select:text;-webkit-user-select:text}
   <div class="hero">
     <span class="badge-pill">Free Qualification Test</span>
     <h1>Nurses to <em>Germany</em><br>Qualification Test</h1>
-    <p class="sub">20 questions · 30 minutes · Instant result. Score above 50% and win a scholarship on the spot.</p>
+    <p class="sub">30 questions · 30 minutes · Instant result. Score above 50% and win a scholarship on the spot.</p>
 
     <div class="prize-card">
       <span class="crown">🏆</span>
@@ -418,7 +418,7 @@ var QUESTIONS = [
    opts:['Munich','Hamburg','Frankfurt','Berlin']},
 ];
 
-var TOTAL = QUESTIONS.length; // 20
+var TOTAL = QUESTIONS.length; // 30
 
 /* ── State ────────────────────────────── */
 var S = { token: null, name: '', qi: 0, answers: {}, timerSec: 30*60, timerID: null, startTs: 0, submitted: false };
@@ -485,7 +485,7 @@ function doRegister(){
     S.token = res.token;
     S.name = name;
     if(res.already_attempted && res.result){
-      showResult(res.result.score, res.result.total, res.result.passed, false);
+      showResult(res.result.score, res.result.total, res.result.passed, false, res.result.premium);
     } else {
       show('s-instructions');
     }
