@@ -15,6 +15,7 @@
   --gold:#F5A524;--gold-deep:#C97C06;--gold-pale:#FFF6E6;
   --primary:#0E2B35;--primary-mid:#14414F;--primary-lo:#1B5567;
   --cta:#1BBF6B;--cta-hover:#15A35D;--cta-glow:rgba(27,191,107,.30);
+  --review:#F59E0B;
   --bg:#F6FBFD;--bg-warm:#EDF6F9;--surface:#FFFFFF;
   --text:#15262E;--text-2:#44606C;--text-3:#8AA3AD;
   --border:#DCEAF0;--border-l:#EDF5F8;
@@ -42,6 +43,8 @@ input{user-select:text;-webkit-user-select:text}
 .btn-primary:hover{background:var(--cta-hover);transform:translateY(-1px)}
 .btn-outline{background:transparent;color:var(--brand-dark);border:1.5px solid var(--brand)}
 .btn-outline:hover{background:var(--brand-pale)}
+.btn-ghost{background:transparent;color:var(--text-2);border:1.5px solid var(--border)}
+.btn-ghost:hover{background:var(--bg-warm)}
 .btn-brand{background:var(--brand);color:var(--primary);box-shadow:0 4px 16px rgba(36,204,228,.3)}
 .btn-brand:hover{background:var(--brand-deep);color:#fff}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
@@ -114,7 +117,7 @@ input{user-select:text;-webkit-user-select:text}
 .q-progress{background:var(--border);height:3px;width:100%}
 .q-progress-fill{height:3px;background:var(--brand);transition:width .3s}
 
-.q-body{flex:1;padding:20px 16px 100px;max-width:640px;margin:0 auto;width:100%}
+.q-body{flex:1;padding:20px 16px 110px;max-width:640px;margin:0 auto;width:100%}
 .q-num{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px}
 .q-text{font-size:clamp(16px,2.5vw,18px);font-weight:600;color:var(--text);line-height:1.5;margin-bottom:22px}
 
@@ -130,21 +133,39 @@ input{user-select:text;-webkit-user-select:text}
 .opt.selected .opt-letter{background:var(--brand-deep);border-color:var(--brand-deep);color:#fff}
 .opt-text{font-size:14.5px;font-weight:500;color:var(--text);line-height:1.4;padding-top:3px}
 
-.q-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);
-  padding:12px 16px;display:flex;gap:10px;max-width:640px;margin:0 auto}
-#btn-prev{flex:1}
-#btn-next{flex:1}
-#btn-submit{flex:2;background:var(--cta);color:#fff;display:none}
-#btn-submit:hover{background:var(--cta-hover)}
-
+/* Question grid */
 .q-grid-wrap{margin-bottom:16px}
 .q-grid-label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px}
 .q-grid{display:flex;flex-wrap:wrap;gap:7px}
-.q-dot{width:30px;height:30px;border-radius:6px;border:1.5px solid var(--border);
+.q-dot{position:relative;width:30px;height:30px;border-radius:6px;border:1.5px solid var(--border);
   background:var(--surface);font-size:11px;font-weight:700;color:var(--text-3);
   display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
-.q-dot.answered{background:var(--brand-pale);border-color:var(--brand-deep);color:var(--brand-dark)}
-.q-dot.current{background:var(--brand-deep);border-color:var(--brand-deep);color:#fff}
+.q-dot:hover{transform:scale(1.1)}
+.q-dot.answered{background:var(--cta);border-color:var(--cta);color:#fff}
+.q-dot.seen{background:var(--danger-pale);border-color:#FCA5A5;color:#B91C1C}
+.q-dot.review{background:var(--review);border-color:var(--review);color:#fff}
+.q-dot.review.answered::after{content:"";position:absolute;right:2px;bottom:2px;
+  width:7px;height:7px;border-radius:50%;background:var(--cta);border:1.5px solid #fff}
+.q-dot.current{box-shadow:0 0 0 3px var(--brand);border-color:var(--brand-dark)}
+
+/* Grid legend */
+.grid-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-bottom:16px}
+.grid-legend span{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-2)}
+.grid-legend i{width:12px;height:12px;border-radius:3px;border:1.5px solid;flex-shrink:0}
+.gl-ans i{background:var(--cta);border-color:var(--cta)}
+.gl-rev i{background:var(--review);border-color:var(--review)}
+.gl-seen i{background:var(--danger-pale);border-color:#FCA5A5}
+.gl-un i{background:var(--surface);border-color:var(--border)}
+
+/* Nav bar */
+.q-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);
+  padding:10px 12px;display:flex;gap:8px;max-width:640px;margin:0 auto}
+#btn-prev{flex:1;font-size:13px;padding:12px 8px}
+#btn-mark{flex:1.5;font-size:12.5px;padding:12px 8px}
+#btn-next{flex:1;font-size:13px;padding:12px 8px}
+#btn-submit{flex:1.5;font-size:13px;padding:12px 8px;background:var(--cta);color:#fff}
+#btn-submit:hover{background:var(--cta-hover)}
+#btn-mark.marked{background:var(--review);border-color:var(--review);color:#fff}
 
 /* ── Result screen ── */
 #s-result{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -158,7 +179,6 @@ input{user-select:text;-webkit-user-select:text}
 .score-badge .sc{font-family:var(--ff-display);font-size:40px;font-weight:800;color:var(--brand-dark);line-height:1}
 .score-badge .sl{font-size:13px;color:var(--text-3);font-weight:600;margin-top:4px}
 
-/* Pass prize card */
 .win-card{background:linear-gradient(145deg,#FFF3CC,#FFF9E6 60%,#FFFDF5);
   border:2.5px solid #E5A800;border-radius:var(--r-lg);padding:24px;margin-bottom:24px;
   box-shadow:0 6px 28px rgba(229,168,0,.2)}
@@ -169,15 +189,29 @@ input{user-select:text;-webkit-user-select:text}
   border:1.5px solid #E5C44A;margin:4px 0 10px}
 .win-card p{font-size:13.5px;color:var(--text);line-height:1.55}
 
-/* Fail card */
 .fail-card{background:var(--bg-warm);border:1.5px solid var(--border);border-radius:var(--r-lg);
   padding:20px;margin-bottom:24px}
 .fail-card h3{font-family:var(--ff-display);font-size:17px;font-weight:700;color:var(--primary);margin-bottom:6px}
 .fail-card p{font-size:13.5px;color:var(--text-2);line-height:1.55}
 
-/* WhatsApp button */
-.btn-wa{background:#25D366;color:#fff;font-size:15px}
-.btn-wa:hover{background:#1ebe59}
+/* ── Submit confirmation modal ── */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;
+  display:flex;align-items:center;justify-content:center;padding:20px}
+.ov.hidden{display:none!important}
+.modal{background:var(--surface);border-radius:var(--r-xl);max-width:400px;width:100%;
+  padding:28px 24px;text-align:center}
+.modal .m-icon{font-size:40px;margin-bottom:12px}
+.modal h3{font-family:var(--ff-display);font-size:21px;font-weight:800;color:var(--primary);margin-bottom:8px}
+.modal p{font-size:14px;color:var(--text-2);line-height:1.6}
+.tally{display:flex;justify-content:center;gap:20px;margin:16px 0 4px}
+.tally .tc{text-align:center}
+.tally .tc .n{font-family:var(--ff-display);font-size:30px;font-weight:800;line-height:1}
+.tally .tc .l{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);margin-top:3px}
+.tally .an .n{color:var(--cta)}
+.tally .un .n{color:var(--danger)}
+.tally .rv .n{color:var(--review)}
+.m-actions{display:flex;gap:10px;margin-top:20px}
+.m-actions .btn{flex:1}
 </style>
 </head>
 <body>
@@ -256,6 +290,8 @@ input{user-select:text;-webkit-user-select:text}
         <li><span class="ico">📋</span><span><b>30 questions</b>, all multiple choice. One correct answer each.</span></li>
         <li><span class="ico">⏱</span><span><b>30 minutes</b> to complete the test. The timer starts when you click Begin.</span></li>
         <li><span class="ico">✅</span><span><b>+1 mark</b> for each correct answer. No negative marking.</span></li>
+        <li><span class="ico">🧭</span><span>Jump to any question using the <b>number grid</b>. Use Prev / Next or tap any number to navigate.</span></li>
+        <li><span class="ico">🔖</span><span>Tap <b>Mark for Review</b> on any question to flag it and come back later.</span></li>
         <li><span class="ico">🏆</span><span>Score <b>above 50%</b> and <b>win a scholarship instantly</b>. The higher you score, the bigger the reward.</span></li>
         <li><span class="ico">📱</span><span>Keep your phone handy. <b>Do not refresh or close</b> the page during the test.</span></li>
         <li><span class="ico">🔒</span><span>One attempt per mobile number.</span></li>
@@ -273,16 +309,20 @@ input{user-select:text;-webkit-user-select:text}
     <div class="exam-title">Qualification Test</div>
     <div id="timer">30:00</div>
   </div>
-  <div class="q-progress"><div class="q-progress-fill" id="q-progress-fill" style="width:5%"></div></div>
+  <div class="q-progress"><div class="q-progress-fill" id="q-progress-fill"></div></div>
 
   <div class="q-body">
-    <!-- question grid overview -->
     <div class="q-grid-wrap">
       <div class="q-grid-label">Questions</div>
       <div class="q-grid" id="q-grid"></div>
     </div>
+    <div class="grid-legend">
+      <span class="gl-ans"><i></i> Answered</span>
+      <span class="gl-rev"><i></i> Marked for review</span>
+      <span class="gl-seen"><i></i> Seen, not answered</span>
+      <span class="gl-un"><i></i> Not visited</span>
+    </div>
 
-    <!-- active question -->
     <div class="q-num" id="q-num"></div>
     <div class="q-text" id="q-text"></div>
     <div class="options" id="options"></div>
@@ -290,8 +330,9 @@ input{user-select:text;-webkit-user-select:text}
 
   <div class="q-nav">
     <button class="btn btn-outline" id="btn-prev" onclick="navQ(-1)">&larr; Prev</button>
+    <button class="btn btn-outline" id="btn-mark" onclick="toggleMark()">🔖 Mark</button>
     <button class="btn btn-outline" id="btn-next" onclick="navQ(1)">Next &rarr;</button>
-    <button class="btn" id="btn-submit" onclick="confirmSubmit()">Submit Test</button>
+    <button class="btn" id="btn-submit" onclick="confirmSubmit()">Submit</button>
   </div>
 </section>
 
@@ -305,14 +346,30 @@ input{user-select:text;-webkit-user-select:text}
     <div class="result-sub" id="res-sub"></div>
     <div class="score-badge">
       <div class="sc" id="res-score"></div>
-      <div class="sl">out of 20 marks</div>
+      <div class="sl">out of 30 marks</div>
     </div>
     <div id="res-prize"></div>
-    <a id="res-wa" class="btn btn-wa btn-full" href="#" target="_blank" rel="noopener" style="margin-top:4px">
-      📞 Talk to a Counsellor on WhatsApp
-    </a>
   </div>
 </section>
+
+<!-- Submit confirmation modal -->
+<div class="ov hidden" id="ov-submit">
+  <div class="modal">
+    <div class="m-icon">📝</div>
+    <h3>Submit your test?</h3>
+    <p id="sub-msg"></p>
+    <div class="tally">
+      <div class="tc an"><div class="n" id="t-ans">0</div><div class="l">Answered</div></div>
+      <div class="tc un"><div class="n" id="t-un">0</div><div class="l">Unanswered</div></div>
+      <div class="tc rv"><div class="n" id="t-rv">0</div><div class="l">For Review</div></div>
+    </div>
+    <p style="font-size:12.5px;color:var(--text-3);margin-top:6px">Once submitted you cannot return to this test.</p>
+    <div class="m-actions">
+      <button class="btn btn-ghost" id="btn-cancel-sub">Keep working</button>
+      <button class="btn btn-primary" id="btn-confirm-sub">Yes, submit</button>
+    </div>
+  </div>
+</div>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
@@ -323,7 +380,6 @@ input{user-select:text;-webkit-user-select:text}
 <script>
 /* ── Config ───────────────────────────── */
 var API = 'https://uxdrldreaockdloqvojs.supabase.co/functions/v1/lead-qualifier-api';
-var WA_NUMBER = '918630604949'; // change to team WhatsApp
 
 /* ── Questions (options only; correct answers live in Edge Function) ── */
 var QUESTIONS = [
@@ -421,7 +477,14 @@ var QUESTIONS = [
 var TOTAL = QUESTIONS.length; // 30
 
 /* ── State ────────────────────────────── */
-var S = { token: null, name: '', qi: 0, answers: {}, timerSec: 30*60, timerID: null, startTs: 0, submitted: false };
+var S = {
+  token: null, name: '',
+  qi: 0,
+  answers: {},
+  marked: [],    // array of question ids marked for review
+  visited: {},   // set of question ids seen
+  timerSec: 30*60, timerID: null, startTs: 0, submitted: false
+};
 
 /* ── Helpers ──────────────────────────── */
 function $(id){ return document.getElementById(id); }
@@ -439,7 +502,6 @@ function busy(el, yes, label){
   el.disabled = yes;
   if(label !== undefined) el.textContent = label;
 }
-
 function api(action, body){
   return fetch(API, {
     method:'POST',
@@ -447,6 +509,9 @@ function api(action, body){
     body: JSON.stringify(Object.assign({action:action}, body))
   }).then(function(r){ return r.json(); });
 }
+
+function isAnswered(i){ var v = S.answers[QUESTIONS[i].id]; return v !== undefined && v !== null && v >= 0; }
+function isMarked(i){ return S.marked.indexOf(QUESTIONS[i].id) > -1; }
 
 /* ── Confetti ─────────────────────────── */
 var CONFETTI = {
@@ -498,7 +563,8 @@ function doRegister(){
 /* ── Exam ─────────────────────────────── */
 function startExam(){
   document.body.classList.add('exam-mode');
-  S.answers = {}; S.qi = 0; S.startTs = Date.now(); S.submitted = false;
+  S.answers = {}; S.marked = []; S.visited = {};
+  S.qi = 0; S.startTs = Date.now(); S.submitted = false;
   buildGrid();
   renderQ(0);
   show('s-exam');
@@ -519,7 +585,9 @@ function buildGrid(){
 
 function renderQ(idx){
   S.qi = idx;
+  S.visited[QUESTIONS[idx].id] = true;
   var q = QUESTIONS[idx];
+
   $('q-num').textContent = 'Question '+(idx+1)+' of '+TOTAL;
   $('q-text').textContent = q.text;
   $('q-progress-fill').style.width = ((idx+1)/TOTAL*100)+'%';
@@ -533,31 +601,53 @@ function renderQ(idx){
                   + '<div class="opt-text">'+opt+'</div>';
     div.addEventListener('click', function(){
       S.answers[q.id] = oi;
-      document.querySelectorAll('.opt').forEach(function(el){ el.classList.remove('selected'); });
+      opts.querySelectorAll('.opt').forEach(function(el){ el.classList.remove('selected'); });
       div.classList.add('selected');
-      updateDot(idx);
+      renderGrid();
     });
     opts.appendChild(div);
   });
 
-  // Update dots
+  // Update nav buttons
+  $('btn-prev').disabled = idx === 0;
+  $('btn-next').disabled = idx === TOTAL-1;
+  $('btn-next').textContent = idx === TOTAL-1 ? 'Last' : 'Next →';
+
+  // Mark for review button state
+  var markBtn = $('btn-mark');
+  if(isMarked(idx)){
+    markBtn.textContent = '✅ Marked';
+    markBtn.classList.add('marked');
+  } else {
+    markBtn.textContent = '🔖 Mark';
+    markBtn.classList.remove('marked');
+  }
+
+  renderGrid();
+
+  // Scroll page to top of question on mobile
+  var qBody = document.querySelector('.q-body');
+  if(qBody) qBody.scrollTop = 0;
+}
+
+function renderGrid(){
   for(var i=0;i<TOTAL;i++){
     var d = $('qd-'+i);
     if(!d) continue;
-    d.className = 'q-dot'
-      + (S.answers[QUESTIONS[i].id]!==undefined ? ' answered' : '')
-      + (i===idx ? ' current' : '');
+    var cls = 'q-dot';
+    if(isMarked(i))   cls += ' review';
+    if(isAnswered(i)) cls += ' answered';
+    else if(S.visited[QUESTIONS[i].id] && !isMarked(i)) cls += ' seen';
+    if(i === S.qi)    cls += ' current';
+    d.className = cls;
   }
-
-  $('btn-prev').style.display = idx === 0 ? 'none' : '';
-  $('btn-next').style.display = idx === TOTAL-1 ? 'none' : '';
-  $('btn-submit').style.display = idx === TOTAL-1 ? '' : 'none';
 }
 
-function updateDot(idx){
-  var d = $('qd-'+idx);
-  if(!d) return;
-  d.className = 'q-dot answered current';
+function toggleMark(){
+  var id = QUESTIONS[S.qi].id;
+  var at = S.marked.indexOf(id);
+  if(at > -1) S.marked.splice(at,1); else S.marked.push(id);
+  renderQ(S.qi); // re-render to update button and grid
 }
 
 function navQ(dir){
@@ -586,15 +676,33 @@ function autoSubmit(){
   submitExam();
 }
 
+/* ── Submit confirmation ──────────────── */
 function confirmSubmit(){
-  var answered = Object.keys(S.answers).length;
-  var unanswered = TOTAL - answered;
-  if(unanswered > 0){
-    var msg = unanswered + ' question'+(unanswered>1?'s are':' is')+' unanswered. Submit anyway?';
-    if(!confirm(msg)) return;
+  var answered = 0;
+  for(var i=0;i<TOTAL;i++){ if(isAnswered(i)) answered++; }
+  var un = TOTAL - answered;
+  var marked = S.marked.length;
+
+  $('t-ans').textContent = answered;
+  $('t-un').textContent = un;
+  $('t-rv').textContent = marked;
+
+  if(un === 0){
+    $('sub-msg').innerHTML = 'You have answered <b>all '+TOTAL+' questions</b>. Ready to submit?';
+  } else {
+    $('sub-msg').innerHTML = 'You have <b>'+un+' unanswered question'+(un===1?'':'s')+'</b>. Unanswered questions score 0 — they do not lose you marks.';
   }
-  submitExam();
+
+  $('ov-submit').classList.remove('hidden');
 }
+
+$('btn-cancel-sub').addEventListener('click', function(){
+  $('ov-submit').classList.add('hidden');
+});
+$('btn-confirm-sub').addEventListener('click', function(){
+  $('ov-submit').classList.add('hidden');
+  submitExam();
+});
 
 function submitExam(){
   if(S.submitted) return;
@@ -606,8 +714,6 @@ function submitExam(){
 
   api('submit', {token:S.token, answers:S.answers, duration:duration}).then(function(res){
     if(!res.ok){ toast('Submission failed. Please try again.', true); S.submitted=false; return; }
-    // override tier to premium if server says so
-    if(res.premium && res.passed) res._tier = 'premium';
     showResult(res.score, res.total, res.passed, true, res.premium);
   }).catch(function(){
     toast('Network error. Please check your connection.', true);
@@ -628,11 +734,6 @@ function showResult(score, total, passed, animate, premium){
   var firstName = S.name ? S.name.split(' ')[0] : 'there';
   var amt = tier === 'premium' ? '₹40,000' : '₹30,000';
 
-  var waMsg = tier !== 'fail'
-    ? 'Hi! I just took the Nurses to Germany Qualification Test and scored ' + score + '/' + t + '. I would like to know more about my scholarship.'
-    : 'Hi! I took the Nurses to Germany Qualification Test and scored ' + score + '/' + t + '. I would like to speak with a counsellor about the programme.';
-  $('res-wa').href = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(waMsg);
-
   if(tier === 'premium' || tier === 'standard'){
     $('res-icon').textContent = '🎉';
     $('res-headline').textContent = 'Congratulations, ' + firstName + '!';
@@ -652,7 +753,7 @@ function showResult(score, total, passed, animate, premium){
     $('res-prize').innerHTML =
       '<div class="fail-card">'
       + '<h3>Keep going — Germany awaits you 🇩🇪</h3>'
-      + '<p>Don\'t worry — our team can still guide you on your journey to work as a nurse in Germany. Talk to a counsellor and find out how to get started.</p>'
+      + '<p>Don\'t worry — our team can still help you start your journey to work as a nurse in Germany.</p>'
       + '</div>';
   }
 }
