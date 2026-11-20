@@ -192,16 +192,16 @@ input{user-select:text;-webkit-user-select:text}
   <div class="hero">
     <span class="badge-pill">Free Qualification Test</span>
     <h1>Nurses to <em>Germany</em><br>Qualification Test</h1>
-    <p class="sub">20 questions · 30 minutes · Instant result. Score above 50% and win a scholarship on the spot.</p>
+    <p class="sub">30 questions · 30 minutes · Instant result. Score above 50% and win a scholarship on the spot.</p>
 
     <div class="prize-card">
       <span class="crown">🏆</span>
-      <div class="amt">₹40,000 Scholarship</div>
-      <div class="cond">Score more than 50% → win instantly</div>
+      <div class="amt">Win a Scholarship</div>
+      <div class="cond">Score above 50% → find out how much after the test</div>
     </div>
 
     <div class="info-row">
-      <div class="info-pill">📋 20 Questions</div>
+      <div class="info-pill">📋 30 Questions</div>
       <div class="info-pill">⏱ 30 Minutes</div>
       <div class="info-pill">⚡ Instant Result</div>
     </div>
@@ -253,10 +253,10 @@ input{user-select:text;-webkit-user-select:text}
       <h2>Before you begin</h2>
       <p class="hint">Read these instructions carefully.</p>
       <ul class="instr-list">
-        <li><span class="ico">📋</span><span><b>20 questions</b>, all multiple choice. One correct answer each.</span></li>
+        <li><span class="ico">📋</span><span><b>30 questions</b>, all multiple choice. One correct answer each.</span></li>
         <li><span class="ico">⏱</span><span><b>30 minutes</b> to complete the test. The timer starts when you click Begin.</span></li>
         <li><span class="ico">✅</span><span><b>+1 mark</b> for each correct answer. No negative marking.</span></li>
-        <li><span class="ico">🏆</span><span>Score <b>more than 10 out of 20</b> (above 50%) and <b>win ₹40,000 instantly</b>.</span></li>
+        <li><span class="ico">🏆</span><span>Score <b>above 50%</b> and <b>win a scholarship instantly</b>. The higher you score, the bigger the reward.</span></li>
         <li><span class="ico">📱</span><span>Keep your phone handy. <b>Do not refresh or close</b> the page during the test.</span></li>
         <li><span class="ico">🔒</span><span>One attempt per mobile number.</span></li>
       </ul>
@@ -386,9 +386,39 @@ var QUESTIONS = [
 
   {id:'q20', text:'What is the standard emergency telephone number in Germany?',
    opts:['100','112','911','999']},
+
+  {id:'q21', text:'Normal urine output for a healthy adult is approximately:',
+   opts:['100–300 mL per day','300–500 mL per day','800–2000 mL per day','3000–4000 mL per day']},
+
+  {id:'q22', text:'Which blood group is known as the universal donor for red blood cells?',
+   opts:['A positive (A+)','B positive (B+)','AB positive (AB+)','O negative (O−)']},
+
+  {id:'q23', text:'The Glasgow Coma Scale (GCS) is used to assess:',
+   opts:['Heart function','Level of consciousness','Kidney function','Lung capacity']},
+
+  {id:'q24', text:'Which position is best for a patient in respiratory distress who is conscious?',
+   opts:['Supine (flat on back)','Prone (face down)','Fowler\'s (semi-sitting upright)','Left lateral']},
+
+  {id:'q25', text:'A patient\'s fluid intake is 2000 mL and urine output is 1800 mL. The fluid balance is:',
+   opts:['−200 mL (negative)','0 mL (balanced)','+200 mL (positive)','+3800 mL (positive)']},
+
+  {id:'q26', text:'Which of the following is NOT a function of the skin?',
+   opts:['Protection against infection','Temperature regulation','Production of red blood cells','Sensation (touch, pain, heat)']},
+
+  {id:'q27', text:'The medical term "tachycardia" means:',
+   opts:['Slow heart rate (below 60 bpm)','Fast heart rate (above 100 bpm)','Irregular heart rate','No heartbeat']},
+
+  {id:'q28', text:'In a prescription, "PRN" means:',
+   opts:['Per Regular Nursing','As needed / when required','Post-Renal Nephrology','Primary Risk Noted']},
+
+  {id:'q29', text:'Germany\'s statutory (public) health insurance system is called:',
+   opts:['Nationalgesundheitsdienst','Krankenversicherung','Medicare','Sozialversicherung']},
+
+  {id:'q30', text:'What is the capital city of Germany?',
+   opts:['Munich','Hamburg','Frankfurt','Berlin']},
 ];
 
-var TOTAL = QUESTIONS.length; // 20
+var TOTAL = QUESTIONS.length; // 30
 
 /* ── State ────────────────────────────── */
 var S = { token: null, name: '', qi: 0, answers: {}, timerSec: 30*60, timerID: null, startTs: 0, submitted: false };
@@ -455,7 +485,7 @@ function doRegister(){
     S.token = res.token;
     S.name = name;
     if(res.already_attempted && res.result){
-      showResult(res.result.score, res.result.total, res.result.passed, false);
+      showResult(res.result.score, res.result.total, res.result.passed, false, res.result.premium);
     } else {
       show('s-instructions');
     }
@@ -576,7 +606,9 @@ function submitExam(){
 
   api('submit', {token:S.token, answers:S.answers, duration:duration}).then(function(res){
     if(!res.ok){ toast('Submission failed. Please try again.', true); S.submitted=false; return; }
-    showResult(res.score, res.total, res.passed, true);
+    // override tier to premium if server says so
+    if(res.premium && res.passed) res._tier = 'premium';
+    showResult(res.score, res.total, res.passed, true, res.premium);
   }).catch(function(){
     toast('Network error. Please check your connection.', true);
     S.submitted = false;
@@ -584,32 +616,39 @@ function submitExam(){
 }
 
 /* ── Result ────────────────────────────── */
-function showResult(score, total, passed, animate){
+function showResult(score, total, passed, animate, premium){
+  var t = total || 30;
+  var tier = passed
+    ? ((premium || score / t > 0.9) ? 'premium' : 'standard')
+    : 'fail';
+
   show('s-result');
+  $('res-score').textContent = score + '/' + t;
 
-  $('res-score').textContent = score + '/' + total;
+  var firstName = S.name ? S.name.split(' ')[0] : 'there';
+  var amt = tier === 'premium' ? '₹40,000' : '₹30,000';
 
-  var waMsg = passed
-    ? 'Hi! I just took the Nurses to Germany Qualification Test and scored ' + score + '/' + total + '. I would like to know more about claiming my ₹40,000 scholarship.'
-    : 'Hi! I took the Nurses to Germany Qualification Test and scored ' + score + '/' + total + '. I would like to speak with a counsellor about the programme.';
+  var waMsg = tier !== 'fail'
+    ? 'Hi! I just took the Nurses to Germany Qualification Test and scored ' + score + '/' + t + '. I would like to know more about my scholarship.'
+    : 'Hi! I took the Nurses to Germany Qualification Test and scored ' + score + '/' + t + '. I would like to speak with a counsellor about the programme.';
   $('res-wa').href = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(waMsg);
 
-  if(passed){
+  if(tier === 'premium' || tier === 'standard'){
     $('res-icon').textContent = '🎉';
-    $('res-headline').textContent = 'Congratulations, ' + S.name.split(' ')[0] + '!';
-    $('res-sub').textContent = 'You have qualified for the ₹40,000 scholarship.';
+    $('res-headline').textContent = 'Congratulations, ' + firstName + '!';
+    $('res-sub').textContent = 'You have qualified for a scholarship on the Nurses to Germany Programme.';
     $('res-prize').innerHTML =
       '<div class="win-card">'
       + '<span class="wc-crown">🏆</span>'
       + '<h3>You\'ve Won!</h3>'
-      + '<div class="wc-amt">₹40,000 Scholarship</div>'
+      + '<div class="wc-amt">' + amt + ' Scholarship</div>'
       + '<p>Our counselling team will call you on your registered number within 24 hours to confirm and activate your scholarship on the Nurses to Germany Programme.</p>'
       + '</div>';
     if(animate) setTimeout(function(){ CONFETTI.fire(); }, 400);
   } else {
     $('res-icon').textContent = '📋';
-    $('res-headline').textContent = 'Good effort, ' + S.name.split(' ')[0] + '!';
-    $('res-sub').textContent = 'You need more than 10/20 to qualify. Keep going!';
+    $('res-headline').textContent = 'Good effort, ' + firstName + '!';
+    $('res-sub').textContent = 'You need more than 15/30 to qualify. Keep going!';
     $('res-prize').innerHTML =
       '<div class="fail-card">'
       + '<h3>Keep going — Germany awaits you 🇩🇪</h3>'
