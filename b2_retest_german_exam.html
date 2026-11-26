@@ -416,6 +416,8 @@ collectData = function () {
   const d = _collectDataBase();
   d.tab_switches   = PROCTOR.count();
   d.violation_log  = PROCTOR.log();
+  if (window.__gcbSpeakingSkipped && window.__gcbSpeakingSkipped.length)
+    d.violation_log = (d.violation_log ? d.violation_log + ' | ' : '') + 'SPEAKING NOT RECORDED: task ' + window.__gcbSpeakingSkipped.join(', ');
   d.auto_submitted = PROCTOR.auto();
   return d;
 };
@@ -505,6 +507,31 @@ const VOICE = (function () {
     } finally { quietUntil = Date.now() + 2500; }
   }
 
+  function micErr(e) {
+    const n = (e && e.name) || '';
+    if (n === 'NotReadableError' || n === 'AbortError')
+      return 'Your microphone is being used by another app \u2014 usually Google Meet. On your phone, mute or leave the Meet call (or join Meet from a second device), then try again. Only one app can use the microphone at a time.';
+    if (n === 'NotFoundError' || n === 'OverconstrainedError')
+      return 'No microphone was found. Check your phone\u2019s microphone and try again.';
+    if (n === 'NotAllowedError' || n === 'SecurityError')
+      return 'Microphone permission is blocked. Tap the lock (or \u201caA\u201d) icon next to the web address, allow the Microphone, then try again.';
+    return 'Could not start the microphone. Close other apps that use the mic (like Google Meet), then try again.';
+  }
+  (function fixListeningAudio() {
+    function go() {
+      const a = document.querySelector('.audio-wrap audio') || document.querySelector('audio');
+      if (!a) return;
+      a.setAttribute('playsinline', ''); a.setAttribute('webkit-playsinline', ''); a.setAttribute('preload', 'auto');
+      if (!document.getElementById('gcb-audio-hint')) {
+        const h = document.createElement('p');
+        h.id = 'gcb-audio-hint';
+        h.style.cssText = 'font-size:12.5px;color:#6b7280;margin-top:8px;line-height:1.55';
+        h.innerHTML = '\ud83d\udd08 <strong>Can\u2019t hear it?</strong> Turn your phone volume up, take Google Meet off the loudspeaker (or mute Meet) so the clip can be heard, then press \u25b6 again. Headphones work best.';
+        a.parentNode.insertBefore(h, a.nextSibling);
+      }
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
+  })();
   function syncHidden(task) {
     const h = document.getElementById(task);
     if (h) h.value = state[task].status === 'saved' ? 'recorded' : '';
@@ -526,7 +553,7 @@ const VOICE = (function () {
       const st = s.status === 'uploading' ? '<span class="vr-st up">Saving&hellip;</span>'
         : s.status === 'saved' ? '<span class="vr-st ok">&#10003; Saved (' + fmt(s.secs) + ')</span>'
         : '<span class="vr-st bad">Not saved &mdash; check your internet</span><button type="button" class="vr-btn" data-act="retry">Retry upload</button>';
-      h = '<audio controls preload="metadata" src="' + s.url + '"></audio><div class="vr-row">' + st +
+      h = '<audio controls playsinline webkit-playsinline preload="metadata" src="' + s.url + '"></audio><div class="vr-row">' + st +
           (s.status !== 'uploading' ? '<button type="button" class="vr-btn vr-ghost" data-act="rec">&#8634; Re-record</button>' : '') + '</div>';
     }
     box.innerHTML = h;
@@ -539,7 +566,7 @@ const VOICE = (function () {
     const s = state[task];
     let stream;
     try { stream = await getMic(); }
-    catch (e) { showToast('Microphone blocked. Allow microphone access for this page and try again.', 'error-t'); return; }
+    catch (e) { showToast(micErr(e), 'error-t'); return; }
     micCapture(true);
     const mime = pickMime();
     let rec;
@@ -643,7 +670,7 @@ const VOICE = (function () {
       st.textContent = 'Asking for permission…';
       let stream;
       try { stream = await getMic(); }
-      catch (e) { st.innerHTML = '<span style="color:#b91c1c;font-weight:600">Microphone blocked. Click the lock icon in the address bar, allow the microphone, then test again.</span>'; return; }
+      catch (e) { st.innerHTML = '<span style="color:#b91c1c;font-weight:600">' + micErr(e) + '</span>'; return; }
       micOK = true;
       st.innerHTML = '<span style="color:#15803d;font-weight:600">&#10003; Microphone works. Say something &mdash; the bar should move.</span>';
       try {
@@ -656,9 +683,9 @@ const VOICE = (function () {
           let peak = 0; for (let i = 0; i < buf.length; i++) peak = Math.max(peak, Math.abs(buf[i] - 128));
           bar.style.width = Math.min(100, peak / 64 * 100) + '%';
           if (Date.now() - t0 < 5000) requestAnimationFrame(tick);
-          else { bar.style.width = '0'; ac.close(); micCapture(false); }   // stays granted, stops listening
+          else { bar.style.width = '0'; ac.close(); releaseMic(); }   // free the mic after the test so the listening clip plays through the loud speaker (iOS routes audio to the quiet earpiece whenever a mic is held open; it is re-acquired when recording starts)
         })();
-      } catch (e) { micCapture(false); /* meter unavailable; the mic itself is fine and stays granted */ }
+      } catch (e) { releaseMic(); /* meter unavailable; the mic still works and is re-acquired when recording starts */ }
     };
   })();
 
@@ -708,10 +735,16 @@ const VOICE = (function () {
       if (missing.length) {
         missing.forEach(function (t) { const b = document.querySelector('.voice-rec[data-task="' + t + '"]'); if (b) b.classList.add('vr-missing'); });
         const nums = missing.map(function (t) { return TASKS.indexOf(t) + 1; });
-        showToast('Record every speaking task before submitting. Missing: task ' + nums.join(', '), 'error-t');
-        const first = document.querySelector('.voice-rec[data-task="' + missing[0] + '"]');
-        if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
+        const ok = window.confirm(
+          'You have not recorded speaking task ' + nums.join(', ') + '.\n\n' +
+          'If the microphone will not work \u2014 for example Google Meet is using it \u2014 mute or leave the Meet call, then tap Record to try again.\n\n' +
+          'If you really cannot record, you can still submit now. These tasks will be marked \u201cNOT RECORDED\u201d for your examiner.\n\n' +
+          'OK = submit without them    \u00b7    Cancel = go back and record');
+        if (!ok) {
+          const first = document.querySelector('.voice-rec[data-task="' + missing[0] + '"]');
+          if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
       }
     } else {
       stop();                                 // keep whatever was being said
@@ -720,6 +753,8 @@ const VOICE = (function () {
       await Promise.race([Promise.all(pend), sleep(20000)]);
     }
     if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+    const __skip = TASKS.filter(function (t) { return state[t].status !== 'saved'; }).map(function (t) { return TASKS.indexOf(t) + 1; });
+    if (__skip.length) window.__gcbSpeakingSkipped = __skip;
     const data = collectData();
     data.id = SUB_ID;
     data.speaking_audio = paths();
